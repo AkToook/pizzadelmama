@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizza Reims — Livraison de Pizza à Reims | Goût incomparable</title>
+<meta name="description" content="Pizza Reims — Pizzeria artisanale à Reims. Livraison rapide, +286 avis, note 4.7/5. Pizzas, burgers, tacos, fried chicken. Commandez en ligne !">
+<meta name="keywords" content="pizza reims, livraison pizza reims, pizzeria reims, commande pizza reims, fast food reims">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--red:#c0392b;
+--red-bright:#e74c3c;
+--red-deep:#8b1a1a;
+--dark:#0b1120;
+--dark-surface:#101828;
+--dark-card:#162032;
+--dark-border:#1e2d45;
+--gold:#d4a855;
+--gold-light:#f0d48a;
+--white:#f5f5f5;
+--white-dim:#a0a0a0;
+--green:#27ae60;
+--font-display:'Bebas Neue',sans-serif;
+--font-body:'Manrope',sans-serif;
+}
+html{scroll-behavior:smooth;background:var(--dark)}
+body{font-family:var(--font-body);color:var(--white);background:var(--dark);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img.emoji{height:1.2em;width:1.2em;margin:0 .05em;vertical-align:-.2em;display:inline}
+img{max-width:100%;display:block}
+button{cursor:pointer;border:none;font-family:inherit}
+
+/* ===== CALL BAR ===== */
+.call-bar{
+position:fixed;top:0;left:0;right:0;z-index:100;
+background:var(--green);
+display:flex;align-items:center;justify-content:center;gap:10px;
+padding:10px 20px;
+font-weight:700;font-size:.95rem;color:#fff;
+}
+.call-bar a{
+background:rgba(255,255,255,.2);padding:6px 18px;border-radius:30px;
+font-weight:800;letter-spacing:.02em;
+transition:background .2s;
+}
+.call-bar a:hover{background:rgba(255,255,255,.35)}
+.call-bar .phone-icon{width:20px;height:20px}
+
+/* ===== NAV ===== */
+.nav{
+position:fixed;top:44px;left:0;right:0;z-index:90;
+background:rgba(11,17,32,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border-bottom:1px solid var(--dark-border);
+transition:box-shadow .3s;
+}
+.nav.scrolled{box-shadow:0 4px 30px rgba(0,0,0,.5)}
+.nav-inner{
+max-width:1200px;margin:0 auto;
+display:flex;align-items:center;justify-content:space-between;
+padding:12px 24px;
+}
+.nav-logo{height:50px;width:auto}
+.nav-links{display:flex;gap:28px;list-style:none;align-items:center}
+.nav-links a{font-size:.85rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--white-dim);transition:color .25s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{
+background:var(--red);color:#fff;padding:10px 24px;border-radius:30px;
+font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;
+transition:background .25s,transform .25s;
+}
+.nav-cta:hover{background:var(--red-bright);transform:translateY(-1px)}
+.hamburger{display:none;background:none;border:none;padding:8px;cursor:pointer}
+.hamburger span{display:block;width:24px;height:2px;background:var(--white);margin:5px 0;transition:all .3s}
+
+/* ===== HERO ===== */
+.hero{
+position:relative;
+min-height:100vh;
+display:flex;align-items:center;
+padding:140px 24px 80px;
+overflow:hidden;
+}
+.hero-bg{
+position:absolute;inset:0;
+background:
+  radial-gradient(ellipse at 70% 40%, rgba(192,57,43,.25) 0%, transparent 60%),
+  radial-gradient(ellipse at 30% 80%, rgba(212,168,85,.1) 0%, transparent 50%),
+  var(--dark);
+
+}
+.hero-bg::after{
+content:'';position:absolute;inset:0;
+background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1920&q=80') center/cover;
+opacity:.35;
+}
+.hero-content{
+position:relative;z-index:2;
+max-width:1200px;margin:0 auto;width:100%;
+text-align:center;
+display:flex;flex-direction:column;align-items:center;
+}
+.hero-text h1{
+font-family:var(--font-display);
+font-size:clamp(3.5rem,9vw,6.5rem);
+line-height:.93;
+letter-spacing:.02em;
+color:var(--white);
+margin-bottom:24px;
+}
+.hero-text h1 span{color:var(--red-bright)}
+.hero-text p{
+font-size:1.15rem;line-height:1.7;
+color:var(--white-dim);
+max-width:560px;
+margin:0 auto 36px;
+}
+.hero-badges{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:36px;justify-content:center}
+.badge{
+background:var(--dark-card);border:1px solid var(--dark-border);
+padding:10px 18px;border-radius:12px;
+display:flex;align-items:center;gap:8px;
+font-size:.85rem;font-weight:600;
+}
+.badge .num{color:var(--gold);font-family:var(--font-display);font-size:1.3rem}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{
+background:var(--red);color:#fff;
+padding:16px 36px;border-radius:50px;
+font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.04em;
+transition:all .3s;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:var(--red-bright);transform:translateY(-2px);box-shadow:0 8px 30px rgba(192,57,43,.4)}
+.btn-secondary{
+background:transparent;color:var(--white);
+border:2px solid var(--dark-border);
+padding:16px 36px;border-radius:50px;
+font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.04em;
+transition:all .3s;
+}
+.btn-secondary:hover{border-color:var(--white);background:rgba(255,255,255,.05)}
+.hero-image{
+position:relative;
+display:flex;align-items:center;justify-content:center;
+}
+.hero-image img{
+width:100%;max-width:520px;
+border-radius:24px;
+box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+.hero-floating{
+position:absolute;
+background:var(--dark-card);border:1px solid var(--dark-border);
+padding:14px 20px;border-radius:16px;
+backdrop-filter:blur(10px);
+animation:float 4s ease-in-out infinite;
+}
+.hero-floating.promo{bottom:20px;left:-20px}
+.hero-floating.rating{top:20px;right:-10px}
+.hero-floating .stars{color:var(--gold);font-size:1.1rem}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ===== PROMOS BANNER ===== */
+.promos-banner{
+background:linear-gradient(135deg,var(--red-deep),var(--red));
+padding:40px 24px;
+overflow:hidden;
+}
+.promos-track{
+display:flex;gap:40px;align-items:center;
+animation:scroll-left 20s linear infinite;
+white-space:nowrap;
+}
+.promos-track span{
+font-family:var(--font-display);font-size:1.6rem;letter-spacing:.04em;
+display:flex;align-items:center;gap:12px;
+}
+.promos-track .dot{width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ===== SECTION COMMON ===== */
+section{padding:100px 24px}
+.section-header{text-align:center;margin-bottom:60px}
+.section-header h2{
+font-family:var(--font-display);
+font-size:clamp(2.2rem,5vw,3.5rem);
+letter-spacing:.03em;
+margin-bottom:12px;
+}
+.section-header p{color:var(--white-dim);font-size:1rem;max-width:500px;margin:0 auto}
+
+/* ===== MENU ===== */
+.menu-section{background:var(--dark)}
+.menu-tabs{
+display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:14px;max-width:1200px;margin:0 auto 48px;
+}
+.menu-tab{
+position:relative;overflow:hidden;
+border-radius:16px;aspect-ratio:1;
+cursor:pointer;transition:transform .3s,box-shadow .3s;
+border:2px solid transparent;
+display:flex;align-items:flex-end;padding:14px;
+background-size:cover;background-position:center;
+}
+.menu-tab.hero-card{
+grid-column:1/-1;aspect-ratio:21/9;
+border-radius:20px;padding:32px;
+}
+.menu-tab.hero-card .tab-label{font-size:1.6rem;letter-spacing:.05em}
+.menu-tab.hero-card .tab-count{
+position:relative;z-index:1;display:block;
+color:rgba(255,255,255,.7);font-size:.85rem;font-weight:400;margin-top:4px;
+}
+.menu-tab::after{
+content:'';position:absolute;inset:0;
+background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.1) 60%);
+transition:background .3s;
+}
+.menu-tab:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.menu-tab:hover::after{background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 60%)}
+.menu-tab.active{border-color:var(--red);box-shadow:0 0 20px rgba(192,57,43,.3)}
+.menu-tab .tab-label{
+position:relative;z-index:1;
+font-weight:800;font-size:.95rem;color:#fff;
+text-shadow:0 2px 8px rgba(0,0,0,.6);
+text-transform:uppercase;letter-spacing:.03em;
+}
+
+.menu-grid{
+max-width:1200px;margin:0 auto;
+display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:20px;
+}
+.menu-card{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:16px;overflow:hidden;
+display:flex;gap:16px;padding:16px;
+transition:border-color .3s,transform .3s;
+}
+.menu-card:hover{border-color:var(--red);transform:translateY(-3px)}
+.menu-card-img{
+width:100px;height:100px;border-radius:12px;
+object-fit:cover;flex-shrink:0;
+}
+.menu-card-info{flex:1;display:flex;flex-direction:column;justify-content:center}
+.menu-card-info h3{font-size:1rem;font-weight:700;margin-bottom:4px}
+.menu-card-info p{font-size:.8rem;color:var(--white-dim);line-height:1.4;margin-bottom:8px;
+display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.menu-card-price{
+font-family:var(--font-display);font-size:1.4rem;color:var(--gold);
+font-weight:700;letter-spacing:.02em;
+background:rgba(212,168,85,.1);padding:4px 12px;border-radius:8px;display:inline-block;
+margin-top:auto;
+}
+.menu-card-sizes{display:flex;gap:8px;flex-wrap:wrap}
+.menu-card-sizes span{
+font-size:.75rem;background:var(--dark-surface);padding:4px 10px;border-radius:6px;
+color:var(--white-dim);
+}
+.menu-category-title{
+grid-column:1/-1;
+font-family:var(--font-display);font-size:1.8rem;
+color:var(--red-bright);
+padding:10px 0 0;
+border-top:1px solid var(--dark-border);
+margin-top:20px;
+}
+.menu-category-title:first-child{border-top:none;margin-top:0}
+
+/* ===== ABOUT ===== */
+.about{background:var(--dark-surface)}
+.about-grid{
+max-width:1100px;margin:0 auto;
+display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+}
+.about-stats{display:flex;gap:32px;margin-top:32px}
+.stat{text-align:center}
+.stat .num{font-family:var(--font-display);font-size:2.8rem;color:var(--gold);display:block}
+.stat .label{font-size:.8rem;color:var(--white-dim);text-transform:uppercase;letter-spacing:.05em}
+.about-text h2{
+font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);
+margin-bottom:16px;
+}
+.about-text p{color:var(--white-dim);line-height:1.8;margin-bottom:16px}
+.about-img{
+border-radius:20px;overflow:hidden;
+aspect-ratio:4/5;
+}
+.about-img img{width:100%;height:100%;object-fit:cover}
+
+/* ===== DELIVERY ZONES ===== */
+.delivery{background:var(--dark)}
+.zones-grid{
+max-width:900px;margin:0 auto;
+display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+}
+.zone-card{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:20px;padding:32px 24px;text-align:center;
+transition:border-color .3s,transform .3s;
+}
+.zone-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+.zone-card h3{font-family:var(--font-display);font-size:2rem;color:var(--gold);margin-bottom:8px}
+.zone-card p{font-size:.9rem;color:var(--white-dim)}
+.zone-card .price{font-family:var(--font-display);font-size:1.4rem;color:var(--white);margin-top:12px}
+
+/* ===== HOURS ===== */
+.hours{background:var(--dark-surface)}
+.hours-grid{
+max-width:800px;margin:0 auto;
+display:grid;grid-template-columns:1fr 1fr;gap:32px;
+}
+.hours-card{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:20px;padding:32px;
+}
+.hours-card h3{font-family:var(--font-display);font-size:1.6rem;margin-bottom:16px;color:var(--red-bright)}
+.hours-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--dark-border)}
+.hours-row:last-child{border-bottom:none}
+.hours-row .day{font-weight:600}
+.hours-row .time{color:var(--gold)}
+
+/* ===== CONTACT ===== */
+.contact{background:var(--dark)}
+.contact-grid{
+max-width:1100px;margin:0 auto;
+display:grid;grid-template-columns:1fr 1fr;gap:48px;
+}
+.contact-info{display:flex;flex-direction:column;gap:24px}
+.contact-item{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:16px;padding:24px;
+display:flex;align-items:center;gap:16px;
+}
+.contact-icon{
+width:48px;height:48px;border-radius:12px;
+background:var(--red);
+display:flex;align-items:center;justify-content:center;
+flex-shrink:0;
+}
+.contact-icon svg{width:22px;height:22px;fill:#fff}
+.contact-item h4{font-size:.85rem;color:var(--white-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.contact-item p{font-weight:600;font-size:1.05rem}
+.contact-map{border-radius:20px;overflow:hidden;min-height:400px}
+.contact-map iframe{width:100%;height:100%;border:none;filter:invert(.9) hue-rotate(180deg) brightness(1.1) contrast(.9)}
+
+/* ===== FOOTER ===== */
+.footer{
+background:var(--dark-surface);
+border-top:1px solid var(--dark-border);
+padding:48px 24px 24px;
+}
+.footer-inner{
+max-width:1200px;margin:0 auto;
+display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;
+}
+.footer-logo{height:60px}
+.footer-links{display:flex;gap:24px;list-style:none}
+.footer-links a{color:var(--white-dim);font-size:.85rem;transition:color .2s}
+.footer-links a:hover{color:var(--white)}
+.footer-copy{width:100%;text-align:center;padding-top:24px;border-top:1px solid var(--dark-border);color:var(--white-dim);font-size:.8rem;margin-top:8px}
+.footer-copy a{color:var(--red-bright)}
+
+/* ===== WHATSAPP FLOAT ===== */
+.wa-float{
+position:fixed;bottom:24px;left:24px;z-index:100;
+width:60px;height:60px;border-radius:50%;
+background:#25D366;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 4px 20px rgba(37,211,102,.4);
+transition:transform .3s;
+}
+.wa-float:hover{transform:scale(1.1)}
+.wa-float svg{width:32px;height:32px;fill:#fff}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+.hero-text p{margin-left:auto;margin-right:auto}
+.about-grid{grid-template-columns:1fr}
+.about-img{max-height:350px}
+.contact-grid{grid-template-columns:1fr}
+.zones-grid{grid-template-columns:1fr}
+.hours-grid{grid-template-columns:1fr}
+.nav-links{display:none}
+.hamburger{display:block}
+}
+@media(max-width:600px){
+.menu-tabs{grid-template-columns:repeat(3,1fr);gap:10px}
+.menu-tab{aspect-ratio:1}
+.menu-tab.hero-card{aspect-ratio:16/9;grid-column:1/-1}
+.menu-tab.hero-card .tab-label{font-size:1.2rem}
+.menu-tab.hero-card .tab-count{font-size:.75rem}
+.menu-tab .tab-label{font-size:.75rem}
+.menu-grid{grid-template-columns:1fr}
+.hero{padding-top:120px}
+.promos-track span{font-size:1.2rem}
+.footer .footer-inner{grid-template-columns:1fr!important;gap:24px!important;text-align:center}
+.four-grid{grid-template-columns:1fr!important;gap:32px!important}
+#duoGrid{grid-template-columns:1fr!important}
+}
+
+/* ===== MOBILE NAV ===== */
+.mobile-menu{
+position:fixed;inset:0;z-index:95;
+background:rgba(11,17,32,.98);
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
+opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mobile-menu a{font-family:var(--font-display);font-size:2rem;letter-spacing:.05em}
+.mobile-close{position:absolute;top:60px;right:24px;background:none;border:none;color:var(--white);font-size:2rem;cursor:pointer}
+
+/* ===== ANIMATIONS ===== */
+.reveal{opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+.reveal{opacity:1;transform:none;transition:none}
+.promos-track{animation:none}
+.hero-floating{animation:none}
+}
+
+/* Order Banner */
+.order-banner{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:20px;padding:48px;text-align:center;
+max-width:800px;margin:0 auto;
+}
+.order-banner h2{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);margin-bottom:12px}
+.order-banner p{color:var(--white-dim);margin-bottom:28px}
+.order-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* ===== CUSTOMIZATION MODAL ===== */
+.custom-overlay{
+position:fixed;inset:0;z-index:200;
+background:rgba(0,0,0,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+display:flex;align-items:flex-end;justify-content:center;
+opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.custom-overlay.open{opacity:1;pointer-events:auto}
+.custom-modal{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:24px 24px 0 0;
+width:100%;max-width:520px;max-height:85vh;
+overflow-y:auto;
+transform:translateY(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);
+}
+.custom-overlay.open .custom-modal{transform:translateY(0)}
+.custom-header{
+position:sticky;top:0;z-index:2;
+background:var(--dark-card);
+padding:24px 24px 16px;
+border-bottom:1px solid var(--dark-border);
+display:flex;align-items:center;justify-content:space-between;
+}
+.custom-header h3{font-size:1.2rem;font-weight:800}
+.custom-header .close-btn{
+background:var(--dark-surface);border:none;color:var(--white);
+width:36px;height:36px;border-radius:50%;font-size:1.2rem;
+display:flex;align-items:center;justify-content:center;cursor:pointer;
+transition:background .2s;
+}
+.custom-header .close-btn:hover{background:var(--dark-border)}
+.custom-hero-img{
+width:100%;height:180px;object-fit:cover;display:block;
+border-bottom:1px solid var(--dark-border);
+}
+.custom-body{padding:20px 24px 24px}
+.custom-section{margin-bottom:24px}
+.custom-section-title{
+font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+color:var(--red-bright);margin-bottom:12px;
+}
+.custom-options{display:flex;gap:8px;flex-wrap:wrap}
+.custom-opt{
+background:var(--dark-surface);border:2px solid var(--dark-border);
+padding:10px 18px;border-radius:12px;
+font-size:.85rem;font-weight:600;color:var(--white-dim);
+cursor:pointer;transition:all .2s;
+display:flex;align-items:center;gap:6px;
+}
+.custom-opt:hover{border-color:var(--white-dim)}
+.custom-opt.selected{border-color:var(--red-bright);color:var(--white);background:rgba(231,76,60,.1)}
+.custom-opt .extra{font-size:.75rem;color:var(--gold)}
+.custom-checks{display:flex;flex-direction:column;gap:8px}
+.custom-check{
+display:flex;align-items:center;gap:10px;
+padding:10px 14px;border-radius:10px;
+background:var(--dark-surface);cursor:pointer;
+transition:background .2s;
+}
+.custom-check:hover{background:var(--dark-border)}
+.custom-check input{display:none}
+.custom-checkbox{
+width:22px;height:22px;border-radius:6px;
+border:2px solid var(--dark-border);flex-shrink:0;
+display:flex;align-items:center;justify-content:center;
+transition:all .2s;
+}
+.custom-check input:checked ~ .custom-checkbox{border-color:var(--red-bright);background:var(--red)}
+.custom-check input:checked ~ .custom-checkbox::after{content:'✓';color:#fff;font-size:.8rem;font-weight:800}
+.custom-check .check-label{font-size:.9rem;font-weight:500;flex:1}
+.custom-check .check-price{font-size:.8rem;color:var(--gold);font-weight:600}
+.custom-textarea{
+width:100%;padding:12px 16px;border-radius:12px;
+background:var(--dark-surface);border:1px solid var(--dark-border);
+color:var(--white);font-size:.9rem;font-family:var(--font-body);
+resize:vertical;min-height:60px;outline:none;
+}
+.custom-textarea:focus{border-color:var(--red)}
+.custom-footer{
+position:sticky;bottom:0;
+background:var(--dark-card);
+padding:16px 24px 24px;
+border-top:1px solid var(--dark-border);
+}
+.custom-total{
+display:flex;align-items:center;justify-content:space-between;
+margin-bottom:14px;
+}
+.custom-total .label{font-size:.9rem;color:var(--white-dim)}
+.custom-total .amount{font-family:var(--font-display);font-size:1.8rem;color:var(--gold)}
+.custom-add-btn{
+width:100%;padding:16px;border-radius:14px;
+background:var(--red);color:#fff;
+font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.03em;
+transition:background .2s;border:none;cursor:pointer;
+}
+.custom-add-btn:hover{background:var(--red-bright)}
+
+/* CART BUTTON */
+.cart-btn{
+background:var(--dark-card);border:1px solid var(--dark-border);
+padding:8px 16px;border-radius:30px;
+font-size:.9rem;font-weight:700;color:var(--white);
+display:flex;align-items:center;gap:6px;
+transition:all .2s;cursor:pointer;
+}
+.cart-btn:hover{border-color:var(--red)}
+.cart-count{
+background:var(--red);color:#fff;
+width:22px;height:22px;border-radius:50%;
+display:inline-flex;align-items:center;justify-content:center;
+font-size:.75rem;font-weight:800;
+}
+
+/* CART SIDEBAR */
+.cart-overlay{
+position:fixed;inset:0;z-index:210;
+background:rgba(0,0,0,.6);
+opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.cart-overlay.open{opacity:1;pointer-events:auto}
+.cart-sidebar{
+position:fixed;top:0;right:-400px;bottom:0;z-index:220;
+width:400px;max-width:100vw;
+background:var(--dark-card);border-left:1px solid var(--dark-border);
+display:flex;flex-direction:column;
+transition:right .4s cubic-bezier(.16,1,.3,1);
+}
+.cart-sidebar.open{right:0}
+.cart-sidebar-header{
+padding:20px 24px;border-bottom:1px solid var(--dark-border);
+display:flex;align-items:center;justify-content:space-between;
+}
+.cart-sidebar-header h3{font-size:1.2rem;font-weight:800}
+.cart-items{flex:1;overflow-y:auto;padding:16px 24px}
+.cart-item{
+display:flex;gap:12px;align-items:center;
+padding:14px 0;border-bottom:1px solid var(--dark-border);
+}
+.cart-item-info{flex:1}
+.cart-item-info h4{font-size:.9rem;font-weight:700;margin-bottom:2px}
+.cart-item-info p{font-size:.75rem;color:var(--white-dim);line-height:1.3}
+.cart-item-price{font-family:var(--font-display);font-size:1.1rem;color:var(--gold);white-space:nowrap}
+.cart-item-del{
+background:none;border:none;color:var(--red-bright);font-size:1.2rem;
+cursor:pointer;padding:4px;transition:opacity .2s;
+}
+.cart-item-del:hover{opacity:.7}
+.cart-empty{text-align:center;padding:40px;color:var(--white-dim)}
+.cart-footer{
+padding:20px 24px;border-top:1px solid var(--dark-border);
+}
+.cart-footer-total{
+display:flex;justify-content:space-between;align-items:center;
+margin-bottom:14px;
+}
+.cart-footer-total .label{font-size:1rem;font-weight:600}
+.cart-footer-total .amount{font-family:var(--font-display);font-size:1.8rem;color:var(--gold)}
+.cart-checkout{
+width:100%;padding:16px;border-radius:14px;
+background:var(--green);color:#fff;
+font-weight:800;font-size:1rem;border:none;cursor:pointer;
+transition:background .2s;text-transform:uppercase;letter-spacing:.03em;
+}
+.cart-checkout:hover{background:#2ecc71}
+.cart-clear{
+width:100%;padding:10px;border-radius:10px;
+background:transparent;border:1px solid var(--dark-border);color:var(--white-dim);
+font-size:.8rem;font-weight:600;cursor:pointer;margin-top:8px;
+transition:all .2s;
+}
+.cart-clear:hover{border-color:var(--red-bright);color:var(--red-bright)}
+
+/* ===== CHECKOUT ===== */
+.checkout-overlay{
+position:fixed;inset:0;z-index:250;
+background:rgba(0,0,0,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+display:flex;align-items:center;justify-content:center;
+opacity:0;pointer-events:none;transition:opacity .3s;
+overflow-y:auto;padding:24px;
+}
+.checkout-overlay.open{opacity:1;pointer-events:auto}
+.checkout-modal{
+background:var(--dark-card);border:1px solid var(--dark-border);
+border-radius:24px;width:100%;max-width:600px;
+max-height:90vh;overflow-y:auto;
+}
+.checkout-header{
+padding:24px 28px 16px;
+border-bottom:1px solid var(--dark-border);
+display:flex;align-items:center;justify-content:space-between;
+position:sticky;top:0;background:var(--dark-card);z-index:2;
+border-radius:24px 24px 0 0;
+}
+.checkout-header h2{font-family:var(--font-display);font-size:1.6rem}
+.checkout-body{padding:24px 28px}
+.checkout-step{margin-bottom:28px}
+.checkout-step-title{
+font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+color:var(--red-bright);margin-bottom:14px;
+display:flex;align-items:center;gap:8px;
+}
+.checkout-step-title .step-num{
+width:24px;height:24px;border-radius:50%;
+background:var(--red);color:#fff;
+display:inline-flex;align-items:center;justify-content:center;
+font-size:.7rem;font-weight:800;
+}
+.checkout-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checkout-field{margin-bottom:12px}
+.checkout-field.full{grid-column:1/-1}
+.checkout-field label{
+display:block;font-size:.8rem;font-weight:600;
+color:var(--white-dim);margin-bottom:6px;
+}
+.checkout-field label .req{color:var(--red-bright)}
+.checkout-field input,.checkout-field select,.checkout-field textarea{
+width:100%;padding:13px 16px;border-radius:12px;
+background:var(--dark-surface);border:1px solid var(--dark-border);
+color:var(--white);font-size:.9rem;font-family:var(--font-body);
+outline:none;transition:border-color .2s;
+}
+.checkout-field input:focus,.checkout-field select:focus,.checkout-field textarea:focus{
+border-color:var(--red);
+}
+.checkout-field input.error{border-color:var(--red-bright);animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+.checkout-field textarea{resize:vertical;min-height:60px}
+.checkout-field select{cursor:pointer;appearance:none;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+background-repeat:no-repeat;background-position:right 16px center;
+padding-right:40px;
+}
+
+/* Delivery mode toggle */
+.delivery-toggle{display:flex;gap:8px}
+.delivery-opt{
+flex:1;padding:16px;border-radius:14px;
+background:var(--dark-surface);border:2px solid var(--dark-border);
+text-align:center;cursor:pointer;transition:all .2s;
+}
+.delivery-opt:hover{border-color:var(--white-dim)}
+.delivery-opt.selected{border-color:var(--red-bright);background:rgba(231,76,60,.08)}
+.delivery-opt .icon{font-size:1.6rem;margin-bottom:6px}
+.delivery-opt .name{font-weight:700;font-size:.9rem}
+.delivery-opt .sub{font-size:.75rem;color:var(--white-dim);margin-top:2px}
+
+/* Time picker */
+.time-toggle{display:flex;gap:8px;margin-bottom:12px}
+.time-opt{
+flex:1;padding:12px;border-radius:12px;
+background:var(--dark-surface);border:2px solid var(--dark-border);
+text-align:center;cursor:pointer;transition:all .2s;
+font-size:.85rem;font-weight:600;
+}
+.time-opt:hover{border-color:var(--white-dim)}
+.time-opt.selected{border-color:var(--red-bright);background:rgba(231,76,60,.08)}
+.time-input-row{display:none;margin-top:8px}
+.time-input-row.visible{display:block}
+
+/* Payment methods */
+.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.payment-opt{
+padding:16px 14px;border-radius:14px;
+background:var(--dark-surface);border:2px solid var(--dark-border);
+display:flex;align-items:center;gap:10px;
+cursor:pointer;transition:all .2s;
+}
+.payment-opt:hover{border-color:var(--white-dim)}
+.payment-opt.selected{border-color:var(--green);background:rgba(39,174,96,.08)}
+.payment-opt .pay-icon{font-size:1.4rem}
+.payment-opt .pay-name{font-weight:700;font-size:.85rem}
+.payment-opt .pay-sub{font-size:.7rem;color:var(--white-dim)}
+
+/* Order summary in checkout */
+.checkout-summary{
+background:var(--dark-surface);border-radius:14px;
+padding:16px;margin-bottom:20px;
+}
+.checkout-summary-item{
+display:flex;justify-content:space-between;align-items:center;
+padding:8px 0;font-size:.85rem;
+}
+.checkout-summary-item:not(:last-child){border-bottom:1px solid var(--dark-border)}
+.checkout-summary-item .qty{color:var(--red-bright);font-weight:700;margin-right:6px}
+.checkout-summary-total{
+display:flex;justify-content:space-between;align-items:center;
+padding:14px 0 0;margin-top:8px;border-top:2px solid var(--dark-border);
+font-weight:800;font-size:1.1rem;
+}
+.checkout-summary-total .amount{font-family:var(--font-display);font-size:1.6rem;color:var(--gold)}
+
+.checkout-footer{
+padding:20px 28px 28px;
+border-top:1px solid var(--dark-border);
+position:sticky;bottom:0;background:var(--dark-card);
+border-radius:0 0 24px 24px;
+}
+.checkout-submit{
+width:100%;padding:18px;border-radius:14px;
+background:var(--green);color:#fff;
+font-weight:800;font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em;
+border:none;cursor:pointer;transition:all .2s;
+display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.checkout-submit:hover{background:#2ecc71;transform:translateY(-1px);box-shadow:0 6px 20px rgba(39,174,96,.3)}
+.checkout-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.checkout-legal{font-size:.7rem;color:var(--white-dim);text-align:center;margin-top:12px;line-height:1.4}
+
+/* Success screen */
+.checkout-success{
+text-align:center;padding:60px 28px;
+}
+.checkout-success .check-circle{
+width:80px;height:80px;border-radius:50%;
+background:var(--green);margin:0 auto 20px;
+display:flex;align-items:center;justify-content:center;
+font-size:2.5rem;
+animation:popIn .4s cubic-bezier(.16,1,.3,1);
+}
+@keyframes popIn{0%{transform:scale(0)}100%{transform:scale(1)}}
+.checkout-success h2{font-family:var(--font-display);font-size:2rem;margin-bottom:8px}
+.checkout-success p{color:var(--white-dim);margin-bottom:24px}
+.checkout-success .order-num{
+font-family:var(--font-display);font-size:1.4rem;color:var(--gold);
+background:var(--dark-surface);display:inline-block;
+padding:8px 20px;border-radius:10px;margin-bottom:24px;
+}
+
+@media(max-width:520px){
+.checkout-row{grid-template-columns:1fr}
+.payment-grid{grid-template-columns:1fr}
+.checkout-modal{border-radius:20px 20px 0 0;max-height:95vh;margin-top:auto}
+}
+
+.menu-card{cursor:pointer}
+.sauce-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){
+.custom-modal{max-width:100%;border-radius:20px 20px 0 0}
+.sauce-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- CALL BAR -->
+<div class="call-bar">
+<svg class="phone-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+<span>Commander maintenant :</span>
+<a href="tel:0326043051">📞 03 26 04 30 51</a>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+<div class="nav-inner">
+<a href="#" style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:.04em;color:var(--white);display:flex;align-items:center;gap:8px"><span style="color:var(--red-bright)">PIZZA</span> <span style="color:var(--gold)">REIMS</span></a>
+<ul class="nav-links">
+<li><a href="#menu">Menu</a></li>
+<li><a href="#promos">Promos</a></li>
+<li><a href="#about">À propos</a></li>
+<li><a href="#livraison">Livraison</a></li>
+<li><a href="#contact">Contact</a></li>
+<li><a href="#commander" class="nav-cta">Commander</a></li>
+<li><button class="cart-btn" onclick="toggleCart()" aria-label="Panier">🛒 <span class="cart-count" id="cartCount">0</span></button></li>
+</ul>
+<button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.add('open')" aria-label="Menu">
+<span></span><span></span><span></span>
+</button>
+</div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu">
+<button class="mobile-close" onclick="this.parentElement.classList.remove('open')">&times;</button>
+<a href="#menu" onclick="this.parentElement.classList.remove('open')">Menu</a>
+<a href="#promos" onclick="this.parentElement.classList.remove('open')">Promos</a>
+<a href="#about" onclick="this.parentElement.classList.remove('open')">À propos</a>
+<a href="#livraison" onclick="this.parentElement.classList.remove('open')">Livraison</a>
+<a href="#contact" onclick="this.parentElement.classList.remove('open')">Contact</a>
+<a href="#commander" class="btn-primary" onclick="this.parentElement.classList.remove('open')">Commander</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="accueil">
+<div class="hero-bg"></div>
+<div class="hero-content">
+<div class="hero-text">
+<div class="hero-badges">
+<div class="badge"><span class="num">4.7</span> ★ sur Google</div>
+<div class="badge"><span class="num">286+</span> avis</div>
+</div>
+<h1>LA PIZZA QUI <span>ENFLAMME</span> REIMS</h1>
+<p>30 ans d'artisanat. Zéro compromis. Une pâte pétrie à la main, des produits frais, et le savoir-faire de trois décennies. Le meilleur de Reims livré, fumant, jusqu'à votre porte. Goûtez la différence dès ce soir.</p>
+<div class="hero-actions" style="justify-content:center">
+<a href="#commander" class="btn-primary">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+Commander
+</a>
+<a href="#menu" class="btn-secondary">Voir le menu</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PROMOS BANNER -->
+<div class="promos-banner" id="promos">
+<div class="promos-track">
+<span><span class="dot"></span>3 PIZZAS ACHETÉES = LA 4ÈME OFFERTE</span>
+<span><span class="dot"></span>MENU SENIOR : 2 PIZZAS À 8€</span>
+<span><span class="dot"></span>LA 3ÈME PIZZA À -50%</span>
+<span><span class="dot"></span>MAXI COCA OFFERTE AVEC 2 PIZZAS</span>
+<span><span class="dot"></span>1 FRITE + 1 BOISSON OFFERTES AVEC CHAQUE TACOS</span>
+<span><span class="dot"></span>3 PIZZAS ACHETÉES = LA 4ÈME OFFERTE</span>
+<span><span class="dot"></span>MENU SENIOR : 2 PIZZAS À 8€</span>
+<span><span class="dot"></span>LA 3ÈME PIZZA À -50%</span>
+<span><span class="dot"></span>MAXI COCA OFFERTE AVEC 2 PIZZAS</span>
+<span><span class="dot"></span>1 FRITE + 1 BOISSON OFFERTES AVEC CHAQUE TACOS</span>
+</div>
+</div>
+
+<!-- DUO GAGNANT PROMO -->
+<section style="padding:60px 24px;background:linear-gradient(135deg,var(--dark) 0%,#1a0a0a 50%,var(--dark) 100%);position:relative;overflow:hidden" id="offres">
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(192,57,43,.08),transparent 70%)"></div>
+<div style="max-width:1000px;margin:0 auto;position:relative">
+<div class="reveal" style="text-align:center;margin-bottom:40px">
+<p style="color:var(--red-bright);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;margin-bottom:8px">Offre exclusive</p>
+<h2 style="font-family:var(--font-display);font-size:2.4rem;line-height:1.1">LE DUO <span style="color:var(--gold)">GAGNANT</span></h2>
+</div>
+
+<div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center" id="duoGrid">
+<!-- Visuel -->
+<div style="position:relative;text-align:center">
+<img src="img/promo-duo.jpg" alt="1 pizza achetée = la 2ème à -50%" style="width:100%;max-width:420px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.4)">
+</div>
+
+<!-- Détails -->
+<div>
+<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:20px;padding:28px;margin-bottom:16px">
+<h3 style="font-size:1.1rem;font-weight:700;margin-bottom:12px;color:var(--gold)">Comment ça marche ?</h3>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">1</div>
+<p style="color:var(--white-dim);font-size:.88rem">Choisissez votre 1ère pizza (Senior ou Méga)</p>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">2</div>
+<p style="color:var(--white-dim);font-size:.88rem">Ajoutez une 2ème pizza au panier</p>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">✓</div>
+<p style="color:var(--white-dim);font-size:.88rem"><strong style="color:#fff">-50% appliqué automatiquement</strong> sur la moins chère</p>
+</div>
+</div>
+</div>
+<p style="font-size:.78rem;color:var(--white-dim);text-align:center;line-height:1.6">Valable 7j/7 · Tailles Senior et Méga uniquement<br><span style="color:var(--gold)">Une question ? Notre équipe ajuste votre facture lors de la préparation.</span></p>
+</div>
+</div>
+
+<!-- Toggle Livraison / À emporter -->
+<div class="reveal" style="margin-top:40px;text-align:center">
+<p style="color:var(--white-dim);font-size:.85rem;margin-bottom:12px">Mode de commande :</p>
+<div style="display:inline-flex;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:50px;overflow:hidden" id="orderModeToggle">
+<button onclick="setOrderMode('livraison')" class="order-mode-btn active" data-mode="livraison" style="padding:12px 28px;border:none;cursor:pointer;font-weight:700;font-size:.85rem;transition:all .3s;border-radius:50px;background:var(--red);color:#fff">🛵 Livraison</button>
+<button onclick="setOrderMode('emporter')" class="order-mode-btn" data-mode="emporter" style="padding:12px 28px;border:none;cursor:pointer;font-weight:700;font-size:.85rem;transition:all .3s;border-radius:50px;background:transparent;color:var(--white-dim)">🏃 À emporter</button>
+</div>
+<div id="orderModeMsg" style="margin-top:12px;font-size:.8rem;color:var(--white-dim);min-height:20px"></div>
+</div>
+</div>
+</section>
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+<div class="section-header reveal" style="margin-bottom:32px">
+<p style="color:var(--red-bright);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem;margin-bottom:8px">Qu'est-ce qui vous tente ?</p>
+<h2>UNE ENVIE DE...</h2>
+</div>
+<div class="menu-tabs" id="menuTabs">
+<button class="menu-tab hero-card active" data-cat="pizza" style="background-image:url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80')"><span class="tab-label">🍕 Pizzas</span><span class="tab-count">Nos pizzas artisanales · Dès 9€</span></button>
+<button class="menu-tab" data-cat="burger" style="background-image:url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🍔 Burgers</span></button>
+<button class="menu-tab" data-cat="tacos" style="background-image:url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🌮 Tacos</span></button>
+<button class="menu-tab" data-cat="fried-chicken" style="background-image:url('https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🍗 Fried Chicken</span></button>
+<button class="menu-tab" data-cat="sandwich" style="background-image:url('https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🥖 Sandwichs</span></button>
+<button class="menu-tab" data-cat="menu-enfant" style="background-image:url('https://images.unsplash.com/photo-1619740455993-9d701c98e73f?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">👶 Kids</span></button>
+<button class="menu-tab" data-cat="riz" style="background-image:url('https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🍚 Riz Krousty</span></button>
+<button class="menu-tab" data-cat="dessert" style="background-image:url('https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🍰 Desserts</span></button>
+<button class="menu-tab" data-cat="boisson" style="background-image:url('https://images.unsplash.com/photo-1581006852262-e4307cf6283a?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🥤 Boissons</span></button>
+</div>
+
+<div class="menu-grid" id="menuGrid">
+<!-- JS injecte le contenu -->
+</div>
+</section>
+
+<!-- FOUR & SOCIAL PROOF -->
+<section style="padding:80px 24px;background:var(--dark);overflow:hidden">
+<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="four-grid">
+
+<!-- Image du four -->
+<div class="reveal" style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/10">
+<img src="img/four-pizzafour.jpg" alt="Four PizzaFour Morithis TT 96 E en action" style="width:100%;height:100%;object-fit:cover;display:block">
+<div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,57,43,.15),transparent 60%)"></div>
+<div style="position:absolute;bottom:16px;left:16px;background:rgba(11,17,32,.85);backdrop-filter:blur(8px);padding:8px 16px;border-radius:10px;font-size:.75rem;color:var(--gold);font-weight:600;border:1px solid rgba(212,168,85,.3)">PizzaFour Morithis TT 96 E</div>
+</div>
+
+<!-- Texte + Social Proof -->
+<div class="reveal">
+<p style="color:var(--red-bright);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.8rem;margin-bottom:12px">Notre secret</p>
+<h2 style="font-family:var(--font-display);font-size:2.2rem;line-height:1.1;margin-bottom:20px">MAÎTRISE DE LA CUISSON,<br><span style="color:var(--gold)">EXCELLENCE DU GOÛT</span></h2>
+<p style="color:var(--white-dim);line-height:1.8;font-size:.95rem;margin-bottom:12px">Notre nouveau four <strong style="color:#fff">PizzaFour Morithis TT 96 E</strong> allie technologie de pointe et tradition artisanale. Cuisson ultra-rapide, température parfaite — chaque pizza sort dorée, croustillante, avec une pâte aérée comme à Naples.</p>
+<p style="color:var(--white-dim);line-height:1.8;font-size:.95rem;margin-bottom:32px">C'est la rencontre entre 30 ans de savoir-faire et l'innovation moderne.</p>
+
+<!-- Social Proof Badges -->
+<div style="display:flex;gap:16px;flex-wrap:wrap">
+
+<!-- Google Rating -->
+<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:20px 24px;flex:1;min-width:180px;text-align:center;transition:border-color .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--dark-border)'">
+<div style="font-size:2rem;font-family:var(--font-display);color:var(--gold);line-height:1">4.7<span style="font-size:1rem;color:var(--white-dim)">/5</span></div>
+<div style="color:#f4c542;font-size:1.1rem;margin:6px 0">★★★★★</div>
+<div style="font-size:.75rem;color:var(--white-dim)">286+ avis Google</div>
+<div style="margin-top:8px">
+<svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+<span style="font-size:.7rem;color:var(--white-dim);margin-left:4px">Google Reviews</span>
+</div>
+</div>
+
+<!-- Hygiène -->
+<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:20px 24px;flex:1;min-width:180px;text-align:center;transition:border-color .3s" onmouseover="this.style.borderColor='#2ecc71'" onmouseout="this.style.borderColor='var(--dark-border)'">
+<div style="font-size:2rem;font-family:var(--font-display);color:#2ecc71;line-height:1">5<span style="font-size:1rem;color:var(--white-dim)">/5</span></div>
+<div style="color:#2ecc71;font-size:1.1rem;margin:6px 0">★★★★★</div>
+<div style="font-size:.75rem;color:var(--white-dim)">Certification Hygiène</div>
+<div style="margin-top:8px">
+<span style="display:inline-block;background:rgba(46,204,113,.15);color:#2ecc71;font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em">Certifié conforme</span>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+<div class="about-grid">
+<div class="about-text reveal">
+<h2>30 ANS DE PASSION POUR LA PIZZA</h2>
+<p>Chez Pizza Reims, chaque pizza raconte une histoire. Notre pizzaïolo cumule plus de 30 ans d'expérience et a déjà porté deux restaurants au sommet. Aujourd'hui, il met tout son savoir-faire au service de Reims.</p>
+<p>Pâte fraîche pétrie chaque matin, ingrédients sélectionnés chez des producteurs locaux, cuisson maîtrisée au degré près. Ce n'est pas un hasard si nous affichons une note de 4.7/5 avec plus de 286 avis — c'est la preuve que le goût ne ment pas.</p>
+<div class="about-stats">
+<div class="stat"><span class="num">30+</span><span class="label">Ans d'expérience</span></div>
+<div class="stat"><span class="num">4.7</span><span class="label">Note Google</span></div>
+<div class="stat"><span class="num">286+</span><span class="label">Avis clients</span></div>
+</div>
+</div>
+<div class="about-img reveal">
+<img src="https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=800&q=80" alt="Préparation artisanale de pizza">
+</div>
+</div>
+</section>
+
+<!-- DELIVERY -->
+<section class="delivery" id="livraison">
+<div class="section-header reveal">
+<h2>Zones de Livraison</h2>
+<p>Livraison rapide dans tout Reims et ses environs</p>
+</div>
+<div class="zones-grid">
+<div class="zone-card reveal">
+<h3>Zone 1</h3>
+<p>Centre-ville de Reims et alentours proches</p>
+<div class="price">Livraison rapide</div>
+</div>
+<div class="zone-card reveal">
+<h3>Zone 2</h3>
+<p>Quartiers périphériques de Reims</p>
+<div class="price">Livraison étendue</div>
+</div>
+<div class="zone-card reveal">
+<h3>Zone 3</h3>
+<p>Communes limitrophes</p>
+<div class="price">Livraison disponible</div>
+</div>
+</div>
+</section>
+
+<!-- HOURS -->
+<section class="hours">
+<div class="section-header reveal">
+<h2>Horaires</h2>
+<p>Ouvert 7j/7 — Ne ratez plus jamais une pizza</p>
+</div>
+<div class="hours-grid">
+<div class="hours-card reveal">
+<h3>🏠 Restaurant</h3>
+<div class="hours-row"><span class="day">Lundi - Samedi</span><span class="time">11h00 - 23h00</span></div>
+<div class="hours-row"><span class="day">Dimanche</span><span class="time">18h00 - 23h00</span></div>
+<div class="hours-row"><span class="day">Vendredi & Samedi</span><span class="time">Jusqu'à 00h !</span></div>
+</div>
+<div class="hours-card reveal">
+<h3>🛵 Livraison</h3>
+<div class="hours-row"><span class="day">Service midi</span><span class="time">11h00 - 13h45</span></div>
+<div class="hours-row"><span class="day">Service soir</span><span class="time">18h00 - 22h45</span></div>
+<div class="hours-row"><span class="day">Dimanche</span><span class="time">Fermé le midi</span></div>
+</div>
+</div>
+</section>
+
+<!-- ORDER CTA -->
+<section id="commander">
+<div class="order-banner reveal">
+<h2>PRÊT À COMMANDER ?</h2>
+<p>Passez commande directement sur le site, appelez-nous ou écrivez-nous sur WhatsApp.</p>
+<div class="order-actions" style="flex-wrap:wrap">
+<a href="#menu" class="btn-primary" style="background:var(--gold);color:var(--dark);font-weight:800">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+Commander en ligne
+</a>
+<a href="tel:0326043051" class="btn-primary">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+Appeler
+</a>
+<a href="https://wa.me/33668562273" target="_blank" class="btn-secondary" style="border-color:#25D366;color:#25D366">
+WhatsApp
+</a>
+</div>
+<p style="color:var(--gold);font-size:.85rem;margin-top:16px;font-weight:600">🚚 Livraison gratuite sur toutes les commandes en ligne !</p>
+</div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact" style="padding-top:60px">
+<div class="section-header reveal">
+<h2>Nous Trouver</h2>
+</div>
+<div class="contact-grid">
+<div class="contact-info">
+<div class="contact-item">
+<div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+<div><h4>Adresse</h4><p>41 rue du Mont d'Arène, 51100 Reims</p></div>
+</div>
+<div class="contact-item">
+<div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div>
+<div><h4>Téléphone</h4><p>03 26 04 30 51 / 06 68 56 22 73</p></div>
+</div>
+<div class="contact-item">
+<div class="contact-icon" style="background:#25D366"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></div>
+<div><h4>WhatsApp</h4><p>06 68 56 22 73</p></div>
+</div>
+<div class="contact-item">
+<div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></div>
+<div><h4>Horaires</h4><p>Lun-Sam 11h-23h / Dim 18h-23h</p></div>
+</div>
+</div>
+<div class="contact-map">
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.5!2d3.7946!3d49.2478!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z41+rue+du+Mont+d'Ar%C3%A8ne+51100+Reims!5e0!3m2!1sfr!2sfr!4v1" allowfullscreen loading="lazy"></iframe>
+</div>
+</div>
+</section>
+
+<!-- MAP FULL WIDTH -->
+<div style="width:100%;height:400px;border-top:1px solid var(--dark-border);border-bottom:1px solid var(--dark-border)">
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.5!2d3.7946!3d49.2478!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z41+rue+du+Mont+d'Ar%C3%A8ne+51100+Reims!5e0!3m2!1sfr!2sfr!4v1" width="100%" height="100%" style="border:none;filter:invert(.9) hue-rotate(180deg) brightness(1.1) contrast(.9)" allowfullscreen loading="lazy"></iframe>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-inner" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;align-items:start">
+<div>
+<div style="font-family:var(--font-display);font-size:2rem;letter-spacing:.04em;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:var(--red-bright)">PIZZA</span> <span style="color:var(--gold)">REIMS</span></div>
+<p style="color:var(--white-dim);font-size:.85rem;line-height:1.6">41 rue du Mont d'Arène · 51100 Reims<br>Ouvert 7J/7 · Pizza artisanale à Reims</p>
+</div>
+<div>
+<h4 style="font-size:.85rem;font-weight:800;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em">Navigation</h4>
+<ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+<li><a href="#accueil" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Accueil</a></li>
+<li><a href="#menu" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Menu</a></li>
+<li><a href="#about" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">À propos</a></li>
+<li><a href="#contact" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Nous trouver</a></li>
+</ul>
+</div>
+<div>
+<h4 style="font-size:.85rem;font-weight:800;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em">Infos</h4>
+<ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+<li><a href="#" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'" onclick="event.preventDefault();document.getElementById('hoursSection')?.scrollIntoView({behavior:'smooth'})">Horaires</a></li>
+<li><a href="#livraison" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Livraison</a></li>
+<li><a href="#commander" style="color:var(--white-dim);font-size:.85rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Commander</a></li>
+</ul>
+</div>
+<div>
+<h4 style="font-size:.85rem;font-weight:800;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em">Contact</h4>
+<ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+<li><a href="tel:0326043051" style="color:var(--gold);font-size:.85rem;font-weight:600">03 26 04 30 51</a></li>
+<li><a href="https://wa.me/33668562273" style="color:var(--gold);font-size:.85rem;font-weight:600">06 68 56 22 73</a></li>
+</ul>
+</div>
+</div>
+<div style="max-width:1200px;margin:0 auto;padding:24px 0 0;border-top:1px solid var(--dark-border);text-align:center">
+<p style="color:var(--white-dim);font-size:.8rem;margin-bottom:8px">&copy; 2026 Pizza Reims — Tous droits réservés · Site conçu par <a href="https://pixelstudioo.fr" target="_blank" style="color:var(--red-bright)">Pixel Studio</a></p>
+<p style="font-size:.75rem"><a href="#" onclick="event.preventDefault();openLegalModal('mentions')" style="color:var(--white-dim);transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Mentions légales</a> · <a href="#" onclick="event.preventDefault();openLegalModal('cgv')" style="color:var(--white-dim);transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">CGV</a> · <a href="#" onclick="event.preventDefault();openLegalModal('privacy')" style="color:var(--white-dim);transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--white-dim)'">Vie privée</a></p>
+</div>
+</footer>
+
+<!-- LEGAL MODALS -->
+<div class="custom-overlay" id="legalOverlay" onclick="if(event.target===this)closeLegalModal()">
+<div class="custom-modal" style="max-width:700px;max-height:85vh;border-radius:24px">
+<div class="custom-header">
+<h3 id="legalTitle">Mentions légales</h3>
+<button class="close-btn" onclick="closeLegalModal()">&times;</button>
+</div>
+<div class="custom-body" id="legalBody" style="font-size:.88rem;line-height:1.8;color:var(--white-dim)"></div>
+</div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="checkout-overlay" id="checkoutOverlay">
+<div class="checkout-modal">
+<div class="checkout-header">
+<h2>🧾 FINALISER MA COMMANDE</h2>
+<button class="close-btn" onclick="closeCheckout()" style="background:var(--dark-surface);border:none;color:var(--white);width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer">&times;</button>
+</div>
+
+<div id="checkoutForm">
+<div class="checkout-body">
+
+<!-- SUMMARY -->
+<div class="checkout-step">
+<div class="checkout-step-title"><span class="step-num">🛒</span> Récapitulatif</div>
+<div class="checkout-summary" id="checkoutSummary"></div>
+</div>
+
+<!-- STEP 1: COORDONNÉES -->
+<div class="checkout-step">
+<div class="checkout-step-title"><span class="step-num">1</span> Vos coordonnées</div>
+<div class="checkout-row">
+<div class="checkout-field">
+<label>Prénom <span class="req">*</span></label>
+<input type="text" id="co_prenom" required placeholder="Votre prénom">
+</div>
+<div class="checkout-field">
+<label>Nom <span class="req">*</span></label>
+<input type="text" id="co_nom" required placeholder="Votre nom">
+</div>
+</div>
+<div class="checkout-row">
+<div class="checkout-field">
+<label>Téléphone <span class="req">*</span></label>
+<input type="tel" id="co_tel" required placeholder="06 XX XX XX XX">
+</div>
+<div class="checkout-field">
+<label>Email <span class="req">*</span></label>
+<input type="email" id="co_email" required placeholder="votre@email.com">
+</div>
+</div>
+</div>
+
+<!-- STEP 2: MODE DE LIVRAISON -->
+<div class="checkout-step">
+<div class="checkout-step-title"><span class="step-num">2</span> Mode de livraison</div>
+<div class="delivery-toggle">
+<div class="delivery-opt selected" data-mode="livraison" onclick="selectDelivery(this)">
+<div class="icon">🛵</div>
+<div class="name">Livraison</div>
+<div class="sub">À votre adresse</div>
+</div>
+<div class="delivery-opt" data-mode="emporter" onclick="selectDelivery(this)">
+<div class="icon">🏃</div>
+<div class="name">À emporter</div>
+<div class="sub">Retrait sur place</div>
+</div>
+</div>
+</div>
+
+<!-- STEP 3: ADRESSE -->
+<div class="checkout-step" id="addressSection">
+<div class="checkout-step-title"><span class="step-num">3</span> Adresse de livraison</div>
+<div class="checkout-field">
+<label>Adresse <span class="req">*</span></label>
+<input type="text" id="co_adresse" required placeholder="12 rue de la Paix">
+</div>
+<div class="checkout-row">
+<div class="checkout-field">
+<label>Ville <span class="req">*</span></label>
+<input type="text" id="co_ville" required placeholder="Reims" value="Reims">
+</div>
+<div class="checkout-field">
+<label>Code postal</label>
+<input type="text" id="co_cp" placeholder="51100" value="51100">
+</div>
+</div>
+<div class="checkout-field">
+<label>Complément / Étage / Digicode</label>
+<textarea id="co_instructions" placeholder="3ème étage, code 1234..."></textarea>
+</div>
+</div>
+
+<!-- STEP 4: HEURE -->
+<div class="checkout-step">
+<div class="checkout-step-title"><span class="step-num">4</span> Heure souhaitée</div>
+<div class="time-toggle">
+<div class="time-opt selected" data-time="asap" onclick="selectTime(this)">⚡ Dès que possible</div>
+<div class="time-opt" data-time="scheduled" onclick="selectTime(this)">🕐 Heure programmée</div>
+</div>
+<div class="time-input-row" id="timeInputRow">
+<div class="checkout-field">
+<label>Choisir l'heure</label>
+<input type="time" id="co_heure" value="19:00">
+</div>
+</div>
+<div class="checkout-field">
+<label>Instructions spéciales</label>
+<textarea id="co_special" placeholder="Sonner 2 fois, livrer devant la porte..."></textarea>
+</div>
+</div>
+
+<!-- STEP 5: PAIEMENT -->
+<div class="checkout-step">
+<div class="checkout-step-title"><span class="step-num">5</span> Mode de paiement</div>
+<div class="payment-grid">
+<div class="payment-opt selected" data-pay="cb" onclick="selectPayment(this)">
+<div class="pay-icon">💳</div>
+<div><div class="pay-name">Carte bancaire</div><div class="pay-sub">Visa, Mastercard</div></div>
+</div>
+<div class="payment-opt" data-pay="especes" onclick="selectPayment(this)">
+<div class="pay-icon">💶</div>
+<div><div class="pay-name">Espèces</div><div class="pay-sub">Paiement à la livraison</div></div>
+</div>
+<div class="payment-opt" data-pay="applepay" onclick="selectPayment(this)">
+<div class="pay-icon">🍎</div>
+<div><div class="pay-name">Apple Pay</div><div class="pay-sub">Paiement instantané</div></div>
+</div>
+<div class="payment-opt" data-pay="paypal" onclick="selectPayment(this)">
+<div class="pay-icon">🅿️</div>
+<div><div class="pay-name">PayPal</div><div class="pay-sub">Paiement sécurisé</div></div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="checkout-footer">
+<button class="checkout-submit" onclick="submitOrder()">✅ Confirmer ma commande</button>
+<div class="checkout-legal">En confirmant, vous acceptez nos conditions générales de vente. Vos données sont utilisées uniquement pour traiter votre commande.</div>
+</div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div id="checkoutSuccess" style="display:none">
+<div class="checkout-success">
+<div class="check-circle">✅</div>
+<h2>COMMANDE CONFIRMÉE !</h2>
+<div class="order-num" id="orderNum">#1025</div>
+<p>Merci pour votre commande. Vous recevrez une confirmation par SMS. Bon appétit !</p>
+<button class="btn-primary" onclick="closeCheckout();clearCart();" style="border:none">Retour au site</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+<div class="cart-sidebar-header">
+<h3>🛒 Mon Panier</h3>
+<button class="close-btn" onclick="toggleCart()" style="background:var(--dark-surface);border:none;color:var(--white);width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer">&times;</button>
+</div>
+<div class="cart-items" id="cartItems">
+<div class="cart-empty">Votre panier est vide</div>
+</div>
+<div class="cart-footer">
+<div class="cart-footer-total">
+<span class="label">Total</span>
+<span class="amount" id="cartTotal">0.00€</span>
+</div>
+<button class="cart-checkout" onclick="openCheckout()">✅ Passer la commande</button>
+<button class="cart-clear" onclick="clearCart()">Vider le panier</button>
+</div>
+</div>
+
+<!-- MOBILE CART FAB -->
+<button class="cart-fab" id="cartFab" onclick="toggleCart()" style="
+position:fixed;bottom:24px;right:24px;z-index:100;
+width:60px;height:60px;border-radius:50%;
+background:var(--red);border:none;
+display:none;align-items:center;justify-content:center;
+box-shadow:0 4px 20px rgba(192,57,43,.4);
+font-size:1.4rem;cursor:pointer;color:#fff;
+">🛒<span class="cart-count" style="position:absolute;top:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--dark);font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center" id="cartCountMobile">0</span></button>
+
+<!-- CUSTOMIZATION MODAL -->
+<div class="custom-overlay" id="customOverlay" onclick="if(event.target===this)closeCustom()">
+<div class="custom-modal">
+<div class="custom-header">
+<h3 id="customTitle">Personnaliser</h3>
+<button class="close-btn" onclick="closeCustom()">&times;</button>
+</div>
+<img class="custom-hero-img" id="customHeroImg" src="" alt="">
+<div class="custom-body" id="customBody"></div>
+<div class="custom-footer">
+<div class="custom-total">
+<span class="label">Total</span>
+<span class="amount" id="customTotal">0.00€</span>
+</div>
+<button class="custom-add-btn" onclick="addToCart()">🛒 Ajouter au panier</button>
+</div>
+</div>
+</div>
+
+<!-- UPSELL MODAL -->
+<div class="custom-overlay" id="upsellOverlay" onclick="if(event.target===this)closeUpsell()">
+<div class="custom-modal" style="max-width:500px;border-radius:24px">
+<div class="custom-header" style="background:linear-gradient(135deg,var(--dark-surface),var(--dark-card))">
+<h3 id="upsellTitle">Envie d'un petit extra ?</h3>
+<button class="close-btn" onclick="closeUpsell()">&times;</button>
+</div>
+<div class="custom-body" id="upsellBody" style="padding:20px;display:flex;flex-direction:column;gap:12px">
+</div>
+<div class="custom-footer" style="padding:16px 20px;border-top:1px solid var(--dark-border)">
+<button class="custom-add-btn" onclick="closeUpsell()" style="background:var(--dark-surface);color:var(--white-dim);border:1px solid var(--dark-border)">Non merci, continuer</button>
+</div>
+</div>
+</div>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/33668562273" target="_blank" class="wa-float" aria-label="Contacter via WhatsApp">
+<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
+<script>
+// ===== MENU DATA =====
+const menuData = {
+"pizza": {
+  subcategories: [
+    {
+      name: "Pizzas Classiques",
+      note: "Base au choix : Tomate ou Crème fraîche",
+      tier: "classique",
+      items: [
+        {name:"Margherita",desc:"Mozzarella, sauce tomate",price:"9.00",tier:"classique"},
+        {name:"4 Fromages",desc:"Mozzarella, mélange de 4 fromages",price:"9.00",tier:"classique"},
+        {name:"Chèvre Miel",desc:"Mozzarella, chèvre, miel, olives",price:"9.00",tier:"classique"},
+        {name:"Napolitaine",desc:"Mozzarella, anchois, câpres, olives, tomate fraîche",price:"9.00",tier:"classique"},
+        {name:"Reine",desc:"Mozzarella, jambon, champignons, olives",price:"9.00",tier:"classique"},
+        {name:"Calzone",desc:"Mozzarella, jambon ou poulet, œuf",price:"9.00",tier:"classique"},
+      ]
+    },
+    {
+      name: "Pizzas Favoris",
+      tier: "favoris",
+      items: [
+        {name:"Thon",desc:"Mozzarella, thon, olives, œuf, oignons",price:"10.00",tier:"favoris"},
+        {name:"Hawaïenne",desc:"Mozzarella, ananas, jambon, poulet, maïs",price:"10.00",tier:"favoris"},
+        {name:"Campione",desc:"Mozzarella, champignons, viande hachée, œuf",price:"10.00",tier:"favoris"},
+        {name:"Américaine",desc:"Mozzarella, bœuf haché, poulet, cheddar, oignons",price:"10.00",tier:"favoris"},
+        {name:"Kebab",desc:"Mozzarella, viande kebab, salade, tomate, oignons",price:"10.00",tier:"favoris"},
+        {name:"Orientale",desc:"Mozzarella, poulet, merguez, œuf, poivrons, olives",price:"10.00",tier:"favoris"},
+        {name:"Paysanne",desc:"Mozzarella, viande hachée, oignons, pommes de terre",price:"10.00",tier:"favoris"},
+        {name:"Raclette",desc:"Mozzarella, lardons, pommes de terre, raclette fondue",price:"10.00",tier:"favoris"},
+        {name:"Royale",desc:"Mozzarella, bœuf haché, poivrons, olives, merguez",price:"10.00",tier:"favoris"},
+        {name:"Romaine",desc:"Mozzarella, lardons, pommes de terre, œuf, oignons",price:"10.00",tier:"favoris"},
+        {name:"Tartiflette",desc:"Mozzarella, poulet, pommes de terre, fromage à raclette",price:"10.00",tier:"favoris"},
+        {name:"Campagnarde",desc:"Mozzarella, chorizo, bœuf haché, poivrons",price:"10.00",tier:"favoris"},
+        {name:"Pizza Reims",desc:"Mozzarella, lardons, champignons, crème fraîche",price:"10.00",tier:"favoris"},
+        {name:"Végétarienne",desc:"Mozzarella, champignons, poivrons, aubergines grillées, olives, tomate fraîche",price:"10.00",tier:"favoris"},
+        {name:"Indienne",desc:"Mozzarella, poulet tikka, oignons, coriandre",price:"10.00",tier:"favoris"},
+        {name:"Boursin",desc:"Mozzarella, poulet, pommes de terre, champignons, Boursin",price:"10.00",tier:"favoris"},
+      ]
+    },
+    {
+      name: "Signature du Chef",
+      note: "Base au choix : Tomate ou Crème fraîche",
+      tier: "chef",
+      items: [
+        {name:"4 Saisons",desc:"Mozzarella, jambon, champignons, poivrons, aubergines grillées, olives, tomate fraîche",price:"11.00",tier:"chef"},
+        {name:"Barbecue",desc:"Mozzarella, bœuf haché, poulet, poivrons, sauce BBQ",price:"11.00",tier:"chef"},
+        {name:"Burana",desc:"Mozzarella, jambon, chorizo, pepperoni, chèvre, œuf",price:"11.00",tier:"chef"},
+        {name:"Buffalo Boursin",desc:"Mozzarella, viande kebab, tomates, Boursin",price:"11.00",tier:"chef"},
+        {name:"Calabraise",desc:"Mozzarella, chorizo, œuf, olives",price:"11.00",tier:"chef"},
+        {name:"Cannibale",desc:"Mozzarella, bœuf haché, poulet, chorizo",price:"11.00",tier:"chef"},
+        {name:"Capri",desc:"Mozzarella, pommes de terre, jambon, chèvre",price:"11.00",tier:"chef"},
+        {name:"Délice",desc:"Mozzarella, poulet, bœuf haché, merguez, champignons, crème",price:"11.00",tier:"chef"},
+        {name:"Exotique",desc:"Mozzarella, poulet curry, lardons, pommes de terre, œuf",price:"11.00",tier:"chef"},
+        {name:"Mexicaine",desc:"Mozzarella, pepperoni, poulet curry, olives, oignons",price:"11.00",tier:"chef"},
+        {name:"Montagnarde",desc:"Mozzarella, poulet, pommes de terre, lardons, raclette",price:"11.00",tier:"chef"},
+        {name:"Milano",desc:"Mozzarella, champignons, viande hachée, mélange de 4 fromages",price:"11.00",tier:"chef"},
+        {name:"Parma",desc:"Mozzarella, jambon de Parme, copeaux de Grana, roquette",price:"11.00",tier:"chef"},
+        {name:"Triple",desc:"Mozzarella, merguez, pepperoni, chorizo, olives",price:"11.00",tier:"chef"},
+        {name:"3 Jambon",desc:"Mozzarella, jambon, chorizo, lardons",price:"11.00",tier:"chef"},
+      ]
+    }
+  ]
+},
+"fried-chicken": {
+  items: [
+    {name:"Menu 1 Personne — Tenders x5",desc:"5 tenders + 1 portion de frites + 1 boisson 33cl",price:"9.90"},
+    {name:"Menu 1 Personne — Wings x8",desc:"8 wings + 1 portion de frites + 1 boisson 33cl",price:"9.90"},
+    {name:"Menu 2 Personnes — Tenders x10",desc:"10 tenders + 2 portions de frites + 2 boissons 33cl",price:"19.00"},
+    {name:"Menu 2 Personnes — Wings x15",desc:"15 wings + 2 portions de frites + 2 boissons 33cl",price:"19.00"},
+    {name:"Menu 2 Personnes — Tenders x7 + Wings x7",desc:"7 tenders + 7 wings + 2 portions de frites + 2 boissons 33cl",price:"19.00"},
+  ]
+},
+"sandwich": {
+  note: "Servis avec pain maison · Boisson +1€ · Frites +1€",
+  items: [
+    {name:"Sandwich Tandoori",desc:"Poulet tandoori, crudités, sauce blanche",price:"6.00"},
+    {name:"Américain",desc:"Poulet pané, frites, crudités, sauce au choix",price:"7.00"},
+    {name:"Big Américain",desc:"2 steaks hachés (50g), 2 cheddar, œuf, salade, tomate, oignon",price:"9.00"},
+    {name:"Chicken Cheese Curry",desc:"Poulet curry, cheddar, salade, tomate, sauce curry",price:"8.00"},
+  ]
+},
+"burger": {
+  note: "Boisson +1€ · Frites +1€",
+  items: [
+    {name:"Hamburger",desc:"Steak 90g, cheddar, salade, tomate, oignon",price:"5.00"},
+    {name:"Big Burger",desc:"2 steaks 90g (1 seul), cheddar",price:"7.00"},
+    {name:"Chicken Crispy",desc:"Crispy Chicken, chèvre, salade",price:"7.00"},
+    {name:"Beef Chef",desc:"2 crispy, cheddar, salade",price:"7.50"},
+  ]
+},
+"tacos": {
+  note: "Viandes : Steak Haché · Poulet · Tenders · Merguez · Nugget · Cordon Bleu · Kebab · Omelette · Poulet Tandoori · Poulet Curry — 1 Frite + 1 Boisson offertes",
+  items: [
+    {name:"Tacos 1 Viande",desc:"Galette, fromage fondu, frites, sauce au choix + 1 viande",price:"7.00"},
+    {name:"Tacos 2 Viandes",desc:"Galette, fromage fondu, frites, sauce au choix + 2 viandes",price:"9.00"},
+    {name:"Tacos 3 Viandes",desc:"Galette, fromage fondu, frites, sauce au choix + 3 viandes",price:"11.00"},
+    {name:"Tacos Bowl",desc:"3 viandes au choix + viande au choix, sauce",price:"9.00"},
+  ]
+},
+"menu-enfant": {
+  items: [
+    {name:"Menu Kids",desc:"5 pièces au choix (nuggets/tenders) + frites + capri-sun",price:"6.00"},
+  ]
+},
+"riz": {
+  items: [
+    {name:"Riz Krousty",desc:"Riz blanc, sauce blanche, tenders, oignon frit, cheddar, sauce au choix",price:"10.00"},
+    {name:"Riz Chicken Tandoori",desc:"Riz blanc, poulet tandoori, crudités, sauce blanche",price:"12.00"},
+    {name:"Riz Chicken Curry",desc:"Riz blanc, poulet curry, légumes, sauce curry maison",price:"12.00"},
+    {name:"Filet de Poulet Pané Fait Maison",desc:"Poulet pané artisanal, accompagnement au choix",price:"9.00"},
+  ]
+},
+"dessert": {
+  items: [
+    {name:"Tiramisu",desc:"Tiramisu maison crémeux",price:"3.50"},
+    {name:"Tarte au Daim",desc:"Tarte croustillante au chocolat Daim",price:"3.50"},
+    {name:"Häagen-Dazs 100ml",desc:"Glace premium, parfum au choix",price:"4.00"},
+    {name:"Häagen-Dazs 500ml",desc:"Pot familial, parfum au choix",price:"8.00"},
+  ]
+},
+"boisson": {
+  items: [
+    {name:"Coca-Cola 33cl",desc:"Cannette classique",price:"1.50"},
+    {name:"Coca-Cola Zero 33cl",desc:"Cannette zéro sucre",price:"1.50"},
+    {name:"Fanta Orange 33cl",desc:"Cannette",price:"1.50"},
+    {name:"Sprite 33cl",desc:"Cannette",price:"1.50"},
+    {name:"Orangina 33cl",desc:"Cannette",price:"1.50"},
+    {name:"Ice Tea Pêche 33cl",desc:"Cannette",price:"1.50"},
+    {name:"Oasis Tropical 33cl",desc:"Cannette",price:"1.50"},
+    {name:"Perrier 33cl",desc:"Eau gazeuse",price:"1.50"},
+    {name:"Evian 50cl",desc:"Eau minérale",price:"1.50"},
+    {name:"Coca-Cola 1.5L",desc:"Bouteille",price:"3.00"},
+    {name:"Fanta Orange 1.5L",desc:"Bouteille",price:"3.00"},
+    {name:"Sprite 1.5L",desc:"Bouteille",price:"3.00"},
+    {name:"Capri-Sun",desc:"Boisson pour enfants",price:"1.00"},
+  ]
+}
+};
+
+// Pizza images from Unsplash
+const categoryImages = {
+"pizza":"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=200&q=80",
+"fried-chicken":"https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=200&q=80",
+"sandwich":"https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=200&q=80",
+"burger":"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=200&q=80",
+"tacos":"https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=200&q=80",
+"menu-enfant":"https://images.unsplash.com/photo-1619881590738-a111d176d906?auto=format&fit=crop&w=200&q=80",
+"riz":"https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=200&q=80",
+"dessert":"https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=200&q=80",
+"boisson":"https://images.unsplash.com/photo-1581006852262-e4307cf6283a?auto=format&fit=crop&w=200&q=80",
+};
+
+function renderMenu(cat) {
+const grid = document.getElementById('menuGrid');
+const data = menuData[cat];
+if (!data) return;
+let html = '';
+const img = categoryImages[cat] || categoryImages.pizza;
+
+currentCat = cat;
+if (data.subcategories) {
+  data.subcategories.forEach(sub => {
+    html += `<div class="menu-category-title">${sub.name}</div>`;
+    if (sub.note) html += `<div style="grid-column:1/-1;color:var(--white-dim);font-size:.8rem;margin-bottom:8px">${sub.note}</div>`;
+    sub.items.forEach(item => {
+      html += menuCard(item, img, cat);
+    });
+  });
+} else {
+  if (data.note) html += `<div style="grid-column:1/-1;color:var(--white-dim);font-size:.85rem;margin-bottom:8px;padding:8px 0;border-bottom:1px solid var(--dark-border)">${data.note}</div>`;
+  data.items.forEach(item => {
+    html += menuCard(item, img, cat);
+  });
+}
+grid.innerHTML = html;
+}
+
+let currentCat = 'pizza';
+
+function menuCard(item, img, cat) {
+return `<div class="menu-card" onclick='openCustom(${JSON.stringify(item).replace(/'/g,"&#39;")}, "${cat || currentCat}")'>
+<img class="menu-card-img" src="${item.image || img}" alt="${item.name}" loading="lazy" onerror="this.style.background='var(--dark-surface)';this.style.display='flex'">
+<div class="menu-card-info">
+  <h3>${item.name}</h3>
+  <p>${item.desc}</p>
+  <div class="menu-card-price">${item.tier ? 'Dès ' : ''}${item.price}€</div>
+</div>
+</div>`;
+}
+
+// ===== ORDER MODE (Livraison vs À emporter) =====
+let orderMode = 'livraison';
+
+function setOrderMode(mode) {
+  orderMode = mode;
+  document.querySelectorAll('.order-mode-btn').forEach(btn => {
+    if (btn.dataset.mode === mode) {
+      btn.style.background = 'var(--red)';
+      btn.style.color = '#fff';
+      btn.classList.add('active');
+    } else {
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--white-dim)';
+      btn.classList.remove('active');
+    }
+  });
+  const msg = document.getElementById('orderModeMsg');
+  if (mode === 'emporter') {
+    msg.innerHTML = '🎉 <strong style="color:var(--gold)">Profitez de nos offres spéciales à emporter !</strong> Économisez sur les frais de livraison.';
+  } else {
+    msg.innerHTML = '';
+  }
+  updateCartUI();
+}
+
+// ===== CART RULES ENGINE =====
+const cartRules = [
+  {
+    id: 'duo-gagnant',
+    name: 'Le Duo Gagnant',
+    desc: '-50% sur la 2ème pizza (Senior/Méga)',
+    condition: (cartItems) => {
+      const pizzas = cartItems.filter(item => item.category === 'pizza' && item.size && (item.size === 'Senior' || item.size === 'Méga'));
+      return pizzas.length >= 2;
+    },
+    discount: (cartItems) => {
+      const pizzas = cartItems.filter(item => item.category === 'pizza' && item.size && (item.size === 'Senior' || item.size === 'Méga'));
+      if (pizzas.length < 2) return 0;
+      const sorted = [...pizzas].sort((a, b) => a.price - b.price);
+      return sorted[0].price * 0.5;
+    }
+  },
+  {
+    id: '3plus1',
+    name: '3+1 Gratuite',
+    desc: '3 pizzas achetées = la 4ème offerte',
+    condition: (cartItems) => {
+      return cartItems.filter(item => item.category === 'pizza').length >= 4;
+    },
+    discount: (cartItems) => {
+      const pizzas = cartItems.filter(item => item.category === 'pizza');
+      if (pizzas.length < 4) return 0;
+      const sorted = [...pizzas].sort((a, b) => a.price - b.price);
+      return sorted[0].price;
+    }
+  },
+  {
+    id: 'emporter-5',
+    name: 'Avantage à emporter',
+    desc: '-5% sur le total en retrait au restaurant',
+    condition: (cartItems) => {
+      return orderMode === 'emporter' && cartItems.length > 0;
+    },
+    discount: (cartItems, subtotal) => {
+      return subtotal * 0.05;
+    }
+  }
+];
+
+function applyCartRules() {
+  const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+  const appliedRules = [];
+  let totalDiscount = 0;
+
+  // Only apply the best pizza promo (not both)
+  const duoDiscount = cartRules[0].condition(cart) ? cartRules[0].discount(cart) : 0;
+  const freeDiscount = cartRules[1].condition(cart) ? cartRules[1].discount(cart) : 0;
+
+  if (duoDiscount > 0 || freeDiscount > 0) {
+    if (freeDiscount >= duoDiscount && freeDiscount > 0) {
+      appliedRules.push({...cartRules[1], amount: freeDiscount});
+      totalDiscount += freeDiscount;
+    } else if (duoDiscount > 0) {
+      appliedRules.push({...cartRules[0], amount: duoDiscount});
+      totalDiscount += duoDiscount;
+    }
+  }
+
+  // À emporter discount (on subtotal after pizza promo)
+  if (cartRules[2].condition(cart)) {
+    const emporterDiscount = cartRules[2].discount(cart, subtotal - totalDiscount);
+    appliedRules.push({...cartRules[2], amount: emporterDiscount});
+    totalDiscount += emporterDiscount;
+  }
+
+  return {subtotal, totalDiscount, appliedRules, total: subtotal - totalDiscount};
+}
+
+// ===== UPSELL SYSTEM =====
+const upsellRules = {
+  pizza: {
+    title: '🍕 Voulez-vous accompagner votre pizza ?',
+    sections: [
+      {
+        type: 'redirect',
+        items: [
+          {label: '🥤 Ajouter une Boisson', cat: 'boisson', style: 'primary'},
+          {label: '🍰 Ajouter un Dessert', cat: 'dessert', style: 'secondary'}
+        ]
+      }
+    ]
+  },
+  burger: { title: '🍔 Complétez votre burger !', sections: [
+    {type:'addon', heading:'Passer en Menu pour seulement +2€ ?', items:[
+      {label:'🍟 Menu (Frites + Boisson)', price:2, desc:'Frites + Canette au choix'}
+    ]},
+    {type:'addon', heading:'Un petit supplément ?', items:[
+      {label:'🥫 Ajouter une Canette', price:1.50},
+      {label:'🍟 Portion de Frites', price:1.50}
+    ]},
+    {type:'redirect', heading:'Envie d\'une touche sucrée ?', items:[
+      {label:'🍰 Voir les Desserts', cat:'dessert', style:'secondary'}
+    ]}
+  ]},
+  tacos: { title: '🌮 Complétez votre tacos !', sections: [
+    {type:'addon', heading:'Passer en Menu pour seulement +2€ ?', items:[
+      {label:'🍟 Menu (Frites + Boisson)', price:2, desc:'Frites + Canette au choix'}
+    ]},
+    {type:'addon', heading:'Un petit supplément ?', items:[
+      {label:'🥫 Ajouter une Canette', price:1.50},
+      {label:'🍟 Portion de Frites', price:1.50}
+    ]},
+    {type:'redirect', heading:'Envie d\'une touche sucrée ?', items:[
+      {label:'🍰 Voir les Desserts', cat:'dessert', style:'secondary'}
+    ]}
+  ]},
+  'fried-chicken': { title: '🍗 Complétez votre chicken !', sections: [
+    {type:'addon', heading:'Passer en Menu pour seulement +2€ ?', items:[
+      {label:'🍟 Menu (Frites + Boisson)', price:2, desc:'Frites + Canette au choix'}
+    ]},
+    {type:'addon', heading:'Un petit supplément ?', items:[
+      {label:'🥫 Ajouter une Canette', price:1.50},
+      {label:'🍟 Portion de Frites', price:1.50}
+    ]},
+    {type:'redirect', heading:'Envie d\'une touche sucrée ?', items:[
+      {label:'🍰 Voir les Desserts', cat:'dessert', style:'secondary'}
+    ]}
+  ]},
+  sandwich: { title: '🥖 Complétez votre sandwich !', sections: [
+    {type:'addon', heading:'Passer en Menu pour seulement +2€ ?', items:[
+      {label:'🍟 Menu (Frites + Boisson)', price:2, desc:'Frites + Canette au choix'}
+    ]},
+    {type:'addon', heading:'Un petit supplément ?', items:[
+      {label:'🥫 Ajouter une Canette', price:1.50},
+      {label:'🍟 Portion de Frites', price:1.50}
+    ]},
+    {type:'redirect', heading:'Envie d\'une touche sucrée ?', items:[
+      {label:'🍰 Voir les Desserts', cat:'dessert', style:'secondary'}
+    ]}
+  ]}
+};
+
+function showUpsell(cat) {
+  const rules = upsellRules[cat];
+  if (!rules) return;
+
+  document.getElementById('upsellTitle').textContent = rules.title;
+  const body = document.getElementById('upsellBody');
+  let html = '';
+
+  rules.sections.forEach(section => {
+    if (section.heading) {
+      html += `<div style="font-weight:700;font-size:.95rem;margin-top:8px;color:var(--gold)">${section.heading}</div>`;
+    }
+    section.items.forEach(item => {
+      if (section.type === 'addon') {
+        html += `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--dark-surface);border:1px solid var(--dark-border);border-radius:14px;padding:14px 18px;transition:border-color .2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--dark-border)'">
+          <div>
+            <div style="font-weight:600;font-size:.9rem">${item.label}</div>
+            ${item.desc ? `<div style="font-size:.75rem;color:var(--white-dim);margin-top:2px">${item.desc}</div>` : ''}
+          </div>
+          <button onclick="addUpsellItem('${item.label}',${item.price});this.textContent='✓ Ajouté';this.style.background='var(--green)';this.style.borderColor='var(--green)';this.disabled=true" style="background:var(--red);color:#fff;border:none;padding:8px 16px;border-radius:10px;font-weight:700;font-size:.8rem;cursor:pointer;white-space:nowrap;transition:all .2s">+${item.price.toFixed(2)}€</button>
+        </div>`;
+      } else {
+        const btnStyle = item.style === 'primary'
+          ? 'background:var(--red);color:#fff;border:2px solid var(--red)'
+          : 'background:transparent;color:var(--gold);border:2px solid var(--gold)';
+        html += `<button onclick="closeUpsell();document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));document.querySelector('[data-cat=${item.cat}]').classList.add('active');renderMenu('${item.cat}');setTimeout(()=>document.getElementById('menuGrid').scrollIntoView({behavior:'smooth'}),100)" style="${btnStyle};padding:14px 20px;border-radius:14px;font-weight:700;font-size:.95rem;cursor:pointer;width:100%;transition:all .2s;text-align:center">${item.label}</button>`;
+      }
+    });
+  });
+
+  body.innerHTML = html;
+  parseEmojis(body);
+  document.getElementById('upsellOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function addUpsellItem(label, price) {
+  cart.push({name: label, details: 'Supplément', price: price});
+  updateCartUI();
+}
+
+function closeUpsell() {
+  document.getElementById('upsellOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ===== LEGAL MODALS =====
+const legalContent = {
+mentions: `<h4 style="color:var(--gold);margin-bottom:12px">Éditeur du site</h4>
+<p>Pizza Reims<br>41 rue du Mont d'Arène, 51100 Reims<br>Téléphone : 03 26 04 30 51<br>Email : contact@newpizzareims.fr</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Hébergement</h4>
+<p>Vercel Inc.<br>340 S Lemon Ave #4133, Walnut, CA 91789, USA<br>https://vercel.com</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Conception du site</h4>
+<p>Pixel Studio — <a href="https://pixelstudioo.fr" target="_blank" style="color:var(--red-bright)">pixelstudioo.fr</a></p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Propriété intellectuelle</h4>
+<p>L'ensemble du contenu de ce site (textes, images, logo, graphismes) est protégé par le droit d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Données personnelles</h4>
+<p>Les données collectées via les formulaires de commande sont uniquement utilisées pour le traitement de votre commande. Conformément au RGPD, vous disposez d'un droit d'accès, de modification et de suppression de vos données en contactant l'établissement.</p>`,
+cgv: `<h4 style="color:var(--gold);margin-bottom:12px">Article 1 — Objet</h4>
+<p>Les présentes Conditions Générales de Vente régissent les ventes de produits alimentaires effectuées par Pizza Reims auprès de ses clients, en livraison ou à emporter.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Article 2 — Prix</h4>
+<p>Les prix sont indiqués en euros TTC. Pizza Reims se réserve le droit de modifier ses prix à tout moment. Les produits sont facturés au tarif en vigueur au moment de la commande.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Article 3 — Commande</h4>
+<p>Toute commande passée constitue un engagement ferme. L'établissement se réserve le droit de refuser une commande en cas d'indisponibilité de produits ou de problème technique.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Article 4 — Livraison</h4>
+<p>Les livraisons sont effectuées dans un rayon défini autour de l'établissement. Les délais de livraison sont donnés à titre indicatif (généralement 30 à 45 minutes). Un minimum de commande peut être requis pour la livraison.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Article 5 — Paiement</h4>
+<p>Le paiement s'effectue à la livraison ou à la commande selon le mode choisi. Modes de paiement acceptés : espèces, carte bancaire.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Article 6 — Réclamations</h4>
+<p>Toute réclamation doit être formulée dans les 24 heures suivant la livraison par téléphone au 03 26 04 30 51 ou par email.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Article 7 — Allergènes</h4>
+<p>La liste des allergènes est disponible sur demande. Les photos des produits sont non contractuelles.</p>`,
+privacy: `<h4 style="color:var(--gold);margin-bottom:12px">Politique de confidentialité</h4>
+<p>Pizza Reims s'engage à protéger la vie privée de ses utilisateurs conformément au Règlement Général sur la Protection des Données (RGPD).</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Données collectées</h4>
+<p>Lors d'une commande, nous collectons : nom, prénom, adresse de livraison, numéro de téléphone et adresse email. Ces données sont strictement nécessaires au traitement de votre commande.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Utilisation des données</h4>
+<p>Vos données sont utilisées exclusivement pour : le traitement et la livraison de votre commande, la communication relative à votre commande, et l'amélioration de nos services.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Conservation</h4>
+<p>Vos données sont conservées pendant une durée maximale de 3 ans après votre dernière commande, conformément aux obligations légales.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Vos droits</h4>
+<p>Vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données. Pour exercer ces droits, contactez-nous au 03 26 04 30 51 ou par email.</p>
+<h4 style="color:var(--gold);margin:20px 0 12px">Cookies</h4>
+<p>Ce site utilise uniquement le stockage local (localStorage) pour mémoriser le contenu de votre panier. Aucun cookie de tracking ou publicitaire n'est utilisé.</p>`
+};
+
+function openLegalModal(type) {
+const titles = {mentions:'Mentions légales',cgv:'Conditions Générales de Vente',privacy:'Politique de confidentialité'};
+document.getElementById('legalTitle').textContent = titles[type];
+document.getElementById('legalBody').innerHTML = legalContent[type];
+document.getElementById('legalOverlay').classList.add('active');
+document.body.style.overflow='hidden';
+}
+function closeLegalModal() {
+document.getElementById('legalOverlay').classList.remove('active');
+document.body.style.overflow='';
+}
+
+// ===== SAUCES LIST =====
+const allSauces = ['Ketchup','Mayonnaise','Algérienne','Samouraï','Blanche','BBQ','Harissa','Chili Thaï','Andalouse','Curry','Boursin','Biggy Burger'];
+
+// ===== CUSTOMIZATION LOGIC =====
+let customItem = null;
+let customCat = '';
+
+function openCustom(item, cat) {
+  customItem = item;
+  customCat = cat;
+  const title = document.getElementById('customTitle');
+  const body = document.getElementById('customBody');
+  const heroImg = document.getElementById('customHeroImg');
+  title.textContent = item.name;
+  const imgSrc = item.image || categoryImages[cat] || categoryImages.pizza;
+  heroImg.src = imgSrc;
+  heroImg.alt = item.name;
+  let html = '';
+  const basePrice = parseFloat(item.price);
+
+  // ---- PIZZA ----
+  if (cat === 'pizza') {
+    const tier = item.tier || 'classique';
+    const pizzaPrices = {
+      classique: {Junior:9, Senior:11, 'Méga':18},
+      favoris:   {Junior:10, Senior:12, 'Méga':19},
+      chef:      {Junior:11, Senior:13, 'Méga':20}
+    };
+    const tp = pizzaPrices[tier];
+    html += `
+    <div class="custom-section">
+      <div class="custom-section-title">🍅 Base</div>
+      <div class="custom-options">
+        <div class="custom-opt selected" data-group="base" data-val="Tomate" onclick="selectOpt(this)">Tomate</div>
+        <div class="custom-opt" data-group="base" data-val="Crème fraîche" onclick="selectOpt(this)">Crème fraîche</div>
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">📏 Taille</div>
+      <div class="custom-options">
+        <div class="custom-opt selected" data-group="taille" data-val="Junior" data-price="${tp.Junior}" onclick="selectOpt(this)">Junior <span class="extra">${tp.Junior}€</span></div>
+        <div class="custom-opt" data-group="taille" data-val="Senior" data-price="${tp.Senior}" onclick="selectOpt(this)">Senior <span class="extra">${tp.Senior}€</span></div>
+        <div class="custom-opt" data-group="taille" data-val="Méga" data-price="${tp['Méga']}" onclick="selectOpt(this)">Méga <span class="extra">${tp['Méga']}€</span></div>
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">📝 Demandes spéciales</div>
+      <textarea class="custom-textarea" placeholder="Ex: sans oignons, bien cuite, sans sauce, extra fromage..." id="customNotes"></textarea>
+    </div>`;
+  }
+
+  // ---- TACOS ----
+  else if (cat === 'tacos') {
+    const viandes = ['Steak Haché','Poulet','Tenders','Merguez','Nugget','Cordon Bleu','Kebab','Omelette','Poulet Tandoori','Poulet Curry'];
+    const nbViandes = item.name.includes('3') ? 3 : item.name.includes('2') ? 2 : item.name.includes('Bowl') ? 3 : 1;
+    html += `
+    <div class="custom-section">
+      <div class="custom-section-title">🥩 Viande${nbViandes>1?'s':''} (${nbViandes} au choix)</div>
+      <div class="custom-options" id="viandeOpts">
+        ${viandes.map(v => `<div class="custom-opt" data-group="viande" data-val="${v}" data-max="${nbViandes}" onclick="toggleMulti(this,${nbViandes})">${v}</div>`).join('')}
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">🥫 Sauces (1 ou 2)</div>
+      <div class="custom-options sauce-grid">
+        ${allSauces.map(s => `<div class="custom-opt" data-group="sauce" data-val="${s}" data-max="2" onclick="toggleMulti(this,2)">${s}</div>`).join('')}
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">📝 Demandes spéciales</div>
+      <textarea class="custom-textarea" placeholder="Ex: viande supplémentaire (+2€), sans oignon..." id="customNotes"></textarea>
+    </div>`;
+  }
+
+  // ---- SANDWICH / BURGER ----
+  else if (cat === 'sandwich' || cat === 'burger') {
+    html += `
+    <div class="custom-section">
+      <div class="custom-section-title">🥫 Sauce au choix</div>
+      <div class="custom-options sauce-grid">
+        ${allSauces.map(s => `<div class="custom-opt" data-group="sauce" data-val="${s}" data-max="1" onclick="toggleMulti(this,1)">${s}</div>`).join('')}
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">🍟 Accompagnement</div>
+      <div class="custom-options">
+        <div class="custom-opt" data-group="accomp" data-val="Frites" data-extra="1.50" onclick="selectOpt(this)">Frites <span class="extra">+1.50€</span></div>
+        <div class="custom-opt" data-group="accomp" data-val="Boisson" data-extra="1.50" onclick="selectOpt(this)">Boisson <span class="extra">+1.50€</span></div>
+        <div class="custom-opt" data-group="accomp" data-val="Menu Frites + Boisson" data-extra="2" onclick="selectOpt(this)">Menu Frites + Boisson <span class="extra">+2€</span></div>
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">📝 Demandes spéciales</div>
+      <textarea class="custom-textarea" placeholder="Précisions..." id="customNotes"></textarea>
+    </div>`;
+  }
+
+  // ---- OTHER (fried chicken, kids, riz, dessert, boisson) ----
+  else {
+    html += `
+    <div class="custom-section" style="text-align:center;padding:20px 0">
+      <p style="color:var(--white-dim);font-size:.95rem">${item.desc}</p>
+      <p style="font-family:var(--font-display);font-size:2rem;color:var(--gold);margin-top:12px">${item.price}€</p>
+    </div>
+    <div class="custom-section">
+      <div class="custom-section-title">📝 Demande spéciale</div>
+      <textarea class="custom-textarea" placeholder="Précisions, allergies..." id="customNotes"></textarea>
+    </div>`;
+  }
+
+  body.innerHTML = html;
+  calcTotal();
+  document.getElementById('customOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  parseEmojis(document.querySelector('.custom-modal'));
+}
+
+function closeCustom() {
+  document.getElementById('customOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function selectOpt(el) {
+  const group = el.dataset.group;
+  el.parentElement.querySelectorAll(`[data-group="${group}"]`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  calcTotal();
+}
+
+function toggleMulti(el, max) {
+  const group = el.dataset.group;
+  const selected = el.parentElement.querySelectorAll(`[data-group="${group}"].selected`);
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+  } else {
+    if (selected.length >= max) {
+      selected[0].classList.remove('selected');
+    }
+    el.classList.add('selected');
+  }
+  calcTotal();
+}
+
+function uncheckOthersInGroup(input, groupName) {
+  if (input.checked) {
+    document.querySelectorAll(`[data-${groupName}]`).forEach(cb => {
+      if (cb !== input) cb.checked = false;
+    });
+  }
+}
+
+function calcTotal() {
+  // For pizza: use the absolute price from the selected taille
+  const tailleEl = document.querySelector('[data-group="taille"].selected[data-price]');
+  let total;
+  if (tailleEl) {
+    total = parseFloat(tailleEl.dataset.price);
+  } else {
+    total = parseFloat(customItem.price);
+  }
+
+  // Add data-extra surcharges (accompagnements etc, NOT pizza sizes)
+  document.querySelectorAll('.custom-body .custom-opt.selected[data-extra]').forEach(el => {
+    total += parseFloat(el.dataset.extra);
+  });
+
+  document.getElementById('customTotal').textContent = total.toFixed(2) + '€';
+}
+
+// ===== CART =====
+let cart = [];
+
+function getItemSummary() {
+  let details = [];
+  const base = document.querySelector('[data-group="base"].selected');
+  if (base) details.push(`Base ${base.dataset.val}`);
+  const taille = document.querySelector('[data-group="taille"].selected');
+  if (taille) details.push(taille.dataset.val);
+  const viandes = document.querySelectorAll('[data-group="viande"].selected');
+  if (viandes.length) details.push([...viandes].map(v=>v.dataset.val).join(', '));
+  const sauces = document.querySelectorAll('[data-group="sauce"].selected');
+  if (sauces.length) details.push('Sauce: ' + [...sauces].map(s=>s.dataset.val).join(', '));
+  const checks = [];
+  document.querySelectorAll('.custom-body input[type="checkbox"]:checked').forEach(cb => checks.push(cb.value));
+  if (checks.length) details.push(checks.join(', '));
+  const notes = document.getElementById('customNotes');
+  if (notes && notes.value.trim()) details.push(notes.value.trim());
+  return details.join(' · ');
+}
+
+function addToCart() {
+  const totalText = document.getElementById('customTotal').textContent;
+  const total = parseFloat(totalText.replace('€',''));
+  const cat = currentCat;
+  const sizeEl = document.querySelector('[data-group="taille"].selected');
+  const size = sizeEl ? sizeEl.dataset.val : null;
+  cart.push({
+    name: customItem.name,
+    details: getItemSummary(),
+    price: total,
+    category: cat,
+    size: size
+  });
+  updateCartUI();
+  closeCustom();
+  // Brief flash on cart button
+  document.querySelectorAll('.cart-count').forEach(el => {
+    el.style.transform = 'scale(1.4)';
+    setTimeout(() => el.style.transform = '', 300);
+  });
+  // Show upsell modal if rules exist for this category
+  if (upsellRules[cat]) {
+    setTimeout(() => showUpsell(cat), 400);
+  }
+}
+
+function updateCartUI() {
+  const count = cart.length;
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartCountMobile').textContent = count;
+  document.getElementById('cartFab').style.display = count > 0 ? 'flex' : 'none';
+
+  const container = document.getElementById('cartItems');
+  const totalEl = document.getElementById('cartTotal');
+  if (!count) {
+    container.innerHTML = '<div class="cart-empty">Votre panier est vide</div>';
+    totalEl.textContent = '0.00€';
+    return;
+  }
+
+  let html = cart.map((item, i) => {
+    return `<div class="cart-item">
+      <div class="cart-item-info">
+        <h4>${item.name}</h4>
+        <p>${item.details}</p>
+      </div>
+      <div class="cart-item-price">${item.price.toFixed(2)}€</div>
+      <button class="cart-item-del" onclick="removeFromCart(${i})">✕</button>
+    </div>`;
+  }).join('');
+
+  // Apply cart rules
+  const result = applyCartRules();
+
+  if (result.appliedRules.length > 0) {
+    html += `<div style="border-top:1px solid var(--dark-border);padding-top:10px;margin-top:10px">`;
+    html += `<div style="display:flex;justify-content:space-between;color:var(--white-dim);font-size:.8rem;margin-bottom:6px"><span>Sous-total</span><span>${result.subtotal.toFixed(2)}€</span></div>`;
+    result.appliedRules.forEach(rule => {
+      html += `<div style="display:flex;justify-content:space-between;color:#2ecc71;font-size:.8rem;margin-bottom:4px"><span>🎉 ${rule.name}</span><span>-${rule.amount.toFixed(2)}€</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  container.innerHTML = html;
+  totalEl.textContent = result.total.toFixed(2) + '€';
+  parseEmojis(container);
+}
+
+function removeFromCart(i) {
+  cart.splice(i, 1);
+  updateCartUI();
+}
+
+function clearCart() {
+  cart = [];
+  updateCartUI();
+  toggleCart();
+}
+
+function toggleCart() {
+  document.getElementById('cartOverlay').classList.toggle('open');
+  document.getElementById('cartSidebar').classList.toggle('open');
+}
+
+// ===== CHECKOUT =====
+function openCheckout() {
+  if (!cart.length) return;
+  toggleCart();
+  const summary = document.getElementById('checkoutSummary');
+  const result = applyCartRules();
+  let html = cart.map(item => {
+    return `<div class="checkout-summary-item">
+      <div><span class="qty">1x</span>${item.name}${item.details ? ' <span style="color:var(--white-dim);font-size:.75rem">— '+item.details+'</span>' : ''}</div>
+      <div style="color:var(--gold);font-weight:700">${item.price.toFixed(2)}€</div>
+    </div>`;
+  }).join('');
+
+  if (result.appliedRules.length > 0) {
+    html += `<div style="border-top:1px dashed var(--dark-border);padding-top:10px;margin-top:10px">`;
+    html += `<div class="checkout-summary-item"><div style="color:var(--white-dim)">Sous-total</div><div style="color:var(--white-dim)">${result.subtotal.toFixed(2)}€</div></div>`;
+    result.appliedRules.forEach(rule => {
+      html += `<div class="checkout-summary-item"><div style="color:#2ecc71">🎉 ${rule.name}</div><div style="color:#2ecc71">-${rule.amount.toFixed(2)}€</div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `<div class="checkout-summary-total"><span>Total</span><span class="amount">${result.total.toFixed(2)}€</span></div>`;
+  summary.innerHTML = html;
+
+  document.getElementById('checkoutForm').style.display = '';
+  document.getElementById('checkoutSuccess').style.display = 'none';
+  document.getElementById('checkoutOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  parseEmojis(document.getElementById('checkoutOverlay'));
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function selectDelivery(el) {
+  document.querySelectorAll('.delivery-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  const mode = el.dataset.mode;
+  document.getElementById('addressSection').style.display = mode === 'emporter' ? 'none' : '';
+}
+
+function selectTime(el) {
+  document.querySelectorAll('.time-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('timeInputRow').classList.toggle('visible', el.dataset.time === 'scheduled');
+}
+
+function selectPayment(el) {
+  document.querySelectorAll('.payment-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function submitOrder() {
+  // Validate required fields
+  const fields = [
+    {id:'co_prenom', label:'Prénom'},
+    {id:'co_nom', label:'Nom'},
+    {id:'co_tel', label:'Téléphone'},
+    {id:'co_email', label:'Email'},
+  ];
+  const isLivraison = document.querySelector('.delivery-opt.selected').dataset.mode === 'livraison';
+  if (isLivraison) {
+    fields.push({id:'co_adresse', label:'Adresse'});
+    fields.push({id:'co_ville', label:'Ville'});
+  }
+
+  let valid = true;
+  fields.forEach(f => {
+    const input = document.getElementById(f.id);
+    if (!input.value.trim()) {
+      input.classList.add('error');
+      valid = false;
+      setTimeout(() => input.classList.remove('error'), 600);
+    }
+  });
+
+  if (!valid) return;
+
+  // Generate order number
+  const orderNum = '#' + (1000 + Math.floor(Math.random() * 9000));
+  document.getElementById('orderNum').textContent = orderNum;
+
+  // Show success
+  document.getElementById('checkoutForm').style.display = 'none';
+  document.getElementById('checkoutSuccess').style.display = '';
+  parseEmojis(document.getElementById('checkoutSuccess'));
+}
+
+// Tab switching + scroll to products
+document.querySelectorAll('.menu-tab').forEach(tab => {
+tab.addEventListener('click', () => {
+  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  renderMenu(tab.dataset.cat);
+  setTimeout(() => {
+    document.getElementById('menuGrid').scrollIntoView({behavior:'smooth',block:'start'});
+  }, 100);
+});
+});
+
+// Initial render
+renderMenu('pizza');
+
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Reveal on scroll
+const observer = new IntersectionObserver(entries => {
+entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Parse all emojis to Twemoji (iOS-style)
+function parseEmojis(el){ if(window.twemoji) twemoji.parse(el||document.body,{folder:'svg',ext:'.svg'}); }
+parseEmojis();
+// Re-parse after menu tab switch
+const origRender = renderMenu;
+renderMenu = function(cat){ origRender(cat); parseEmojis(document.getElementById('menuGrid')); };
+</script>
+
+</body>
+</html>
