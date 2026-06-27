@@ -1413,14 +1413,17 @@ WhatsApp
 <div class="pay-icon">💶</div>
 <div><div class="pay-name">Espèces</div><div class="pay-sub">Paiement sur place / à la livraison</div></div>
 </div>
+<div class="payment-opt" data-pay="cb" onclick="selectPayment(this)">
+<div class="pay-icon">💳</div>
+<div><div class="pay-name">Carte bancaire</div><div class="pay-sub">Paiement sécurisé en ligne via Stripe</div></div>
+</div>
 </div>
 </div>
 
 </div>
 
 <div class="checkout-footer">
-<button class="checkout-submit" onclick="submitOrder()">💶 Payer en espèces</button>
-<button class="checkout-submit" style="background:linear-gradient(135deg,#635bff,#4f46e5);margin-top:10px" onclick="payByCard()">💳 Payer par carte bancaire</button>
+<button class="checkout-submit" id="checkoutBtn" onclick="submitOrder()">💶 Payer en espèces</button>
 <div class="checkout-legal">En confirmant, vous acceptez nos conditions générales de vente. Vos données sont utilisées uniquement pour traiter votre commande.</div>
 </div>
 </div>
@@ -2362,6 +2365,16 @@ function selectTime(el) {
 function selectPayment(el) {
   document.querySelectorAll('.payment-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
+  var btn = document.getElementById('checkoutBtn');
+  if(el.dataset.pay === 'cb'){
+    btn.textContent = '💳 Payer par carte bancaire';
+    btn.style.background = 'linear-gradient(135deg,#635bff,#4f46e5)';
+    btn.onclick = payByCard;
+  } else {
+    btn.textContent = '💶 Payer en espèces';
+    btn.style.background = '';
+    btn.onclick = submitOrder;
+  }
 }
 
 async function payByCard() {
