@@ -312,6 +312,27 @@ display:flex;align-items:center;justify-content:center;
 .cdot-warn{background:var(--red-bright)}
 .cdot-loading{background:var(--orange);animation:blink .8s infinite}
 
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.topbar-qz{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.topbar-qz:hover{border-color:var(--gold)}
+.topbar-qz.connected{border-color:rgba(39,174,96,.3)}
+.topbar-qz.error{border-color:rgba(231,76,60,.3);animation:qz-alert 1s ease-in-out 3}
+@keyframes qz-alert{0%,100%{background:var(--card)}50%{background:rgba(231,76,60,.1)}}
+.topbar-qz .tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.topbar-fb{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:.82rem;font-weight:600}
+.topbar-fb .tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.topbar-btn{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--white);font-family:var(--font);transition:all .2s}
+.topbar-btn:hover{border-color:var(--gold)}
+.topbar-btn.test-ok{border-color:var(--green);color:var(--green)}
+
+/* Connection toast */
+.toast{position:fixed;top:20px;right:20px;z-index:300;padding:14px 20px;border-radius:12px;font-size:.85rem;font-weight:600;transform:translateY(-100px);opacity:0;transition:all .3s;max-width:400px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green);color:#fff}
+.toast.error{background:var(--red-bright);color:#fff}
+.toast.warning{background:var(--orange);color:#fff}
+
 @media(max-width:768px){
 .sidebar{display:none}
 .main{margin-left:0}
@@ -373,6 +394,23 @@ display:flex;align-items:center;justify-content:center;
 
 <!-- MAIN -->
 <div class="main no-print">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-qz" onclick="reconnectQZ()" id="topbarQz" title="Cliquez pour reconnecter">
+    <span class="tdot" id="topQzDot" style="background:var(--red-bright)"></span>
+    <span id="topQzText">Connexion QZ...</span>
+  </div>
+  <div class="topbar-fb" id="topbarFb">
+    <span class="tdot" id="topFbDot" style="background:var(--green)"></span>
+    <span id="topFbText">Firebase</span>
+  </div>
+  <button class="topbar-btn" onclick="testPrint()" title="Imprimer un ticket test">🖨️ Test</button>
+  <button class="topbar-btn" onclick="location.reload()">🔄 Actualiser</button>
+</div>
+
+<!-- Toast notifications -->
+<div class="toast" id="toast"></div>
 
 <!-- DASHBOARD PAGE -->
 <div class="page active" id="page-dashboard">
@@ -603,30 +641,249 @@ function quickPass(){
   initQZ();
 }
 
-// QZ Tray connection
+// ═══════════════════════════════════════════
+// QZ TRAY — CONNEXION ROBUSTE
+// ═══════════════════════════════════════════
 var printerName = null;
+var qzConnected = false;
+var qzRetryCount = 0;
+var qzRetryTimer = null;
+var qzHealthTimer = null;
+var lastPrintTime = null;
+var printCount = 0;
+var printErrors = 0;
+
 function initQZ(){
-  setTimeout(function(){
-    if(typeof qz === 'undefined' || !qz) return updatePrinterUI(false, 'QZ non installé');
-    if(qz.websocket.isActive()){
-      qz.printers.find().then(function(p){ printerName = p[0]; updatePrinterUI(true, printerName); });
+  if(typeof qz === 'undefined' || !qz){
+    updatePrinterUI('error', 'QZ Tray non installé — qz.io/download');
+    return;
+  }
+
+  // Écouter les déconnexions QZ
+  qz.websocket.setClosedCallbacks(function(evt){
+    qzConnected = false;
+    printerName = null;
+    updatePrinterUI('error', 'QZ déconnecté — reconnexion...');
+    showToast('Imprimante déconnectée — tentative de reconnexion...', 'warning');
+    scheduleRetry();
+  });
+
+  // Écouter les erreurs QZ
+  qz.websocket.setErrorCallbacks(function(evt){
+    console.error('QZ error:', evt);
+  });
+
+  connectQZ();
+  startHealthCheck();
+}
+
+function connectQZ(){
+  if(typeof qz === 'undefined') return;
+  if(qz.websocket.isActive()){
+    // Déjà connecté, juste vérifier l'imprimante
+    findPrinter();
+    return;
+  }
+
+  updatePrinterUI('loading', 'Connexion QZ Tray...');
+
+  qz.websocket.connect().then(function(){
+    qzRetryCount = 0;
+    findPrinter();
+  }).catch(function(e){
+    qzConnected = false;
+    var msg = 'QZ non connecté';
+    if(e.message && e.message.indexOf('not running') > -1){
+      msg = 'QZ Tray pas lancé — démarrez-le';
+    }
+    updatePrinterUI('error', msg);
+    scheduleRetry();
+  });
+}
+
+function findPrinter(){
+  qz.printers.find().then(function(printers){
+    if(printers.length > 0){
+      printerName = printers[0];
+      qzConnected = true;
+      updatePrinterUI('ok', printerName);
+      if(qzRetryCount > 0){
+        showToast('Imprimante reconnectée: ' + printerName, 'success');
+      }
+      qzRetryCount = 0;
+    } else {
+      qzConnected = true; // QZ connecté mais pas d'imprimante
+      printerName = null;
+      updatePrinterUI('warning', 'QZ OK — aucune imprimante détectée');
+      showToast('QZ Tray connecté mais aucune imprimante trouvée. Vérifiez le câble USB.', 'warning');
+    }
+  }).catch(function(e){
+    updatePrinterUI('error', 'Erreur détection imprimante');
+  });
+}
+
+// Auto-reconnexion avec backoff
+function scheduleRetry(){
+  if(qzRetryTimer) clearTimeout(qzRetryTimer);
+  qzRetryCount++;
+  // Backoff: 5s, 10s, 20s, 30s max
+  var delay = Math.min(5000 * Math.pow(2, qzRetryCount - 1), 30000);
+  console.log('QZ retry #' + qzRetryCount + ' dans ' + (delay/1000) + 's');
+  qzRetryTimer = setTimeout(connectQZ, delay);
+}
+
+// Reconnexion manuelle (clic sur le badge)
+function reconnectQZ(){
+  if(qzRetryTimer) clearTimeout(qzRetryTimer);
+  qzRetryCount = 0;
+  showToast('Reconnexion en cours...', 'warning');
+
+  // Si déjà connecté, déconnecter d'abord
+  if(typeof qz !== 'undefined' && qz.websocket.isActive()){
+    qz.websocket.disconnect().then(function(){
+      setTimeout(connectQZ, 500);
+    }).catch(function(){
+      connectQZ();
+    });
+  } else {
+    connectQZ();
+  }
+}
+
+// Health check toutes les 30s — vérifie que QZ + imprimante sont toujours là
+function startHealthCheck(){
+  if(qzHealthTimer) clearInterval(qzHealthTimer);
+  qzHealthTimer = setInterval(function(){
+    if(typeof qz === 'undefined') return;
+
+    if(!qz.websocket.isActive()){
+      if(qzConnected){
+        // Était connecté, vient de tomber
+        qzConnected = false;
+        printerName = null;
+        updatePrinterUI('error', 'QZ déconnecté');
+        showToast('Connexion imprimante perdue', 'error');
+        scheduleRetry();
+      }
       return;
     }
-    qz.websocket.connect().then(function(){
-      return qz.printers.find();
-    }).then(function(printers){
-      printerName = printers[0] || null;
-      updatePrinterUI(!!printerName, printerName || 'Aucune imprimante');
-    }).catch(function(e){
-      updatePrinterUI(false, 'QZ non connecté');
-      setTimeout(initQZ, 10000); // retry
+
+    // QZ actif — vérifier que l'imprimante est toujours là
+    qz.printers.find().then(function(printers){
+      if(printers.length > 0){
+        if(!printerName || printerName !== printers[0]){
+          printerName = printers[0];
+          updatePrinterUI('ok', printerName);
+          if(!qzConnected) showToast('Imprimante détectée: ' + printerName, 'success');
+        }
+        qzConnected = true;
+      } else if(printerName){
+        // Imprimante disparue (câble débranché ?)
+        printerName = null;
+        updatePrinterUI('warning', 'Imprimante débranchée !');
+        showToast('Imprimante débranchée — vérifiez le câble USB', 'error');
+      }
     });
-  }, 500);
+  }, 30000);
 }
-function updatePrinterUI(ok, text){
+
+// Firebase health check
+function checkFirebaseHealth(){
+  db.collection('orders').limit(1).get().then(function(){
+    var dot = document.getElementById('topFbDot');
+    var txt = document.getElementById('topFbText');
+    if(dot) dot.style.background = 'var(--green)';
+    if(txt) txt.textContent = 'Firebase';
+  }).catch(function(){
+    var dot = document.getElementById('topFbDot');
+    var txt = document.getElementById('topFbText');
+    if(dot) dot.style.background = 'var(--red-bright)';
+    if(txt) txt.textContent = 'Firebase erreur';
+    showToast('Connexion Firebase perdue — vérifiez internet', 'error');
+  });
+}
+// Check Firebase toutes les 60s
+setInterval(checkFirebaseHealth, 60000);
+
+// Test d'impression
+function testPrint(){
+  if(!printerName || !qzConnected){
+    showToast('Imprimante non connectée — impossible de tester', 'error');
+    return;
+  }
+  var ESC = '\x1B', GS = '\x1D';
+  var testTicket = ESC + '@' + ESC + 'E\x01' + ESC + 'a\x01';
+  testTicket += ESC + '!\x30' + 'TEST IMPRESSION\n' + ESC + '!\x00';
+  testTicket += '================================\n';
+  testTicket += ESC + 'a\x00';
+  testTicket += 'Imprimante: ' + printerName + '\n';
+  testTicket += 'Date: ' + new Date().toLocaleString('fr-FR') + '\n';
+  testTicket += 'Status: OK\n';
+  testTicket += 'Impressions aujourd\'hui: ' + printCount + '\n';
+  testTicket += 'Erreurs: ' + printErrors + '\n';
+  testTicket += '================================\n';
+  testTicket += ESC + 'a\x01' + 'New Pizza Reims\n';
+  testTicket += '\n\n\n' + GS + 'V\x42\x00';
+
+  var cfg = qz.configs.create(printerName);
+  qz.print(cfg, [{ type:'raw', format:'command', data: testTicket }]).then(function(){
+    showToast('Test OK — ticket imprimé sur ' + printerName, 'success');
+    var btn = document.querySelector('.topbar-btn');
+    if(btn){ btn.classList.add('test-ok'); setTimeout(function(){ btn.classList.remove('test-ok'); }, 2000); }
+  }).catch(function(err){
+    showToast('Erreur test: ' + err.message, 'error');
+  });
+}
+
+// UI updates
+function updatePrinterUI(state, text){
+  // Sidebar
   var el = document.getElementById('printerStatus');
-  el.className = 'printer-indicator ' + (ok ? 'ok' : 'warn');
-  el.textContent = (ok ? '🟢 ' : '🔴 ') + text;
+  if(state === 'ok'){
+    el.className = 'printer-indicator ok';
+    el.textContent = '🟢 ' + text;
+  } else if(state === 'warning'){
+    el.className = 'printer-indicator warn';
+    el.textContent = '🟡 ' + text;
+  } else if(state === 'loading'){
+    el.className = 'printer-indicator warn';
+    el.textContent = '⏳ ' + text;
+  } else {
+    el.className = 'printer-indicator warn';
+    el.textContent = '🔴 ' + text;
+  }
+
+  // Topbar
+  var dot = document.getElementById('topQzDot');
+  var txt = document.getElementById('topQzText');
+  var bar = document.getElementById('topbarQz');
+  if(!dot) return;
+
+  if(state === 'ok'){
+    dot.style.background = 'var(--green)';
+    txt.textContent = text;
+    bar.className = 'topbar-qz connected';
+  } else if(state === 'warning'){
+    dot.style.background = 'var(--orange)';
+    txt.textContent = text;
+    bar.className = 'topbar-qz';
+  } else if(state === 'loading'){
+    dot.style.background = 'var(--orange)';
+    txt.textContent = text;
+    bar.className = 'topbar-qz';
+  } else {
+    dot.style.background = 'var(--red-bright)';
+    txt.textContent = text;
+    bar.className = 'topbar-qz error';
+  }
+}
+
+// Toast notification
+function showToast(msg, type){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || 'success') + ' show';
+  setTimeout(function(){ t.classList.remove('show'); }, 4000);
 }
 
 if(sessionStorage.getItem('admin')==='1'){
@@ -750,10 +1007,15 @@ function autoPrint(order){
     var cfg = qz.configs.create(printerName);
     var data = [{ type:'raw', format:'command', data: buildTicket(order) }];
     qz.print(cfg, data).then(function(){
+      printCount++;
+      lastPrintTime = new Date();
       console.log('Ticket imprimé:', order.orderNum || order.id);
       db.collection('orders').doc(order.id).update({ printed: true });
+      showToast('Ticket imprimé — ' + (order.orderNum || order.id), 'success');
     }).catch(function(err){
+      printErrors++;
       console.error('Erreur impression QZ:', err);
+      showToast('Erreur impression — fallback navigateur', 'error');
       // Fallback: iframe print
       fallbackPrint(order);
     });
