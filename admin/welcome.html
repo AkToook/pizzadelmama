@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouverture — New Pizza Reims</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--card:#1a1a1a;--border:#2a2a2a;--red:#c0392b;--red-bright:#e74c3c;--green:#27ae60;--gold:#d4a855;--white:#f5f5f5;--dim:#888;--font:'Manrope',sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--white);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.welcome{text-align:center;max-width:500px;padding:32px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--red);margin-bottom:8px}
+.subtitle{color:var(--dim);font-size:1rem;margin-bottom:48px}
+.btn{display:block;width:100%;padding:20px;border-radius:16px;border:none;cursor:pointer;font-family:var(--font);font-weight:800;font-size:1.1rem;margin-bottom:16px;transition:all .2s}
+.btn-start{background:var(--green);color:#fff;font-size:1.3rem;padding:24px}
+.btn-start:hover{background:#2ecc71;transform:scale(1.02)}
+.btn-quick{background:var(--card);color:var(--white);border:1px solid var(--border)}
+.btn-quick:hover{border-color:var(--gold)}
+.status{margin-top:32px;padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--border);font-size:.85rem;color:var(--dim)}
+.status .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+.dot.ok{background:var(--green)}
+.dot.warn{background:var(--red)}
+.time{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--white);margin-bottom:4px;line-height:1}
+.date{color:var(--gold);font-size:1rem;margin-bottom:32px}
+</style>
+</head>
+<body>
+
+<div class="welcome">
+  <div class="logo">NEW PIZZA REIMS</div>
+  <div class="time" id="clock">--:--</div>
+  <div class="date" id="dateStr">--</div>
+
+  <button class="btn btn-start" onclick="startDay()">
+    DÉMARRER LA JOURNÉE
+  </button>
+  <button class="btn btn-quick" onclick="quickPass()">
+    Juste de passage
+  </button>
+
+  <div class="status">
+    <div style="margin-bottom:8px">
+      <span class="dot" id="qzDot"></span>
+      <span id="qzStatus">Vérification QZ Tray...</span>
+    </div>
+    <div>
+      <span class="dot" id="fbDot"></span>
+      <span id="fbStatus">Vérification Firebase...</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// Clock
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('dateStr').textContent = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Firebase check
+firebase.initializeApp({
+  apiKey:"AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU",
+  authDomain:"pizza-reims.firebaseapp.com",
+  projectId:"pizza-reims",
+  storageBucket:"pizza-reims.firebasestorage.app",
+  messagingSenderId:"39771057202",
+  appId:"1:39771057202:web:e55aa7ce61d7d39f82a02b"
+});
+const db = firebase.firestore();
+db.collection('orders').limit(1).get().then(()=>{
+  document.getElementById('fbDot').className='dot ok';
+  document.getElementById('fbStatus').textContent='Firebase connecté';
+}).catch(()=>{
+  document.getElementById('fbDot').className='dot warn';
+  document.getElementById('fbStatus').textContent='Firebase erreur';
+});
+
+// QZ Tray check
+function checkQZ(){
+  const dot = document.getElementById('qzDot');
+  const txt = document.getElementById('qzStatus');
+  if(typeof qz !== 'undefined'){
+    qz.websocket.connect().then(()=>{
+      dot.className='dot ok';
+      txt.textContent='QZ Tray connecté';
+    }).catch(()=>{
+      dot.className='dot warn';
+      txt.textContent='QZ Tray non connecté';
+    });
+  } else {
+    dot.className='dot warn';
+    txt.textContent='QZ Tray non détecté — installer qz.io';
+  }
+}
+
+// Load QZ Tray script dynamically
+const qzScript = document.createElement('script');
+qzScript.src = 'https://cdn.jsdelivr.net/npm/qz-tray@2/qz-tray.js';
+qzScript.onload = () => setTimeout(checkQZ, 500);
+qzScript.onerror = () => {
+  document.getElementById('qzDot').className='dot warn';
+  document.getElementById('qzStatus').textContent='QZ Tray script non chargé';
+};
+document.head.appendChild(qzScript);
+
+// Actions
+function startDay(){
+  // Déverrouiller audio Chrome (obligatoire via interaction utilisateur)
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  ctx.resume();
+  localStorage.setItem('apk_audio_unlocked', 'true');
+  localStorage.setItem('apk_day_started', new Date().toDateString());
+  window.location.href = 'orders.html';
+}
+
+function quickPass(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  ctx.resume();
+  window.location.href = 'orders.html';
+}
+</script>
+</body>
+</html>

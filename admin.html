@@ -547,6 +547,8 @@ function todayStart(){
   return d;
 }
 
+var initialLoadDone = false;
+
 function initFirebaseListener(){
   db.collection('orders')
     .where('createdAt', '>=', todayStart())
@@ -559,7 +561,16 @@ function initFirebaseListener(){
       renderOrdersPage(allOrders);
       updateDashboard(allOrders);
 
-      // Auto-print on status change
+      if(!initialLoadDone){
+        // Premier chargement : on marque les commandes existantes comme "déjà vues"
+        // pour ne PAS les imprimer
+        snapshot.forEach(doc => printedOrders.add(doc.id));
+        initialLoadDone = true;
+        console.log('Chargement initial: ' + allOrders.length + ' commandes existantes ignorées pour impression');
+        return;
+      }
+
+      // Après le premier chargement : imprimer uniquement les NOUVELLES
       snapshot.docChanges().forEach(change => {
         const order = { id: change.doc.id, ...change.doc.data() };
         if(change.type === 'added' || change.type === 'modified'){

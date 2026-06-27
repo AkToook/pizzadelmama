@@ -147,6 +147,7 @@ function toggleSound() {
 
 // ======== ORDERS ========
 const printedOrders = new Set();
+var initialLoadDone = false;
 
 function todayStart() {
   const d = new Date();
@@ -162,6 +163,13 @@ db.collection('orders')
     const orders = [];
     snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
     renderOrders(orders);
+
+    if(!initialLoadDone){
+      snapshot.forEach(doc => printedOrders.add(doc.id));
+      initialLoadDone = true;
+      console.log('Chargement initial: ' + orders.length + ' commandes ignorées pour impression');
+      return;
+    }
 
     snapshot.docChanges().forEach(change => {
       const order = { id: change.doc.id, ...change.doc.data() };

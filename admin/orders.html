@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commandes — New Pizza Reims</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--surface:#141414;--card:#1a1a1a;--border:#2a2a2a;--red:#c0392b;--green:#27ae60;--gold:#d4a855;--blue:#3498db;--orange:#f39c12;--white:#f5f5f5;--dim:#888;--font:'Manrope',sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--white);min-height:100vh;padding:24px}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.header h1{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red)}
+.header-right{display:flex;gap:12px;align-items:center}
+.badge{padding:8px 16px;border-radius:10px;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.badge-qz{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.25);color:var(--green)}
+.badge-qz.warn{background:rgba(192,57,43,.12);border-color:rgba(192,57,43,.25);color:var(--red)}
+.badge-fb{background:rgba(52,152,219,.12);border:1px solid rgba(52,152,219,.25);color:var(--blue)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot-ok{background:var(--green);animation:blink 2s infinite}
+.dot-warn{background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Stats */
+.stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 24px;flex:1;min-width:140px}
+.stat-label{font-size:.75rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold)}
+
+/* Sound + back */
+.btn-sm{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--white);font-size:.8rem;cursor:pointer;font-family:var(--font);font-weight:600}
+.btn-sm:hover{border-color:var(--gold)}
+
+/* Orders grid */
+.orders{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;margin-top:8px}
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:border-color .3s}
+.order-card.fresh{border-color:var(--green);animation:pulse 2s ease-in-out 3}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.3)}50%{box-shadow:0 0 16px 4px rgba(39,174,96,.15)}}
+.order-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.order-num{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--gold)}
+.order-badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+.badge-cash{background:var(--green);color:#fff}
+.badge-done{background:rgba(255,255,255,.1);color:var(--dim)}
+.order-client{font-weight:700;margin-bottom:2px}
+.order-phone{color:var(--gold);font-size:.85rem;margin-bottom:4px}
+.order-mode{color:var(--dim);font-size:.82rem;margin-bottom:10px}
+.order-items{list-style:none;margin-bottom:10px}
+.order-items li{padding:3px 0;font-size:.85rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.order-items li:last-child{border:none}
+.order-note{background:rgba(212,168,85,.1);border:1px solid rgba(212,168,85,.15);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--gold);margin-bottom:10px}
+.order-total{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--gold);text-align:right;margin-bottom:8px}
+.order-time{color:var(--dim);font-size:.72rem;margin-bottom:10px}
+.order-actions{display:flex;gap:8px}
+.btn-done{padding:8px 14px;border-radius:8px;border:none;background:var(--green);color:#fff;font-weight:700;font-size:.8rem;cursor:pointer}
+.btn-print{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--white);font-weight:600;font-size:.8rem;cursor:pointer}
+.btn-done:hover{opacity:.8}
+.btn-print:hover{border-color:var(--gold)}
+.empty{text-align:center;color:var(--dim);padding:80px 24px;font-size:1rem}
+
+/* Banner */
+.banner{position:fixed;top:0;left:0;right:0;background:var(--green);color:#fff;text-align:center;padding:12px;font-weight:700;font-size:.95rem;z-index:100;transform:translateY(-100%);transition:transform .3s}
+.banner.show{transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="banner" id="banner"></div>
+
+<div class="header">
+  <h1>COMMANDES EN DIRECT</h1>
+  <div class="header-right">
+    <div class="badge badge-qz warn" id="qzBadge"><span class="dot dot-warn" id="qzDot"></span><span id="qzText">QZ Tray...</span></div>
+    <div class="badge badge-fb"><span class="dot dot-ok"></span>Firebase</div>
+    <button class="btn-sm" id="soundBtn" onclick="toggleSound()">Son ON</button>
+    <button class="btn-sm" onclick="location.href='welcome.html'">Accueil</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">En attente</div><div class="stat-value" id="sPending">0</div></div>
+  <div class="stat"><div class="stat-label">Terminées</div><div class="stat-value" id="sDone">0</div></div>
+  <div class="stat"><div class="stat-label">Total jour</div><div class="stat-value" id="sTotal">0</div></div>
+  <div class="stat"><div class="stat-label">CA du jour</div><div class="stat-value" id="sCA">0€</div></div>
+</div>
+
+<div class="orders" id="ordersGrid">
+  <div class="empty">En attente de commandes...</div>
+</div>
+
+<!-- QZ Tray -->
+<script src="https://cdn.jsdelivr.net/npm/qz-tray@2/qz-tray.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════════════
+// FIREBASE INIT
+// ═══════════════════════════════════════════
+firebase.initializeApp({
+  apiKey:"AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU",
+  authDomain:"pizza-reims.firebaseapp.com",
+  projectId:"pizza-reims",
+  storageBucket:"pizza-reims.firebasestorage.app",
+  messagingSenderId:"39771057202",
+  appId:"1:39771057202:web:e55aa7ce61d7d39f82a02b"
+});
+const db = firebase.firestore();
+
+// ═══════════════════════════════════════════
+// QZ TRAY
+// ═══════════════════════════════════════════
+var printerName = null;
+
+async function connectQZ(){
+  const badge = document.getElementById('qzBadge');
+  const dot = document.getElementById('qzDot');
+  const txt = document.getElementById('qzText');
+  try {
+    if(!qz.websocket.isActive()) await qz.websocket.connect();
+    var printers = await qz.printers.find();
+    if(printers.length){
+      printerName = printers[0];
+      badge.classList.remove('warn');
+      dot.className = 'dot dot-ok';
+      txt.textContent = printerName;
+    } else {
+      dot.className = 'dot dot-warn';
+      txt.textContent = 'Aucune imprimante';
+    }
+  } catch(e){
+    dot.className = 'dot dot-warn';
+    txt.textContent = 'QZ non connecté';
+    console.warn('QZ Tray:', e.message);
+    // Retry in 10s
+    setTimeout(connectQZ, 10000);
+  }
+}
+
+// ═══════════════════════════════════════════
+// AUDIO
+// ═══════════════════════════════════════════
+var soundEnabled = true;
+var audioCtx = null;
+
+function initAudio(){
+  if(localStorage.getItem('apk_audio_unlocked')){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtx.resume();
+  }
+}
+
+function playAlarm(){
+  if(!soundEnabled) return;
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 300, 600].forEach(delay => {
+      setTimeout(() => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.3;
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      }, delay);
+    });
+  } catch(e){}
+}
+
+function toggleSound(){
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundBtn').textContent = soundEnabled ? 'Son ON' : 'Son OFF';
+}
+
+// ═══════════════════════════════════════════
+// BANNER
+// ═══════════════════════════════════════════
+function showBanner(msg){
+  const b = document.getElementById('banner');
+  b.textContent = msg;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 5000);
+}
+
+// ═══════════════════════════════════════════
+// FIREBASE LISTENER — COMMANDES DU JOUR
+// ═══════════════════════════════════════════
+const printedOrders = new Set();
+var allOrders = [];
+var initialLoadDone = false;
+
+function todayStart(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+db.collection('orders')
+  .where('createdAt', '>=', todayStart())
+  .orderBy('createdAt', 'desc')
+  .onSnapshot(function(snap){
+    // Rebuild full list
+    allOrders = [];
+    snap.forEach(doc => allOrders.push({ _id: doc.id, ...doc.data() }));
+    renderOrders();
+    updateStats();
+
+    if(!initialLoadDone){
+      // Premier chargement : marquer toutes les commandes existantes comme "déjà vues"
+      snap.forEach(function(doc){ printedOrders.add(doc.id); });
+      initialLoadDone = true;
+      console.log('Chargement initial: ' + allOrders.length + ' commandes ignorées pour impression');
+      return;
+    }
+
+    // Après le premier chargement : traiter uniquement les NOUVELLES
+    snap.docChanges().forEach(function(change){
+      var o = Object.assign({ _id: change.doc.id }, change.doc.data());
+
+      if(change.type === 'added'){
+        onNewOrder(o);
+      }
+      if(change.type === 'modified'){
+        onStatusUpdate(o);
+      }
+    });
+  });
+
+// ═══════════════════════════════════════════
+// onNewOrder — SON + AFFICHAGE UNIQUEMENT
+// JAMAIS autoPrint() ici
+// ═══════════════════════════════════════════
+function onNewOrder(order){
+  if(order.status === 'PAYED_CASH' && !order.printed && !printedOrders.has(order._id)){
+    playAlarm();
+    showBanner('Nouvelle commande — ' + (order.orderNum || order.orderNumber || '---'));
+    // L'impression est déclenchée par onStatusUpdate
+    // Mais comme le doc arrive déjà avec PAYED_CASH, on imprime ici aussi
+    // car Firebase 'added' = première apparition du doc
+    printedOrders.add(order._id);
+    autoPrint(order);
+  }
+}
+
+// ═══════════════════════════════════════════
+// onStatusUpdate — SEUL DÉCLENCHEUR D'IMPRESSION
+// ═══════════════════════════════════════════
+function onStatusUpdate(order){
+  if(order.printed) return;
+  if(printedOrders.has(order._id)) return;
+  if(order.status === 'PAYED_CASH'){
+    printedOrders.add(order._id);
+    playAlarm();
+    autoPrint(order);
+  }
+}
+
+// ═══════════════════════════════════════════
+// IMPRESSION QZ TRAY — ESC/POS
+// ═══════════════════════════════════════════
+function autoPrint(order){
+  if(!printerName || typeof qz === 'undefined' || !qz.websocket.isActive()){
+    console.warn('QZ non connecté — impression impossible');
+    showBanner('Imprimante non connectée !');
+    return;
+  }
+
+  var cfg = qz.configs.create(printerName);
+  var data = [{ type:'raw', format:'command', data: buildTicket(order) }];
+
+  qz.print(cfg, data).then(function(){
+    console.log('Ticket imprimé:', order.orderNum || order.orderNumber);
+    db.collection('orders').doc(order._id).update({ printed: true });
+  }).catch(function(err){
+    console.error('Erreur impression:', err);
+    showBanner('Erreur impression: ' + err.message);
+  });
+}
+
+// ═══════════════════════════════════════════
+// TICKET ESC/POS — GRAS + LISIBLE
+// ═══════════════════════════════════════════
+function buildTicket(order){
+  var ESC = '\x1B', GS = '\x1D';
+  var INIT     = ESC + '@';
+  var BOLD_ON  = ESC + 'E\x01';
+  var BOLD_OFF = ESC + 'E\x00';
+  var STRIKE   = ESC + 'G\x01';
+  var CENTER   = ESC + 'a\x01';
+  var LEFT     = ESC + 'a\x00';
+  var BIG      = ESC + '!\x30';
+  var NORMAL   = ESC + '!\x00';
+  var CUT      = GS  + 'V\x42\x00';
+  var LF       = '\n';
+  var SEP      = '================================\n';
+
+  var num = order.orderNum || order.orderNumber || '---';
+  var name = order.customerName || ((order.firstName||'') + ' ' + (order.lastName||'')).trim() || 'Client';
+  var phone = order.customerPhone || order.phone || '';
+  var mode = order.deliveryMode || order.mode || 'emporter';
+  var modeLabel = (mode === 'livraison') ? 'LIVRAISON' : 'A EMPORTER';
+  var addr = order.address || '';
+  var time = '';
+  if(order.createdAt && order.createdAt.toDate){
+    time = order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  var t = INIT + BOLD_ON + STRIKE;
+
+  // En-tête
+  t += CENTER + BIG + 'NEW PIZZA REIMS' + LF + NORMAL;
+  t += '41 rue du Mont d\'Arene' + LF;
+  t += 'Tel: 03 26 04 30 51' + LF;
+  t += SEP;
+
+  // Infos commande
+  t += LEFT;
+  t += BIG + 'N. ' + num + LF + NORMAL;
+  t += time ? ('Heure: ' + time + LF) : '';
+  t += SEP;
+  t += 'Mode  : ' + modeLabel + LF;
+  t += 'Client: ' + name + LF;
+  t += 'Tel   : ' + phone + LF;
+  if(mode === 'livraison' && addr){
+    t += 'Adresse: ' + addr + LF;
+  }
+  t += SEP;
+
+  // Articles
+  var items = order.items || [];
+  items.forEach(function(item){
+    var itemName = item.name || '';
+    var qty = item.qty || 1;
+    var price = parseFloat(item.price || 0).toFixed(2);
+    t += itemName;
+    if(qty > 1) t += ' x' + qty;
+    t += '  ' + price + 'EUR' + LF;
+
+    // Détails (options, personnalisation)
+    if(item.details) t += '  > ' + item.details + LF;
+
+    // Options sélectionnées
+    if(item.selectedOptions){
+      Object.values(item.selectedOptions).forEach(function(v){
+        if(v) t += '  > ' + v + LF;
+      });
+    }
+
+    // Note spéciale
+    if(item.specialRequest){
+      t += '  !! ' + item.specialRequest.toUpperCase() + ' !!' + LF;
+    }
+  });
+
+  t += SEP;
+
+  // Total
+  var total = parseFloat(order.total || 0).toFixed(2);
+  t += CENTER + BIG + 'TOTAL: ' + total + ' EUR' + LF + NORMAL;
+  t += 'Paiement: ESPECES' + LF;
+
+  // Note commande
+  var special = order.special || order.notes || '';
+  if(special){
+    t += SEP + LEFT;
+    t += 'NOTE: ' + special + LF;
+  }
+
+  t += SEP;
+  t += CENTER + 'Merci de votre commande !' + LF;
+  t += 'New Pizza Reims - 7j/7' + LF;
+
+  // Coupe + avance papier
+  t += LF + LF + LF + LF;
+  t += CUT;
+
+  return t;
+}
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function renderOrders(){
+  var grid = document.getElementById('ordersGrid');
+  if(!allOrders.length){
+    grid.innerHTML = '<div class="empty">En attente de commandes...</div>';
+    return;
+  }
+
+  grid.innerHTML = allOrders.map(function(order){
+    var num = order.orderNum || order.orderNumber || '---';
+    var name = order.customerName || ((order.firstName||'') + ' ' + (order.lastName||'')).trim() || 'Client';
+    var phone = order.customerPhone || order.phone || '';
+    var mode = order.deliveryMode || order.mode || 'emporter';
+    var modeLabel = (mode === 'livraison') ? 'Livraison' : 'À emporter';
+    var addr = order.address || '';
+    var special = order.special || order.notes || '';
+    var items = order.items || [];
+    var total = parseFloat(order.total || 0).toFixed(2);
+    var isDone = order.status === 'DONE';
+    var isFresh = !isDone && !order.printed;
+    var time = '';
+    if(order.createdAt && order.createdAt.toDate){
+      time = order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    }
+
+    return '<div class="order-card '+(isFresh?'fresh':'')+'">' +
+      '<div class="order-head">' +
+        '<span class="order-num">'+num+'</span>' +
+        '<span class="order-badge '+(isDone?'badge-done':'badge-cash')+'">'+(isDone?'Terminée':'Espèces')+'</span>' +
+      '</div>' +
+      '<div class="order-client">'+name+'</div>' +
+      '<div class="order-phone">'+phone+'</div>' +
+      '<div class="order-mode">'+(mode==='livraison'?'Livraison — '+addr:modeLabel)+'</div>' +
+      '<ul class="order-items">' +
+        items.map(function(item){
+          return '<li><span>'+item.name+(item.details?' <small style="color:var(--dim)">'+item.details+'</small>':'')+'</span><span>'+parseFloat(item.price||0).toFixed(2)+'€</span></li>';
+        }).join('') +
+      '</ul>' +
+      (special ? '<div class="order-note">'+special+'</div>' : '') +
+      '<div class="order-total">'+total+'€</div>' +
+      '<div class="order-time">'+time+'</div>' +
+      '<div class="order-actions">' +
+        (!isDone ? '<button class="btn-done" onclick="markDone(\''+order._id+'\')">Terminée</button>' : '') +
+        '<button class="btn-print" onclick="manualPrint(\''+order._id+'\')">Réimprimer</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function updateStats(){
+  var pending = allOrders.filter(function(o){ return o.status !== 'DONE'; }).length;
+  var done = allOrders.filter(function(o){ return o.status === 'DONE'; }).length;
+  var ca = allOrders.reduce(function(sum, o){ return sum + parseFloat(o.total || 0); }, 0);
+  document.getElementById('sPending').textContent = pending;
+  document.getElementById('sDone').textContent = done;
+  document.getElementById('sTotal').textContent = allOrders.length;
+  document.getElementById('sCA').textContent = ca.toFixed(2) + '€';
+}
+
+// ═══════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════
+function markDone(id){
+  db.collection('orders').doc(id).update({ status: 'DONE' });
+}
+
+function manualPrint(id){
+  var order = allOrders.find(function(o){ return o._id === id; });
+  if(order){
+    printedOrders.delete(id);
+    autoPrint(order);
+  }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+initAudio();
+setTimeout(connectQZ, 1000);
+</script>
+</body>
+</html>
