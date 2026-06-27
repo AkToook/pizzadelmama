@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://pizzareims.vercel.app/</loc><priority>1.0</priority></url>
+  <url><loc>https://pizzareims.vercel.app/admin.html</loc><priority>0.3</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/centre-ville-reims.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/tinqueux.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/cormontreuil.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/betheny.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/saint-brice-courcelles.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/cernay-les-reims.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/witry-les-reims.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/murigny.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/orgeval.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/laon-zola.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/wilson.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/clairmarais.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/croix-rouge.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/bezannes.html</loc><priority>0.8</priority></url>
+  <url><loc>https://pizzareims.vercel.app/livraison/saint-leonard.html</loc><priority>0.8</priority></url>
+</urlset>
