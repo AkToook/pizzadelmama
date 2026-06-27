@@ -393,8 +393,8 @@ line-height:1.4;color:#000;
 
 </div>
 
-<!-- HIDDEN PRINT RECEIPT -->
-<div id="printReceipt"></div>
+<!-- HIDDEN PRINT IFRAME -->
+<iframe id="printFrame" style="position:absolute;width:0;height:0;border:none;left:-9999px"></iframe>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
@@ -629,13 +629,14 @@ ${order.special ? '<div class="divider"></div><p class="note">Note: '+order.spec
 
   db.collection('orders').doc(order.id).update({ printed: true });
 
-  // Ouvrir fenetre temporaire avec UNIQUEMENT le ticket → imprimer → fermer
-  const printWin = window.open('', 'ticket', 'width=302,height=600');
-  printWin.document.write(ticketHTML);
-  printWin.document.close();
+  // Impression via iframe caché — compatible --kiosk-printing = 100% auto
+  const frame = document.getElementById('printFrame');
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open();
+  doc.write(ticketHTML);
+  doc.close();
   setTimeout(() => {
-    printWin.print();
-    setTimeout(() => printWin.close(), 1000);
+    frame.contentWindow.print();
   }, 400);
 }
 
