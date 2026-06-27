@@ -257,7 +257,8 @@ cursor:pointer;border:none;transition:all .2s;
 @page{size:80mm auto;margin:0}
 *{margin:0;padding:0}
 body{background:#fff!important;color:#000!important;display:block!important;width:80mm;font-family:'Courier New',monospace}
-.sidebar,.login-screen,.no-print,.main{display:none!important}
+.sidebar,.login-screen,.no-print,.main,.topbar,.toast,.welcome-screen{display:none!important}
+#printZone{display:block!important;width:80mm;padding:0;margin:0}
 #printReceipt{
 display:block!important;width:80mm;padding:4mm 2mm;
 font-family:'Courier New',monospace;font-size:14px;font-weight:bold;
@@ -492,6 +493,7 @@ display:flex;align-items:center;justify-content:center;
 
 <!-- HIDDEN PRINT IFRAME -->
 <iframe id="printFrame" style="position:absolute;width:0;height:0;border:none;left:-9999px"></iframe>
+<div id="printZone" style="display:none"></div>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
@@ -1140,24 +1142,10 @@ function fallbackPrint(order){
     '<div class="divider"></div><p class="footer">Merci !<br>New Pizza Reims - 7j/7</p></body></html>';
 
   db.collection('orders').doc(order.id).update({ printed: true });
-  // Ouvrir popup, imprimer, fermer automatiquement
-  var win = window.open('', '_blank', 'width=350,height=600');
-  if(win){
-    win.document.open();
-    win.document.write(ticketHTML);
-    win.document.close();
-    win.onload = function(){
-      win.print();
-      win.onafterprint = function(){ win.close(); };
-      // Fallback fermeture après 3s si onafterprint pas supporté
-      setTimeout(function(){ try{win.close();}catch(e){} }, 3000);
-    };
-    // Si onload ne se déclenche pas (contenu simple)
-    setTimeout(function(){
-      try{ win.print(); }catch(e){}
-      setTimeout(function(){ try{win.close();}catch(e){} }, 3000);
-    }, 500);
-  }
+  // Injecter le ticket dans le div d'impression et imprimer
+  var printZone = document.getElementById('printZone');
+  printZone.innerHTML = ticketHTML;
+  setTimeout(function(){ window.print(); }, 300);
 }
 
 // ===== RENDER ORDERS PAGE =====
