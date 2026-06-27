@@ -1046,27 +1046,9 @@ function onStatusUpdate(order){
 
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
 function autoPrint(order){
-  // Si QZ Tray disponible → impression ESC/POS directe
-  if(printerName && typeof qz !== 'undefined' && qz.websocket.isActive()){
-    var cfg = qz.configs.create(printerName);
-    var data = [{ type:'raw', format:'command', data: buildTicket(order) }];
-    qz.print(cfg, data).then(function(){
-      printCount++;
-      lastPrintTime = new Date();
-      console.log('Ticket imprimé:', order.orderNum || order.id);
-      db.collection('orders').doc(order.id).update({ printed: true });
-      showToast('Ticket imprimé — ' + (order.orderNum || order.id), 'success');
-    }).catch(function(err){
-      printErrors++;
-      console.error('Erreur impression QZ:', err);
-      showToast('Erreur impression — fallback navigateur', 'error');
-      // Fallback: iframe print
-      fallbackPrint(order);
-    });
-  } else {
-    // Fallback: iframe print (avec --kiosk-printing = auto)
-    fallbackPrint(order);
-  }
+  console.log('>>> autoPrint déclenché pour commande:', order.orderNum || order.id);
+  playOrderSound();
+  fallbackPrint(order);
 }
 
 function buildTicket(order){
