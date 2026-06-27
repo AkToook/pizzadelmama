@@ -159,6 +159,12 @@ display:flex;align-items:center;
 padding:140px 24px 80px;
 overflow:hidden;
 }
+.hero-float-left,.hero-float-right{position:absolute;top:50%;transform:translateY(-50%);z-index:3}
+.hero-float-left{left:36px}
+.hero-float-right{right:36px}
+.hero-float-left img{height:140px;width:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);border:2px solid rgba(255,255,255,.15)}
+.hero-float-right img{height:150px;width:auto;filter:drop-shadow(0 6px 24px rgba(192,57,43,.5))}
+@media(max-width:1100px){.hero-float-left,.hero-float-right{display:none}}
 .hero-bg{
 position:absolute;inset:0;
 background:
@@ -900,16 +906,13 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 <!-- HERO -->
 <section class="hero" id="accueil">
 <div class="hero-bg"></div>
+<div class="hero-float-left"><img src="img/hygiene.png" alt="Niveau d'hygiène - Très satisfaisant"></div>
+<div class="hero-float-right"><img src="img/Logo-Pizza-Reims.png" alt="New Pizza Reims"></div>
 <div class="hero-content">
 <div class="hero-text">
-<div style="display:flex;align-items:center;justify-content:center;gap:28px;margin-bottom:20px;flex-wrap:wrap">
-<img src="img/hygiene.png" alt="Niveau d'hygiène - Très satisfaisant" style="height:110px;width:auto;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.5);border:2px solid rgba(255,255,255,.2);filter:sepia(.6) saturate(.8) brightness(1.1) hue-rotate(-10deg)">
-<img src="img/Logo-Pizza-Reims.png" alt="New Pizza Reims" style="height:130px;width:auto;filter:drop-shadow(0 4px 20px rgba(192,57,43,.4))">
-</div>
 <div class="hero-badges">
 <div class="badge"><span class="num">4.7</span> ★ sur Google</div>
 <div class="badge"><span class="num">286+</span> avis</div>
-<div class="badge badge-hygiene"><div class="smileys"><span class="smiley-dim">😕</span><span class="smiley-dim">😐</span><span class="smiley-dim">🙂</span><span class="smiley-active">😊</span></div>Très satisfaisant</div>
 </div>
 <h1>LA PIZZA QUI <span>ENFLAMME</span> REIMS</h1>
 <p>10 ans d'artisanat. Zéro compromis. Une pâte pétrie à la main, des produits frais, et le savoir-faire d'une décennie. Le meilleur de Reims livré, fumant, jusqu'à votre porte. Goûtez la différence dès ce soir.</p>
