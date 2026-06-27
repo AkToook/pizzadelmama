@@ -904,6 +904,27 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 <a href="#commander" class="btn-primary" onclick="this.parentElement.classList.remove('open')">Commander</a>
 </div>
 
+<!-- POPUP BIENVENUE -->
+<div id="welcomeOverlay" style="position:fixed;inset:0;z-index:9999;background:rgba(11,17,32,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;transition:opacity .4s">
+<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:40px 32px;max-width:420px;width:90%;text-align:center">
+<img src="img/Logo-Pizza-Reims.png" alt="New Pizza Reims" style="height:70px;width:auto;margin-bottom:20px">
+<h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px">Bienvenue !</h2>
+<p style="color:var(--white-dim);font-size:.9rem;margin-bottom:28px">Comment souhaitez-vous commander ?</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<button onclick="chooseOrderMode('livraison')" style="background:var(--dark);border:2px solid var(--red);border-radius:16px;padding:24px 16px;cursor:pointer;transition:all .3s" onmouseover="this.style.background='rgba(192,57,43,.15)'" onmouseout="this.style.background='var(--dark)'">
+<div style="font-size:2rem;margin-bottom:8px">🚚</div>
+<div style="color:#fff;font-weight:700;font-size:.95rem">Livraison</div>
+<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px">À domicile</div>
+</button>
+<button onclick="chooseOrderMode('emporter')" style="background:var(--dark);border:2px solid var(--dark-border);border-radius:16px;padding:24px 16px;cursor:pointer;transition:all .3s" onmouseover="this.style.background='rgba(212,168,85,.1)'" onmouseout="this.style.background='var(--dark)'">
+<div style="font-size:2rem;margin-bottom:8px">🏪</div>
+<div style="color:#fff;font-weight:700;font-size:.95rem">Sur place / À emporter</div>
+<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px">Retrait au restaurant</div>
+</button>
+</div>
+</div>
+</div>
+
 <!-- HERO -->
 <section class="hero" id="accueil">
 <div class="hero-bg"></div>
@@ -997,7 +1018,7 @@ Commander
 <section class="menu-section" id="menu">
 
 <!-- MENU ÉTUDIANT + OFFRES SPÉCIALES -->
-<div class="reveal" style="max-width:1100px;margin:0 auto 40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+<div class="reveal" id="offresCards" style="max-width:1100px;margin:0 auto 40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
 
 <!-- Menu Étudiant -->
 <div style="background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:16px;padding:24px;text-align:center;position:relative;overflow:hidden">
@@ -1008,7 +1029,7 @@ Commander
 </div>
 
 <!-- 3+1 Gratuite -->
-<div style="background:linear-gradient(135deg,var(--dark-card),#1a1a2e);border:1px solid var(--gold);border-radius:16px;padding:24px;text-align:center">
+<div class="promo-card-emporter" style="background:linear-gradient(135deg,var(--dark-card),#1a1a2e);border:1px solid var(--gold);border-radius:16px;padding:24px;text-align:center">
 <div style="font-family:var(--font-display);font-size:2rem;color:var(--gold);line-height:1">3<span style="color:#fff">+</span>1</div>
 <p style="color:var(--gold);font-weight:700;font-size:.85rem;margin:8px 0 4px">GRATUITE</p>
 <p style="color:var(--white-dim);font-size:.75rem">3 pizzas achetées, la 4ème offerte*</p>
@@ -1016,7 +1037,7 @@ Commander
 </div>
 
 <!-- 2 Pizzas Séniors -->
-<div style="background:linear-gradient(135deg,var(--dark-card),#1a1a2e);border:1px solid var(--dark-border);border-radius:16px;padding:24px;text-align:center">
+<div class="promo-card-emporter" style="background:linear-gradient(135deg,var(--dark-card),#1a1a2e);border:1px solid var(--dark-border);border-radius:16px;padding:24px;text-align:center">
 <div style="font-family:var(--font-display);font-size:1.6rem;color:#fff;line-height:1.1">2 PIZZAS</div>
 <p style="color:var(--red-bright);font-weight:700;font-size:.85rem;margin:8px 0 4px">SÉNIORS</p>
 <p style="color:var(--white-dim);font-size:.75rem">La 3ème à <strong style="color:var(--gold)">-50%</strong></p>
@@ -1752,6 +1773,34 @@ return `<div class="menu-card" onclick='openCustom(${JSON.stringify(item).replac
 // ===== ORDER MODE (Livraison vs À emporter) =====
 let orderMode = 'livraison';
 
+function chooseOrderMode(mode) {
+  orderMode = mode;
+  document.getElementById('welcomeOverlay').style.opacity = '0';
+  setTimeout(() => {
+    document.getElementById('welcomeOverlay').style.display = 'none';
+  }, 400);
+  setOrderMode(mode);
+  toggleOffresVisibility(mode);
+}
+
+function toggleOffresVisibility(mode) {
+  // Hide promo cards (3+1 and duo) but keep menu étudiant visible
+  document.querySelectorAll('.promo-card-emporter').forEach(el => {
+    el.style.display = (mode === 'livraison') ? 'none' : 'block';
+  });
+  // Adjust grid: 1 column if livraison (menu étudiant only), 3 if emporter
+  const offresCards = document.getElementById('offresCards');
+  if (offresCards) {
+    offresCards.style.gridTemplateColumns = (mode === 'livraison') ? '1fr' : '1fr 1fr 1fr';
+    offresCards.style.maxWidth = (mode === 'livraison') ? '300px' : '1100px';
+  }
+  // Hide/show the "Duo Gagnant" promo section
+  const offresSection = document.getElementById('offres');
+  if (offresSection) {
+    offresSection.style.display = (mode === 'livraison') ? 'none' : 'block';
+  }
+}
+
 function setOrderMode(mode) {
   orderMode = mode;
   document.querySelectorAll('.order-mode-btn').forEach(btn => {
@@ -1771,6 +1820,7 @@ function setOrderMode(mode) {
   } else {
     msg.innerHTML = '';
   }
+  toggleOffresVisibility(mode);
   updateCartUI();
 }
 
@@ -1781,6 +1831,7 @@ const cartRules = [
     name: 'Le Duo Gagnant',
     desc: '-50% sur la 2ème pizza (Senior/Méga uniquement)',
     condition: (cartItems) => {
+      if (orderMode === 'livraison') return false;
       const pizzas = cartItems.filter(item => item.category === 'pizza' && item.size && item.size !== 'Junior');
       return pizzas.length >= 2;
     },
@@ -1796,6 +1847,7 @@ const cartRules = [
     name: '3+1 Gratuite',
     desc: '3 pizzas achetées = la 4ème offerte (Senior/Méga)',
     condition: (cartItems) => {
+      if (orderMode === 'livraison') return false;
       return cartItems.filter(item => item.category === 'pizza' && item.size && item.size !== 'Junior').length >= 4;
     },
     discount: (cartItems) => {
@@ -2410,6 +2462,15 @@ function selectPayment(el) {
 }
 
 async function payByCard() {
+  // Minimum de commande en livraison + CB = 17€
+  const isLivraisonCheck = document.querySelector('.delivery-opt.selected')?.dataset.mode === 'livraison';
+  if (isLivraisonCheck) {
+    const result = applyCartRules();
+    if (result.total < 17) {
+      alert('Le minimum de commande en livraison par carte bancaire est de 17€. Votre total actuel : ' + result.total.toFixed(2) + '€');
+      return;
+    }
+  }
   // Validation des champs
   const fields = [
     {id:'co_prenom', label:'Prénom'},
@@ -2478,6 +2539,15 @@ async function payByCard() {
 }
 
 async function submitOrder() {
+  // Minimum de commande en livraison + espèces = 15€
+  const isLivraisonCheck = document.querySelector('.delivery-opt.selected')?.dataset.mode === 'livraison';
+  if (isLivraisonCheck) {
+    const result = applyCartRules();
+    if (result.total < 15) {
+      alert('Le minimum de commande en livraison est de 15€. Votre total actuel : ' + result.total.toFixed(2) + '€');
+      return;
+    }
+  }
   // Validate required fields
   const fields = [
     {id:'co_prenom', label:'Prénom'},
