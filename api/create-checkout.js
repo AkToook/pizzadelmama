@@ -1,7 +1,6 @@
-import Stripe from 'stripe';
+const Stripe = require('stripe');
 
-export default async function handler(req, res) {
-  // CORS
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -27,9 +26,9 @@ export default async function handler(req, res) {
         price_data: {
           currency: 'eur',
           product_data: {
-            name: 'Commande #' + (orderNum || '---') + ' — New Pizza Reims',
+            name: 'Commande ' + (orderNum || '---') + ' — New Pizza Reims',
           },
-          unit_amount: Math.round(total * 100), // Stripe veut des centimes
+          unit_amount: Math.round(total * 100),
         },
         quantity: 1,
       }],
@@ -55,4 +54,4 @@ export default async function handler(req, res) {
     console.error('Stripe error:', err);
     return res.status(500).json({ error: err.message });
   }
-}
+};
