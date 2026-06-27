@@ -167,13 +167,11 @@ background:
   var(--dark);
 
 }
-.hero-bg::after{content:none}
-.hero-slide{
-position:absolute;inset:0;
-background-size:cover;background-position:center;
-opacity:0;transition:opacity 1.5s ease;
+.hero-bg::after{
+content:'';position:absolute;inset:0;
+background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1920&q=80') center/cover;
+opacity:.35;
 }
-.hero-slide.active{opacity:.35}
 .hero-content{
 position:relative;z-index:2;
 max-width:1200px;margin:0 auto;width:100%;
@@ -901,12 +899,7 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 
 <!-- HERO -->
 <section class="hero" id="accueil">
-<div class="hero-bg">
-<div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1920&q=80')"></div>
-<div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=1920&q=80')"></div>
-<div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1920&q=80')"></div>
-<div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1920&q=80')"></div>
-</div>
+<div class="hero-bg"></div>
 <div class="hero-content">
 <div class="hero-text">
 <img src="img/logo.svg" alt="New Pizza Reims" style="height:120px;width:auto;margin:0 auto 20px;display:block;filter:drop-shadow(0 4px 20px rgba(192,57,43,.4))">
@@ -1120,21 +1113,59 @@ Commander
 <div class="hours-row"><span class="day">Tous les jours (7j/7)</span><span class="time">11h00 - 14h00</span></div>
 <div class="hours-row"><span class="day">Tous les jours (7j/7)</span><span class="time">18h00 - 23h00</span></div>
 </div>
-<div class="hours-card reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
-<h3>🛡️ Niveau d'hygiène</h3>
-<div style="background:#1a2766;border-radius:16px;padding:20px 28px;margin-top:8px;width:100%;max-width:280px">
-<div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:12px">Niveau d'hygiène</div>
-<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px">
-<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">😕</div>
-<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">😐</div>
-<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🙂</div>
-<div style="width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 2px 10px rgba(0,0,0,.2);position:relative">😊
-<div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff"></div>
-</div>
-</div>
-<div style="font-weight:800;font-size:1rem;color:#fff;text-transform:uppercase;letter-spacing:.05em">Très satisfaisant</div>
-</div>
-<p style="color:var(--white-dim);font-size:.75rem;margin-top:10px">Contrôle officiel des services d'hygiène<br><span style="color:var(--gold);font-weight:700">Validé le 1 février 2026</span></p>
+<div class="hours-card reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px">
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;border-radius:12px;overflow:hidden">
+<!-- Background -->
+<rect width="400" height="250" fill="#f5f5f0" rx="8"/>
+<!-- Top white bar -->
+<rect x="0" y="0" width="400" height="60" fill="#fff"/>
+<!-- French flag -->
+<rect x="15" y="8" width="6" height="44" fill="#002395"/>
+<rect x="21" y="8" width="6" height="44" fill="#fff" stroke="#ccc" stroke-width=".5"/>
+<rect x="27" y="8" width="6" height="44" fill="#ED2939"/>
+<text x="40" y="20" font-family="serif" font-size="7" fill="#333" font-style="italic">Liberté · Égalité · Fraternité</text>
+<text x="40" y="32" font-family="sans-serif" font-size="8" fill="#333" font-weight="700">RÉPUBLIQUE FRANÇAISE</text>
+<!-- Date -->
+<text x="160" y="18" font-family="sans-serif" font-size="9" fill="#333" font-weight="600">DATE DU CONTRÔLE :</text>
+<text x="290" y="18" font-family="sans-serif" font-size="10" fill="#333" font-weight="800">19 FÉV. 2026</text>
+<text x="160" y="32" font-family="sans-serif" font-size="8" fill="#666">Validité 1 an</text>
+<text x="160" y="44" font-family="sans-serif" font-size="8" fill="#1a2766" font-weight="600">www.alim-confiance.gouv.fr</text>
+<!-- Blue main area -->
+<rect x="10" y="65" width="380" height="140" rx="6" fill="#1a2766"/>
+<!-- Title -->
+<text x="30" y="100" font-family="Georgia,serif" font-size="22" fill="#fff" font-style="italic">Niveau d'hygiène</text>
+<!-- 4 smiley faces -->
+<g transform="translate(30,115)">
+<!-- Smiley 1 - sad (dimmed) -->
+<circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+<circle cx="13" cy="15" r="2" fill="rgba(255,255,255,.3)"/>
+<circle cx="27" cy="15" r="2" fill="rgba(255,255,255,.3)"/>
+<path d="M10 28 Q20 22 30 28" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+<!-- Smiley 2 - neutral (dimmed) -->
+<circle cx="75" cy="20" r="18" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+<circle cx="68" cy="15" r="2" fill="rgba(255,255,255,.3)"/>
+<circle cx="82" cy="15" r="2" fill="rgba(255,255,255,.3)"/>
+<line x1="65" y1="26" x2="85" y2="26" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+<!-- Smiley 3 - smile (dimmed) -->
+<circle cx="130" cy="20" r="18" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+<circle cx="123" cy="15" r="2" fill="rgba(255,255,255,.3)"/>
+<circle cx="137" cy="15" r="2" fill="rgba(255,255,255,.3)"/>
+<path d="M120 24 Q130 32 140 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+<!-- Smiley 4 - big smile (highlighted) -->
+<g>
+<circle cx="195" cy="20" r="22" fill="rgba(255,255,255,.15)" stroke="#fff" stroke-width="2.5"/>
+<circle cx="187" cy="14" r="2.5" fill="#fff"/>
+<circle cx="203" cy="14" r="2.5" fill="#fff"/>
+<path d="M183 22 Q195 34 207 22" fill="none" stroke="#fff" stroke-width="2.5"/>
+<!-- Map pin pointer -->
+<path d="M195 42 L189 50 L201 50 Z" fill="#fff"/>
+</g>
+</g>
+<!-- Divider line -->
+<line x1="25" y1="168" x2="375" y2="168" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+<!-- TRÈS SATISFAISANT -->
+<text x="200" y="195" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#fff" font-weight="800" letter-spacing="2">TRÈS SATISFAISANT</text>
+</svg>
 </div>
 </div>
 </section>
@@ -2469,17 +2500,6 @@ parseEmojis();
 const origRender = renderMenu;
 renderMenu = function(cat){ origRender(cat); parseEmojis(document.getElementById('menuGrid')); };
 
-// Hero slideshow
-(function(){
-const slides=document.querySelectorAll('.hero-slide');
-if(slides.length<2)return;
-let cur=0;
-setInterval(()=>{
-slides[cur].classList.remove('active');
-cur=(cur+1)%slides.length;
-slides[cur].classList.add('active');
-},4000);
-})();
 </script>
 
 </body>
