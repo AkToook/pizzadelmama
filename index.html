@@ -1428,10 +1428,11 @@ WhatsApp
 <div id="checkoutSuccess" style="display:none">
 <div class="checkout-success">
 <div class="check-circle">✅</div>
-<h2>COMMANDE CONFIRMÉE !</h2>
+<h2>COMMANDE ENREGISTRÉE !</h2>
 <div class="order-num" id="orderNum">#1025</div>
-<p>Merci pour votre commande. Vous recevrez une confirmation par SMS. Bon appétit !</p>
-<button class="btn-primary" onclick="closeCheckout();clearCart();" style="border:none">Retour au site</button>
+<p style="font-size:1.05rem;line-height:1.7">Votre commande a bien été enregistrée.<br><strong style="color:var(--gold)">Le magasin va vous appeler pour confirmer.</strong></p>
+<p style="color:var(--white-dim);font-size:.85rem;margin-top:8px">📞 Si besoin, contactez-nous au <a href="tel:0326043051" style="color:var(--gold);font-weight:700">03 26 04 30 51</a></p>
+<button class="btn-primary" onclick="closeCheckout();clearCart();" style="border:none;margin-top:16px">Retour au site</button>
 </div>
 </div>
 
@@ -2477,15 +2478,6 @@ async function submitOrder() {
   try {
     await db.collection('orders').add(orderData);
   } catch(e) { console.error('Firestore error:', e); }
-
-  const waMsg = `🆕 COMMANDE ${orderNum}%0A` +
-    `👤 ${encodeURIComponent(customerName)} — ${encodeURIComponent(customerPhone)}%0A` +
-    `📍 ${encodeURIComponent(deliveryMode === 'livraison' ? address : 'À EMPORTER')}%0A` +
-    `📝 ${encodeURIComponent(orderDesc)}%0A` +
-    `${special ? '💬 '+encodeURIComponent(special)+'%0A' : ''}` +
-    `💰 TOTAL: ${result.total.toFixed(2)}€ (💶 Espèces)`;
-
-  window.open(`https://wa.me/33668562273?text=${waMsg}`, '_blank');
 
   document.getElementById('orderNum').textContent = orderNum;
   document.getElementById('checkoutForm').style.display = 'none';
