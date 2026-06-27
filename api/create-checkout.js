@@ -1,3 +1,5 @@
+import Stripe from 'stripe';
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -6,57 +8,51 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { amount, description, reference, customer_name, customer_phone, delivery_address } = req.body;
+  const STRIPE_SK = process.env.STRIPE_SECRET_KEY;
+  if (!STRIPE_SK) return res.status(500).json({ error: 'Clé Stripe manquante' });
 
-  if (!amount || amount < 1) {
+  const stripe = new Stripe(STRIPE_SK);
+
+  const { items, total, orderNum, customerName, customerPhone, deliveryMode, address, special } = req.body;
+
+  if (!total || total < 1) {
     return res.status(400).json({ error: 'Montant invalide' });
   }
 
-  const SUMUP_API_KEY = process.env.SUMUP_API_KEY;
-  const SUMUP_MERCHANT_CODE = process.env.SUMUP_MERCHANT_CODE;
-
-  if (!SUMUP_API_KEY || !SUMUP_MERCHANT_CODE) {
-    return res.status(500).json({ error: 'Configuration SumUp manquante' });
-  }
-
-  // Generate unique reference
-  const checkoutRef = reference || `NPR-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
-
   try {
-    const response = await fetch('https://api.sumup.com/v0.1/checkouts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUMUP_API_KEY}`
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: 'Commande #' + (orderNum || '---') + ' — New Pizza Reims',
+          },
+          unit_amount: Math.round(total * 100), // Stripe veut des centimes
+        },
+        quantity: 1,
+      }],
+      metadata: {
+        orderNum: orderNum || '',
+        customerName: customerName || '',
+        customerPhone: customerPhone || '',
+        deliveryMode: deliveryMode || '',
+        address: address || '',
+        special: special || '',
+        items: JSON.stringify(items || []),
       },
-      body: JSON.stringify({
-        amount: parseFloat(amount),
-        currency: 'EUR',
-        checkout_reference: checkoutRef,
-        merchant_code: SUMUP_MERCHANT_CODE,
-        description: description || 'Commande New Pizza Reims',
-        redirect_url: 'https://pizzareims.vercel.app/confirmation.html?ref=' + encodeURIComponent(checkoutRef),
-        hosted_checkout: { enabled: true }
-      })
+      success_url: 'https://pizzareims.vercel.app/confirmation.html?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://pizzareims.vercel.app/index.html#panier',
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('SumUp error:', data);
-      return res.status(response.status).json({ error: data.message || 'Erreur SumUp', details: data });
-    }
-
     return res.status(200).json({
-      checkout_id: data.id,
-      checkout_url: data.hosted_checkout_url,
-      reference: checkoutRef,
-      amount: data.amount,
-      status: data.status
+      url: session.url,
+      sessionId: session.id,
     });
 
   } catch (err) {
-    console.error('Server error:', err);
-    return res.status(500).json({ error: 'Erreur serveur' });
+    console.error('Stripe error:', err);
+    return res.status(500).json({ error: err.message });
   }
 }

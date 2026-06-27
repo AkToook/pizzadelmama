@@ -1039,11 +1039,49 @@ function initFirebaseListener(){
 }
 
 function onStatusUpdate(order){
-  if((order.status === 'PAYED_CASH' || order.status === 'PAYED_CARD') && !printedOrders.has(order.id)){
-    printedOrders.add(order.id);
-    playOrderSound();
-    autoPrint(order);
+  if(!printedOrders.has(order.id)){
+    if(order.status === 'PAYED_CASH'){
+      // Espèces → impression automatique
+      printedOrders.add(order.id);
+      playOrderSound();
+      autoPrint(order);
+    } else if(order.status === 'PAYED_CARD'){
+      // Carte → popup avec bouton imprimer
+      printedOrders.add(order.id);
+      playOrderSound();
+      showPrintPopup(order);
+    }
   }
+}
+
+// Popup pour commande carte — le mec clique "Imprimer"
+function showPrintPopup(order){
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:16px;padding:30px;max-width:400px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3)';
+  var num = order.orderNum || '---';
+  var total = parseFloat(order.total||0).toFixed(2);
+  var mode = order.deliveryMode === 'livraison' ? 'Livraison' : 'A emporter';
+  box.innerHTML = '<h2 style="margin:0 0 10px;font-size:24px;color:#22c55e">💳 Paiement carte validé</h2>' +
+    '<p style="font-size:20px;font-weight:900;margin:5px 0">Commande #' + num + '</p>' +
+    '<p style="font-size:16px;margin:5px 0">' + (order.customerName||'') + ' — ' + mode + '</p>' +
+    '<p style="font-size:22px;font-weight:900;margin:10px 0">' + total + ' EUR</p>' +
+    '<button onclick="printFromPopup(this)" style="background:#e63946;color:#fff;border:none;padding:14px 40px;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;margin:10px 5px">🖨️ Imprimer</button>' +
+    '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:#666;color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:16px;cursor:pointer;margin:10px 5px">Fermer</button>';
+  box.dataset.orderId = order.id;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  // Stocker la commande pour impression
+  overlay._order = order;
+}
+
+function printFromPopup(btn){
+  var overlay = btn.closest('div[style*="fixed"]');
+  var order = overlay._order;
+  autoPrint(order);
+  overlay.remove();
 }
 
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
