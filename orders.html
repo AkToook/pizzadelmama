@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commandes — New Pizza Reims</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#c0392b;--dark:#0b1120;--dark-card:#162032;--dark-border:#1e2d45;--gold:#d4a855;--white:#f5f5f5;--green:#27ae60;--orange:#f39c12;--font-display:'Bebas Neue',sans-serif;--font-body:'Manrope',sans-serif}
+body{font-family:var(--font-body);background:var(--dark);color:var(--white);min-height:100vh;padding:24px}
+h1{font-family:var(--font-display);font-size:2.5rem;text-align:center;margin-bottom:8px}
+.subtitle{text-align:center;color:var(--gold);font-size:.9rem;margin-bottom:32px}
+.status-bar{display:flex;justify-content:center;gap:24px;margin-bottom:32px;flex-wrap:wrap}
+.status-badge{padding:10px 20px;border-radius:12px;background:var(--dark-card);border:1px solid var(--dark-border);font-weight:700;font-size:.9rem}
+.status-badge .count{font-family:var(--font-display);font-size:1.6rem;color:var(--gold)}
+.orders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px;max-width:1400px;margin:0 auto}
+.order-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:24px;position:relative;transition:border-color .3s}
+.order-card.new{border-color:var(--green);animation:pulse 2s ease-in-out 3}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.4)}50%{box-shadow:0 0 20px 4px rgba(39,174,96,.2)}}
+.order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.order-num{font-family:var(--font-display);font-size:1.4rem;color:var(--gold)}
+.order-status{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;text-transform:uppercase}
+.order-status.payed-cash{background:var(--green);color:#fff}
+.order-status.payed-card{background:#3498db;color:#fff}
+.order-status.pending{background:var(--orange);color:#fff}
+.order-status.done{background:rgba(255,255,255,.1);color:var(--white)}
+.order-client{font-weight:700;font-size:1rem;margin-bottom:4px}
+.order-phone{color:var(--gold);font-size:.85rem;margin-bottom:4px}
+.order-address{color:rgba(255,255,255,.6);font-size:.85rem;margin-bottom:12px}
+.order-items{list-style:none;margin-bottom:12px}
+.order-items li{padding:4px 0;font-size:.85rem;border-bottom:1px solid var(--dark-border);display:flex;justify-content:space-between}
+.order-items li:last-child{border:none}
+.order-total{font-family:var(--font-display);font-size:1.3rem;color:var(--gold);text-align:right;margin-bottom:12px}
+.order-special{background:rgba(212,168,85,.1);border:1px solid rgba(212,168,85,.2);border-radius:8px;padding:8px 12px;font-size:.8rem;color:var(--gold);margin-bottom:12px}
+.order-time{color:rgba(255,255,255,.4);font-size:.75rem}
+.order-actions{display:flex;gap:8px;margin-top:12px}
+.btn-done,.btn-print{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:.8rem;transition:opacity .2s}
+.btn-done{background:var(--green);color:#fff}
+.btn-print{background:var(--dark-border);color:var(--white)}
+.btn-done:hover,.btn-print:hover{opacity:.8}
+.empty{text-align:center;color:rgba(255,255,255,.4);font-size:1.1rem;padding:80px 24px}
+.connection-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);margin-right:8px;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+/* Print receipt styling */
+@media print{
+body{background:#fff;color:#000;padding:0}
+.no-print{display:none!important}
+.print-receipt{display:block!important;width:80mm;font-family:'Courier New',monospace;font-size:12px;padding:8px}
+.print-receipt h2{text-align:center;font-size:16px;margin-bottom:4px}
+.print-receipt .divider{border-top:1px dashed #000;margin:8px 0}
+.print-receipt table{width:100%;border-collapse:collapse}
+.print-receipt td{padding:2px 0;font-size:11px}
+.print-receipt .total-line{font-weight:bold;font-size:14px;border-top:2px solid #000;padding-top:4px}
+.print-receipt .footer{text-align:center;font-size:10px;margin-top:8px}
+}
+.print-receipt{display:none}
+</style>
+</head>
+<body>
+
+<div class="no-print">
+<h1>🍕 COMMANDES EN DIRECT</h1>
+<p class="subtitle"><span class="connection-dot"></span>Connecté à Firebase — Impression automatique activée</p>
+
+<div class="status-bar">
+<div class="status-badge">En attente <span class="count" id="countPending">0</span></div>
+<div class="status-badge">Payées <span class="count" id="countPayed">0</span></div>
+<div class="status-badge">Terminées <span class="count" id="countDone">0</span></div>
+<div class="status-badge">Total aujourd'hui <span class="count" id="countTotal">0</span></div>
+</div>
+
+<div class="orders-grid" id="ordersGrid">
+<div class="empty">En attente de commandes...</div>
+</div>
+</div>
+
+<!-- Hidden print receipt template -->
+<div class="print-receipt" id="printReceipt"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU",
+  authDomain: "pizza-reims.firebaseapp.com",
+  projectId: "pizza-reims",
+  storageBucket: "pizza-reims.firebasestorage.app",
+  messagingSenderId: "39771057202",
+  appId: "1:39771057202:web:e55aa7ce61d7d39f82a02b"
+});
+const db = firebase.firestore();
+
+// Track which orders we already printed
+const printedOrders = new Set();
+
+// Get today's start timestamp
+function todayStart() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+// Listen to today's orders in real-time
+db.collection('orders')
+  .where('createdAt', '>=', todayStart())
+  .orderBy('createdAt', 'desc')
+  .onSnapshot(snapshot => {
+    const orders = [];
+    snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+    renderOrders(orders);
+
+    // Handle status updates → auto-print
+    snapshot.docChanges().forEach(change => {
+      const order = { id: change.doc.id, ...change.doc.data() };
+      if (change.type === 'added' || change.type === 'modified') {
+        onStatusUpdate(order);
+      }
+    });
+  });
+
+function onStatusUpdate(order) {
+  // RÈGLE D'OR : seul déclencheur d'impression
+  if ((order.status === 'PAYED_CASH' || order.status === 'PAYED_CARD') && !printedOrders.has(order.id)) {
+    printedOrders.add(order.id);
+    autoPrint(order);
+  }
+}
+
+function autoPrint(order) {
+  const receipt = document.getElementById('printReceipt');
+  const time = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--';
+  const payLabel = order.status === 'PAYED_CASH' ? 'ESPÈCES' : 'CARTE';
+
+  receipt.innerHTML = `
+    <h2>NEW PIZZA REIMS</h2>
+    <p style="text-align:center;font-size:10px">41 rue du Mont d'Arène — 51100 Reims<br>Tél: 03 26 04 30 51</p>
+    <div class="divider"></div>
+    <p><strong>${order.orderNum}</strong> — ${time}</p>
+    <p>${order.deliveryMode === 'livraison' ? '🛵 LIVRAISON' : '🏠 À EMPORTER'}</p>
+    <p><strong>${order.customerName}</strong><br>${order.customerPhone}</p>
+    ${order.deliveryMode === 'livraison' ? `<p>📍 ${order.address}</p>` : ''}
+    <div class="divider"></div>
+    <table>
+      ${order.items.map(item => `
+        <tr>
+          <td>${item.name}${item.details ? '<br><small>'+item.details+'</small>' : ''}</td>
+          <td style="text-align:right;white-space:nowrap">${item.price.toFixed(2)}€</td>
+        </tr>
+      `).join('')}
+    </table>
+    <div class="divider"></div>
+    <p class="total-line">TOTAL: ${order.total.toFixed(2)}€</p>
+    <p>Paiement: ${payLabel}</p>
+    ${order.special ? `<div class="divider"></div><p>📝 ${order.special}</p>` : ''}
+    <div class="divider"></div>
+    <p class="footer">Merci de votre commande !<br>New Pizza Reims — 7j/7</p>
+  `;
+
+  // Mark as printed in Firestore
+  db.collection('orders').doc(order.id).update({ printed: true });
+
+  // Auto-print
+  setTimeout(() => window.print(), 500);
+}
+
+function renderOrders(orders) {
+  const grid = document.getElementById('ordersGrid');
+  if (!orders.length) {
+    grid.innerHTML = '<div class="empty">En attente de commandes...</div>';
+    updateCounts(orders);
+    return;
+  }
+
+  grid.innerHTML = orders.map(order => {
+    const time = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--';
+    const statusClass = order.status === 'PAYED_CASH' ? 'payed-cash' : order.status === 'PAYED_CARD' ? 'payed-card' : order.status === 'DONE' ? 'done' : 'pending';
+    const statusLabel = order.status === 'PAYED_CASH' ? '💶 Espèces' : order.status === 'PAYED_CARD' ? '💳 Carte' : order.status === 'DONE' ? '✅ Terminée' : '⏳ En attente';
+    const isNew = order.status !== 'DONE' && !order.printed;
+
+    return `
+      <div class="order-card ${isNew ? 'new' : ''}">
+        <div class="order-header">
+          <span class="order-num">${order.orderNum || '---'}</span>
+          <span class="order-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <div class="order-client">${order.customerName || 'Client'}</div>
+        <div class="order-phone">${order.customerPhone || ''}</div>
+        <div class="order-address">${order.deliveryMode === 'livraison' ? '🛵 ' + order.address : '🏠 À emporter'}</div>
+        <ul class="order-items">
+          ${(order.items||[]).map(item => `<li><span>${item.name}${item.details ? ' <small style="color:rgba(255,255,255,.4)">'+item.details+'</small>' : ''}</span><span>${item.price.toFixed(2)}€</span></li>`).join('')}
+        </ul>
+        ${order.special ? `<div class="order-special">📝 ${order.special}</div>` : ''}
+        <div class="order-total">${order.total?.toFixed(2) || '0.00'}€</div>
+        <div class="order-time">🕐 ${time}</div>
+        <div class="order-actions">
+          ${order.status !== 'DONE' ? `<button class="btn-done" onclick="markDone('${order.id}')">✅ Terminée</button>` : ''}
+          <button class="btn-print" onclick="manualPrint('${order.id}')">🖨️ Réimprimer</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateCounts(orders);
+}
+
+function updateCounts(orders) {
+  document.getElementById('countPending').textContent = orders.filter(o => o.status === 'PENDING').length;
+  document.getElementById('countPayed').textContent = orders.filter(o => o.status === 'PAYED_CASH' || o.status === 'PAYED_CARD').length;
+  document.getElementById('countDone').textContent = orders.filter(o => o.status === 'DONE').length;
+  document.getElementById('countTotal').textContent = orders.length;
+}
+
+function markDone(orderId) {
+  db.collection('orders').doc(orderId).update({ status: 'DONE' });
+}
+
+function manualPrint(orderId) {
+  db.collection('orders').doc(orderId).get().then(doc => {
+    if (doc.exists) {
+      printedOrders.delete(orderId); // Allow reprint
+      autoPrint({ id: doc.id, ...doc.data() });
+    }
+  });
+}
+</script>
+
+</body>
+</html>
