@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commande confirmée — New Pizza Reims</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#c0392b;--red-bright:#e74c3c;--dark:#0b1120;--dark-surface:#101828;--dark-card:#162032;--dark-border:#1e2d45;--gold:#d4a855;--white:#f5f5f5;--white-dim:#a0a0a0;--green:#27ae60;--font-display:'Bebas Neue',sans-serif;--font-body:'Manrope',sans-serif}
+html{background:var(--dark)}
+body{font-family:var(--font-body);color:var(--white);background:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:48px 36px;max-width:480px;width:100%;text-align:center}
+.icon{width:80px;height:80px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2.5rem}
+.icon.error{background:var(--red)}
+h1{font-family:var(--font-display);font-size:2rem;margin-bottom:8px}
+.ref{color:var(--gold);font-size:.9rem;font-weight:700;margin-bottom:16px}
+p{color:var(--white-dim);font-size:.9rem;line-height:1.6;margin-bottom:20px}
+.btn{display:inline-block;background:var(--red);color:#fff;padding:14px 36px;border-radius:30px;font-weight:700;font-size:1rem;text-decoration:none;transition:background .25s}
+.btn:hover{background:var(--red-bright)}
+.contact{margin-top:24px;padding-top:20px;border-top:1px solid var(--dark-border)}
+.contact a{color:var(--gold);font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="card" id="confirmCard">
+<div class="icon" id="statusIcon">✓</div>
+<h1 id="statusTitle">Paiement reçu !</h1>
+<div class="ref" id="refDisplay"></div>
+<p id="statusMsg">Votre commande a bien été enregistrée et payée. Notre équipe la prépare dès maintenant. Vous recevrez votre commande dans les 30 à 45 minutes.</p>
+<a href="/" class="btn">Retour au site</a>
+<div class="contact">
+<p style="margin-bottom:8px">Une question sur votre commande ?</p>
+<a href="tel:0326043051">📞 03 26 04 30 51</a> · <a href="https://wa.me/33668562273">💬 WhatsApp</a>
+</div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const ref = params.get('ref');
+const status = params.get('status');
+
+if (ref) {
+  document.getElementById('refDisplay').textContent = 'Réf: ' + ref;
+}
+
+if (status === 'failed' || status === 'error') {
+  document.getElementById('statusIcon').textContent = '✕';
+  document.getElementById('statusIcon').classList.add('error');
+  document.getElementById('statusTitle').textContent = 'Paiement échoué';
+  document.getElementById('statusMsg').textContent = 'Le paiement n\'a pas pu être traité. Veuillez réessayer ou nous contacter par téléphone pour passer votre commande.';
+}
+</script>
+</body>
+</html>

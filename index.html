@@ -47,13 +47,13 @@
   "openingHoursSpecification": [
     {
       "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       "opens": "11:00",
-      "closes": "23:00"
+      "closes": "14:00"
     },
     {
       "@type": "OpeningHoursSpecification",
-      "dayOfWeek": "Sunday",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       "opens": "18:00",
       "closes": "23:00"
     }
@@ -864,7 +864,9 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 <!-- NAV -->
 <nav class="nav" id="nav">
 <div class="nav-inner">
-<a href="#" style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:.04em;color:var(--white);display:flex;align-items:center;gap:8px"><span style="color:var(--red-bright)">PIZZA</span> <span style="color:var(--gold)">REIMS</span></a>
+<a href="#" style="display:flex;align-items:center;gap:10px">
+<img src="img/logo.svg" alt="New Pizza Reims" class="nav-logo" style="height:50px;width:auto">
+</a>
 <ul class="nav-links">
 <li><a href="#menu">Menu</a></li>
 <li><a href="#promos">Promos</a></li>
@@ -896,6 +898,7 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 <div class="hero-bg"></div>
 <div class="hero-content">
 <div class="hero-text">
+<img src="img/logo.svg" alt="New Pizza Reims" style="height:120px;width:auto;margin:0 auto 20px;display:block;filter:drop-shadow(0 4px 20px rgba(192,57,43,.4))">
 <div class="hero-badges">
 <div class="badge"><span class="num">4.7</span> ★ sur Google</div>
 <div class="badge"><span class="num">286+</span> avis</div>
@@ -1101,16 +1104,25 @@ Commander
 </div>
 <div class="hours-grid">
 <div class="hours-card reveal">
-<h3>🏠 Restaurant</h3>
-<div class="hours-row"><span class="day">Lundi - Samedi</span><span class="time">11h00 - 23h00</span></div>
-<div class="hours-row"><span class="day">Dimanche</span><span class="time">18h00 - 23h00</span></div>
-<div class="hours-row"><span class="day">Vendredi & Samedi</span><span class="time">Jusqu'à 00h !</span></div>
+<h3>🏠 Restaurant & 🛵 Livraison</h3>
+<div class="hours-row"><span class="day">Tous les jours (7j/7)</span><span class="time">11h00 - 14h00</span></div>
+<div class="hours-row"><span class="day">Tous les jours (7j/7)</span><span class="time">18h00 - 23h00</span></div>
 </div>
-<div class="hours-card reveal">
-<h3>🛵 Livraison</h3>
-<div class="hours-row"><span class="day">Service midi</span><span class="time">11h00 - 13h45</span></div>
-<div class="hours-row"><span class="day">Service soir</span><span class="time">18h00 - 22h45</span></div>
-<div class="hours-row"><span class="day">Dimanche</span><span class="time">Fermé le midi</span></div>
+<div class="hours-card reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+<h3>🛡️ Niveau d'hygiène</h3>
+<div style="background:#1a2766;border-radius:16px;padding:20px 28px;margin-top:8px;width:100%;max-width:280px">
+<div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:12px">Niveau d'hygiène</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px">
+<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">😕</div>
+<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">😐</div>
+<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🙂</div>
+<div style="width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 2px 10px rgba(0,0,0,.2);position:relative">😊
+<div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff"></div>
+</div>
+</div>
+<div style="font-weight:800;font-size:1rem;color:#fff;text-transform:uppercase;letter-spacing:.05em">Très satisfaisant</div>
+</div>
+<p style="color:var(--white-dim);font-size:.75rem;margin-top:10px">Contrôle officiel des services d'hygiène</p>
 </div>
 </div>
 </section>
@@ -1158,7 +1170,7 @@ WhatsApp
 </div>
 <div class="contact-item">
 <div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></div>
-<div><h4>Horaires</h4><p>Lun-Sam 11h-23h / Dim 18h-23h</p></div>
+<div><h4>Horaires</h4><p>7j/7 : 11h-14h & 18h-23h</p></div>
 </div>
 </div>
 <div class="contact-map">
@@ -1199,7 +1211,7 @@ WhatsApp
 <footer class="footer">
 <div class="footer-inner" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;align-items:start">
 <div>
-<div style="font-family:var(--font-display);font-size:2rem;letter-spacing:.04em;display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="color:var(--red-bright)">PIZZA</span> <span style="color:var(--gold)">REIMS</span></div>
+<div style="margin-bottom:16px"><img src="img/logo.svg" alt="New Pizza Reims" style="height:70px;width:auto"></div>
 <p style="color:var(--white-dim);font-size:.85rem;line-height:1.6">41 rue du Mont d'Arène · 51100 Reims<br>Ouvert 7J/7 · Pizza artisanale à Reims</p>
 </div>
 <div>
@@ -1248,7 +1260,7 @@ WhatsApp
 <div class="checkout-overlay" id="checkoutOverlay">
 <div class="checkout-modal">
 <div class="checkout-header">
-<h2>🧾 FINALISER MA COMMANDE</h2>
+<div style="display:flex;align-items:center;gap:12px"><img src="img/logo.svg" alt="Logo" style="height:36px;width:auto"><h2>🧾 FINALISER MA COMMANDE</h2></div>
 <button class="close-btn" onclick="closeCheckout()" style="background:var(--dark-surface);border:none;color:var(--white);width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer">&times;</button>
 </div>
 
@@ -1456,7 +1468,7 @@ font-size:1.4rem;cursor:pointer;color:#fff;
 
 <!-- WHATSAPP FLOAT -->
 <a href="https://wa.me/33668562273" target="_blank" class="wa-float" aria-label="Contacter via WhatsApp">
-<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 4C12.954 4 4 12.954 4 24c0 3.53.922 6.84 2.533 9.713L4 44l10.572-2.472A19.92 19.92 0 0024 44c11.046 0 20-8.954 20-20S35.046 4 24 4z" fill="#25D366"/><path d="M34.6 29.2c-.6-.3-3.5-1.7-4-1.9-.6-.2-.9-.3-1.3.3-.4.6-1.5 1.9-1.9 2.3-.3.4-.7.4-1.3.1-.6-.3-2.5-.9-4.7-2.9-1.7-1.6-2.9-3.5-3.3-4.1-.3-.6 0-.9.3-1.2.3-.3.6-.7.9-1 .3-.3.4-.6.6-1 .2-.4.1-.7 0-1-.1-.3-1.3-3.2-1.8-4.4-.5-1.1-1-1-1.3-1h-1.1c-.4 0-1 .1-1.6.7-.5.6-2 2-2 4.8 0 2.9 2.1 5.7 2.4 6.1.3.4 4.1 6.3 10 8.8 1.4.6 2.5 1 3.4 1.2 1.4.4 2.7.4 3.7.2 1.1-.2 3.5-1.4 4-2.8.5-1.4.5-2.5.3-2.8-.1-.2-.5-.4-1.1-.7z" fill="#fff"/></svg>
 </a>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
@@ -2301,7 +2313,7 @@ function selectPayment(el) {
   el.classList.add('selected');
 }
 
-function submitOrder() {
+async function submitOrder() {
   // Validate required fields
   const fields = [
     {id:'co_prenom', label:'Prénom'},
@@ -2327,14 +2339,89 @@ function submitOrder() {
 
   if (!valid) return;
 
-  // Generate order number
+  const paymentMethod = document.querySelector('.payment-opt.selected')?.dataset.pay || 'cb';
+  const result = applyCartRules();
   const orderNum = '#' + (1000 + Math.floor(Math.random() * 9000));
-  document.getElementById('orderNum').textContent = orderNum;
 
-  // Show success
+  // Build order description for WhatsApp / SumUp
+  const customerName = document.getElementById('co_prenom').value + ' ' + document.getElementById('co_nom').value;
+  const customerPhone = document.getElementById('co_tel').value;
+  const deliveryMode = document.querySelector('.delivery-opt.selected').dataset.mode;
+  const address = isLivraison ? (document.getElementById('co_adresse').value + ', ' + document.getElementById('co_ville').value) : 'À emporter';
+  const special = document.getElementById('co_special')?.value || '';
+
+  const orderDesc = cart.map(item => `${item.name} (${item.price.toFixed(2)}€)${item.details ? ' — '+item.details : ''}`).join('\n');
+
+  // CB / Apple Pay → SumUp Hosted Checkout
+  if (paymentMethod === 'cb' || paymentMethod === 'applepay') {
+    const submitBtn = document.querySelector('.checkout-submit');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Redirection vers le paiement...';
+
+    try {
+      const resp = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          amount: result.total,
+          description: `Commande ${orderNum} — ${customerName} — ${deliveryMode === 'livraison' ? address : 'À emporter'}`,
+          reference: orderNum.replace('#','NPR-'),
+          customer_name: customerName,
+          customer_phone: customerPhone,
+          delivery_address: address
+        })
+      });
+
+      const data = await resp.json();
+
+      if (data.checkout_url) {
+        // Send WhatsApp notification to restaurant before redirect
+        const waMsg = `🆕 COMMANDE ${orderNum} (CB en ligne)%0A` +
+          `👤 ${encodeURIComponent(customerName)} — ${encodeURIComponent(customerPhone)}%0A` +
+          `📍 ${encodeURIComponent(deliveryMode === 'livraison' ? address : 'À EMPORTER')}%0A` +
+          `📝 ${encodeURIComponent(orderDesc)}%0A` +
+          `${special ? '💬 '+encodeURIComponent(special)+'%0A' : ''}` +
+          `💰 TOTAL: ${result.total.toFixed(2)}€ (💳 CB en ligne)%0A` +
+          `⏳ Paiement en cours sur SumUp`;
+
+        // Open WhatsApp notification in background
+        const waLink = document.createElement('a');
+        waLink.href = `https://wa.me/33668562273?text=${waMsg}`;
+        waLink.target = '_blank';
+        waLink.click();
+
+        // Redirect to SumUp payment page
+        setTimeout(() => {
+          window.location.href = data.checkout_url;
+        }, 1000);
+      } else {
+        throw new Error(data.error || 'Erreur lors de la création du paiement');
+      }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '✅ Confirmer ma commande';
+      alert('Erreur de paiement : ' + err.message + '\nVeuillez réessayer ou choisir un autre mode de paiement.');
+    }
+    return;
+  }
+
+  // Espèces / PayPal → WhatsApp flow (existing behavior)
+  const payLabel = paymentMethod === 'especes' ? '💶 Espèces' : '🅿️ PayPal';
+  const waMsg = `🆕 COMMANDE ${orderNum}%0A` +
+    `👤 ${encodeURIComponent(customerName)} — ${encodeURIComponent(customerPhone)}%0A` +
+    `📍 ${encodeURIComponent(deliveryMode === 'livraison' ? address : 'À EMPORTER')}%0A` +
+    `📝 ${encodeURIComponent(orderDesc)}%0A` +
+    `${special ? '💬 '+encodeURIComponent(special)+'%0A' : ''}` +
+    `💰 TOTAL: ${result.total.toFixed(2)}€ (${payLabel})`;
+
+  window.open(`https://wa.me/33668562273?text=${waMsg}`, '_blank');
+
+  document.getElementById('orderNum').textContent = orderNum;
   document.getElementById('checkoutForm').style.display = 'none';
   document.getElementById('checkoutSuccess').style.display = '';
   parseEmojis(document.getElementById('checkoutSuccess'));
+  cart = [];
+  updateCartUI();
 }
 
 // Tab switching + scroll to products
