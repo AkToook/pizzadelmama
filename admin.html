@@ -252,19 +252,32 @@ cursor:pointer;border:none;transition:all .2s;
 .page-title{font-size:1.6rem;font-weight:800;margin-bottom:24px}
 .empty-state{text-align:center;padding:60px;color:var(--dim)}
 
-/* PRINT */
+/* PRINT — optimisé pour imprimante thermique 80mm */
 @media print{
-body{background:#fff!important;color:#000!important;display:block!important}
-.sidebar,.login-screen,.no-print{display:none!important}
-.main{margin-left:0!important;padding:0!important}
-.page{display:none!important}
-#printReceipt{display:block!important;width:80mm;font-family:'Courier New',monospace;font-size:12px;padding:8px}
-#printReceipt h2{text-align:center;font-size:16px;margin-bottom:4px}
-#printReceipt .divider{border-top:1px dashed #000;margin:8px 0}
+@page{size:80mm auto;margin:0}
+*{margin:0;padding:0}
+body{background:#fff!important;color:#000!important;display:block!important;width:80mm;font-family:'Courier New',monospace}
+.sidebar,.login-screen,.no-print,.main{display:none!important}
+#printReceipt{
+display:block!important;width:80mm;padding:4mm 2mm;
+font-family:'Courier New',monospace;font-size:14px;font-weight:bold;
+line-height:1.4;color:#000;
+}
+#printReceipt h2{text-align:center;font-size:22px;font-weight:900;margin-bottom:4px;letter-spacing:1px}
+#printReceipt .shop-info{text-align:center;font-size:12px;font-weight:normal;margin-bottom:6px}
+#printReceipt .divider{border:none;border-top:2px dashed #000;margin:6px 0}
+#printReceipt .order-info{font-size:16px;font-weight:900;margin-bottom:2px}
+#printReceipt .delivery-mode{font-size:15px;font-weight:900;text-transform:uppercase;margin-bottom:4px}
+#printReceipt .client-info{font-size:14px;font-weight:bold;margin-bottom:2px}
+#printReceipt .address-info{font-size:13px;font-weight:bold;margin-bottom:4px}
 #printReceipt table{width:100%;border-collapse:collapse}
-#printReceipt td{padding:2px 0;font-size:11px}
-#printReceipt .total-line{font-weight:bold;font-size:14px;border-top:2px solid #000;padding-top:4px}
-#printReceipt .receipt-footer{text-align:center;font-size:10px;margin-top:8px}
+#printReceipt td{padding:3px 0;font-size:14px;font-weight:bold;vertical-align:top}
+#printReceipt td.item-price{text-align:right;white-space:nowrap}
+#printReceipt td small{font-size:11px;font-weight:normal}
+#printReceipt .total-line{font-size:20px;font-weight:900;text-align:center;border-top:3px solid #000;padding-top:6px;margin-top:4px}
+#printReceipt .pay-line{font-size:14px;font-weight:bold;text-align:center;margin-top:2px}
+#printReceipt .note-line{font-size:13px;font-weight:bold;margin-top:4px}
+#printReceipt .receipt-footer{text-align:center;font-size:12px;font-weight:normal;margin-top:8px}
 }
 #printReceipt{display:none}
 
@@ -576,20 +589,20 @@ function autoPrint(order){
 
   receipt.innerHTML = `
     <h2>NEW PIZZA REIMS</h2>
-    <p style="text-align:center;font-size:10px">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
+    <p class="shop-info">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
     <div class="divider"></div>
-    <p><strong>${order.orderNum || '---'}</strong> - ${time}</p>
-    <p>${order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER'}</p>
-    <p><strong>${order.customerName || ''}</strong><br>${order.customerPhone || ''}</p>
-    ${order.deliveryMode === 'livraison' && order.address ? '<p>Adresse: '+order.address+'</p>' : ''}
+    <p class="order-info">${order.orderNum || '---'} - ${time}</p>
+    <p class="delivery-mode">${order.deliveryMode === 'livraison' ? '🛵 LIVRAISON' : '🏠 A EMPORTER'}</p>
+    <p class="client-info">${order.customerName || ''}<br>${order.customerPhone || ''}</p>
+    ${order.deliveryMode === 'livraison' && order.address ? '<p class="address-info">📍 '+order.address+'</p>' : ''}
     <div class="divider"></div>
     <table>
-      ${(order.items||[]).map(item => '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td style="text-align:right;white-space:nowrap">'+item.price.toFixed(2)+' EUR</td></tr>').join('')}
+      ${(order.items||[]).map(item => '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td class="item-price">'+item.price.toFixed(2)+' EUR</td></tr>').join('')}
     </table>
     <div class="divider"></div>
     <p class="total-line">TOTAL: ${(order.total||0).toFixed(2)} EUR</p>
-    <p>Paiement: ${payLabel}</p>
-    ${order.special ? '<div class="divider"></div><p>Note: '+order.special+'</p>' : ''}
+    <p class="pay-line">Paiement: ${payLabel}</p>
+    ${order.special ? '<div class="divider"></div><p class="note-line">📝 '+order.special+'</p>' : ''}
     <div class="divider"></div>
     <p class="receipt-footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</p>
   `;
