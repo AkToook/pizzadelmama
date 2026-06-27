@@ -167,11 +167,13 @@ background:
   var(--dark);
 
 }
-.hero-bg::after{
-content:'';position:absolute;inset:0;
-background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1920&q=80') center/cover;
-opacity:.35;
+.hero-bg::after{content:none}
+.hero-slide{
+position:absolute;inset:0;
+background-size:cover;background-position:center;
+opacity:0;transition:opacity 1.5s ease;
 }
+.hero-slide.active{opacity:.35}
 .hero-content{
 position:relative;z-index:2;
 max-width:1200px;margin:0 auto;width:100%;
@@ -196,11 +198,15 @@ margin:0 auto 36px;
 .hero-badges{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:36px;justify-content:center}
 .badge{
 background:var(--dark-card);border:1px solid var(--dark-border);
-padding:10px 18px;border-radius:12px;
-display:flex;align-items:center;gap:8px;
-font-size:.85rem;font-weight:600;
+padding:14px 24px;border-radius:14px;
+display:flex;align-items:center;gap:10px;
+font-size:1rem;font-weight:700;
 }
-.badge .num{color:var(--gold);font-family:var(--font-display);font-size:1.3rem}
+.badge .num{color:var(--gold);font-family:var(--font-display);font-size:1.8rem}
+.badge-hygiene{background:#1a2766;border-color:#2a3d7a;gap:6px}
+.badge-hygiene .smileys{display:flex;gap:4px;font-size:1.1rem}
+.badge-hygiene .smiley-active{background:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.badge-hygiene .smiley-dim{opacity:.4}
 .hero-actions{display:flex;gap:16px;flex-wrap:wrap}
 .btn-primary{
 background:var(--red);color:#fff;
@@ -895,13 +901,19 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 
 <!-- HERO -->
 <section class="hero" id="accueil">
-<div class="hero-bg"></div>
+<div class="hero-bg">
+<div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1920&q=80')"></div>
+<div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=1920&q=80')"></div>
+<div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1920&q=80')"></div>
+<div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1920&q=80')"></div>
+</div>
 <div class="hero-content">
 <div class="hero-text">
 <img src="img/logo.svg" alt="New Pizza Reims" style="height:120px;width:auto;margin:0 auto 20px;display:block;filter:drop-shadow(0 4px 20px rgba(192,57,43,.4))">
 <div class="hero-badges">
 <div class="badge"><span class="num">4.7</span> ★ sur Google</div>
 <div class="badge"><span class="num">286+</span> avis</div>
+<div class="badge badge-hygiene"><div class="smileys"><span class="smiley-dim">😕</span><span class="smiley-dim">😐</span><span class="smiley-dim">🙂</span><span class="smiley-active">😊</span></div>Très satisfaisant</div>
 </div>
 <h1>LA PIZZA QUI <span>ENFLAMME</span> REIMS</h1>
 <p>30 ans d'artisanat. Zéro compromis. Une pâte pétrie à la main, des produits frais, et le savoir-faire de trois décennies. Le meilleur de Reims livré, fumant, jusqu'à votre porte. Goûtez la différence dès ce soir.</p>
@@ -1122,7 +1134,7 @@ Commander
 </div>
 <div style="font-weight:800;font-size:1rem;color:#fff;text-transform:uppercase;letter-spacing:.05em">Très satisfaisant</div>
 </div>
-<p style="color:var(--white-dim);font-size:.75rem;margin-top:10px">Contrôle officiel des services d'hygiène</p>
+<p style="color:var(--white-dim);font-size:.75rem;margin-top:10px">Contrôle officiel des services d'hygiène<br><span style="color:var(--gold);font-weight:700">Validé le 1 février 2026</span></p>
 </div>
 </div>
 </section>
@@ -1468,7 +1480,7 @@ font-size:1.4rem;cursor:pointer;color:#fff;
 
 <!-- WHATSAPP FLOAT -->
 <a href="https://wa.me/33668562273" target="_blank" class="wa-float" aria-label="Contacter via WhatsApp">
-<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 4C12.954 4 4 12.954 4 24c0 3.53.922 6.84 2.533 9.713L4 44l10.572-2.472A19.92 19.92 0 0024 44c11.046 0 20-8.954 20-20S35.046 4 24 4z" fill="#25D366"/><path d="M34.6 29.2c-.6-.3-3.5-1.7-4-1.9-.6-.2-.9-.3-1.3.3-.4.6-1.5 1.9-1.9 2.3-.3.4-.7.4-1.3.1-.6-.3-2.5-.9-4.7-2.9-1.7-1.6-2.9-3.5-3.3-4.1-.3-.6 0-.9.3-1.2.3-.3.6-.7.9-1 .3-.3.4-.6.6-1 .2-.4.1-.7 0-1-.1-.3-1.3-3.2-1.8-4.4-.5-1.1-1-1-1.3-1h-1.1c-.4 0-1 .1-1.6.7-.5.6-2 2-2 4.8 0 2.9 2.1 5.7 2.4 6.1.3.4 4.1 6.3 10 8.8 1.4.6 2.5 1 3.4 1.2 1.4.4 2.7.4 3.7.2 1.1-.2 3.5-1.4 4-2.8.5-1.4.5-2.5.3-2.8-.1-.2-.5-.4-1.1-.7z" fill="#fff"/></svg>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#fff"/><path d="M12 2C6.478 2 2 6.478 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.522 0 10-4.478 10-10S17.522 2 12 2z" fill="none"/></svg>
 </a>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
@@ -2456,6 +2468,18 @@ parseEmojis();
 // Re-parse after menu tab switch
 const origRender = renderMenu;
 renderMenu = function(cat){ origRender(cat); parseEmojis(document.getElementById('menuGrid')); };
+
+// Hero slideshow
+(function(){
+const slides=document.querySelectorAll('.hero-slide');
+if(slides.length<2)return;
+let cur=0;
+setInterval(()=>{
+slides[cur].classList.remove('active');
+cur=(cur+1)%slides.length;
+slides[cur].classList.add('active');
+},4000);
+})();
 </script>
 
 </body>
