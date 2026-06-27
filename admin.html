@@ -581,34 +581,62 @@ function onStatusUpdate(order){
 
 // ===== AUTO PRINT (window.print — mode kiosk = 100% auto) =====
 function autoPrint(order){
-  const receipt = document.getElementById('printReceipt');
   const time = order.createdAt && order.createdAt.toDate
     ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
     : '--:--';
   const payLabel = order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE';
 
-  receipt.innerHTML = `
-    <h2>NEW PIZZA REIMS</h2>
-    <p class="shop-info">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
-    <div class="divider"></div>
-    <p class="order-info">${order.orderNum || '---'} - ${time}</p>
-    <p class="delivery-mode">${order.deliveryMode === 'livraison' ? '🛵 LIVRAISON' : '🏠 A EMPORTER'}</p>
-    <p class="client-info">${order.customerName || ''}<br>${order.customerPhone || ''}</p>
-    ${order.deliveryMode === 'livraison' && order.address ? '<p class="address-info">📍 '+order.address+'</p>' : ''}
-    <div class="divider"></div>
-    <table>
-      ${(order.items||[]).map(item => '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td class="item-price">'+item.price.toFixed(2)+' EUR</td></tr>').join('')}
-    </table>
-    <div class="divider"></div>
-    <p class="total-line">TOTAL: ${(order.total||0).toFixed(2)} EUR</p>
-    <p class="pay-line">Paiement: ${payLabel}</p>
-    ${order.special ? '<div class="divider"></div><p class="note-line">📝 '+order.special+'</p>' : ''}
-    <div class="divider"></div>
-    <p class="receipt-footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</p>
-  `;
+  const ticketHTML = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+@page{size:80mm auto;margin:0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:80mm;padding:4mm 3mm;font-family:'Courier New',Courier,monospace;font-size:14pt;font-weight:bold;color:#000;line-height:1.4}
+h2{text-align:center;font-size:20pt;font-weight:900;margin-bottom:2mm;letter-spacing:1px}
+.shop-info{text-align:center;font-size:10pt;font-weight:normal;margin-bottom:3mm}
+.divider{border-top:2px dashed #000;margin:3mm 0}
+.order-num{font-size:14pt;font-weight:900}
+.mode{font-size:13pt;font-weight:900;text-transform:uppercase;margin:1mm 0}
+.client{font-size:12pt;font-weight:bold}
+.address{font-size:11pt;font-weight:bold;margin-bottom:1mm}
+table{width:100%;border-collapse:collapse}
+td{padding:1mm 0;font-size:12pt;font-weight:bold;vertical-align:top}
+td.price{text-align:right;white-space:nowrap}
+td small{font-size:9pt;font-weight:normal}
+.total{font-size:18pt;font-weight:900;text-align:center;border-top:3px solid #000;padding-top:2mm;margin-top:2mm}
+.payment{font-size:12pt;font-weight:bold;text-align:center;margin-top:1mm}
+.note{font-size:11pt;font-weight:bold;margin-top:2mm}
+.footer{text-align:center;font-size:10pt;font-weight:normal;margin-top:4mm}
+</style></head><body>
+<h2>NEW PIZZA REIMS</h2>
+<p class="shop-info">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
+<div class="divider"></div>
+<p class="order-num">${order.orderNum || '---'} - ${time}</p>
+<p class="mode">${order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER'}</p>
+<p class="client">${order.customerName || ''}<br>${order.customerPhone || ''}</p>
+${order.deliveryMode === 'livraison' && order.address ? '<p class="address">Adresse: '+order.address+'</p>' : ''}
+<div class="divider"></div>
+<table>
+${(order.items||[]).map(item => '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td class="price">'+item.price.toFixed(2)+' EUR</td></tr>').join('')}
+</table>
+<div class="divider"></div>
+<p class="total">TOTAL: ${(order.total||0).toFixed(2)} EUR</p>
+<p class="payment">Paiement: ${payLabel}</p>
+${order.special ? '<div class="divider"></div><p class="note">Note: '+order.special+'</p>' : ''}
+<div class="divider"></div>
+<p class="footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</p>
+</body></html>`;
 
   db.collection('orders').doc(order.id).update({ printed: true });
-  setTimeout(() => window.print(), 500);
+
+  // Ouvrir fenetre temporaire avec UNIQUEMENT le ticket → imprimer → fermer
+  const printWin = window.open('', 'ticket', 'width=302,height=600');
+  printWin.document.write(ticketHTML);
+  printWin.document.close();
+  setTimeout(() => {
+    printWin.print();
+    setTimeout(() => printWin.close(), 1000);
+  }, 400);
 }
 
 // ===== RENDER ORDERS PAGE =====
