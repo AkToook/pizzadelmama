@@ -281,6 +281,37 @@ line-height:1.4;color:#000;
 }
 #printReceipt{display:none}
 
+/* WELCOME SCREEN */
+.welcome-screen{
+position:fixed;inset:0;z-index:150;background:var(--bg);
+display:flex;align-items:center;justify-content:center;
+}
+.welcome-screen.hidden{display:none}
+.welcome-screen::before{content:'';position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(192,57,43,.08) 0%,transparent 70%);pointer-events:none}
+.welcome-inner{text-align:center;max-width:520px;width:100%;padding:24px;position:relative;z-index:1}
+.w-logo{font-size:1rem;letter-spacing:3px;color:var(--dim);margin-bottom:12px;text-transform:uppercase}
+.w-greet{font-size:2rem;font-weight:800;margin-bottom:4px}
+.w-clock{font-size:4rem;font-weight:800;color:var(--green);line-height:1;margin-bottom:2px}
+.w-date{color:var(--dim);font-size:.9rem;margin-bottom:28px}
+.w-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.25);border-radius:30px;padding:10px 24px;font-weight:700;font-size:.85rem;color:var(--green);margin-bottom:36px}
+.w-pill .wdot{width:10px;height:10px;border-radius:50%;background:var(--green);animation:wdot-pulse 2s infinite}
+@keyframes wdot-pulse{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.4)}50%{box-shadow:0 0 8px 4px rgba(39,174,96,.15)}}
+.w-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.w-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:32px 20px;cursor:pointer;transition:all .25s;text-align:center}
+.w-card:hover{transform:translateY(-2px)}
+.w-card-start{border-color:var(--green);box-shadow:0 0 20px rgba(39,174,96,.25)}
+.w-card-start:hover{box-shadow:0 0 30px rgba(39,174,96,.25);border-color:#2ecc71}
+.w-card-quick:hover{border-color:var(--gold)}
+.w-card-icon{font-size:2.5rem;margin-bottom:12px}
+.w-card-title{font-weight:800;font-size:1.1rem;margin-bottom:6px}
+.w-card-desc{color:var(--dim);font-size:.78rem;line-height:1.4}
+.w-checks{display:flex;flex-direction:column;gap:8px}
+.w-check{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:.82rem}
+.w-check .cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cdot-ok{background:var(--green)}
+.cdot-warn{background:var(--red-bright)}
+.cdot-loading{background:var(--orange);animation:blink .8s infinite}
+
 @media(max-width:768px){
 .sidebar{display:none}
 .main{margin-left:0}
@@ -298,6 +329,33 @@ line-height:1.4;color:#000;
 <input type="password" id="loginPass" placeholder="Mot de passe" value="">
 <button onclick="doLogin()">Se connecter</button>
 <div class="login-error" id="loginError">Identifiants incorrects</div>
+</div>
+</div>
+
+<!-- WELCOME SCREEN (after login, before dashboard) -->
+<div class="welcome-screen hidden" id="welcomeScreen">
+<div class="welcome-inner">
+  <div class="w-logo">New Pizza Reims — Admin</div>
+  <div class="w-greet">Bonjour 👋</div>
+  <div class="w-clock" id="wClock">--:--</div>
+  <div class="w-date" id="wDate">--</div>
+  <div class="w-pill"><span class="wdot"></span>Restaurant ouvert — Commandes actives</div>
+  <div class="w-cards">
+    <div class="w-card w-card-start" onclick="startDay()">
+      <div class="w-card-icon">🟢</div>
+      <div class="w-card-title">Démarrer<br>la journée</div>
+      <div class="w-card-desc">Active les commandes<br>+ Son activé</div>
+    </div>
+    <div class="w-card w-card-quick" onclick="quickPass()">
+      <div class="w-card-icon">⚡</div>
+      <div class="w-card-title">Juste de<br>passage</div>
+      <div class="w-card-desc">Consulter sans changer<br>le statut</div>
+    </div>
+  </div>
+  <div class="w-checks">
+    <div class="w-check"><span class="cdot cdot-loading" id="wQzDot"></span><span id="wQzText">Vérification QZ Tray...</span></div>
+    <div class="w-check"><span class="cdot cdot-loading" id="wFbDot"></span><span id="wFbText">Vérification Firebase...</span></div>
+  </div>
 </div>
 </div>
 
@@ -431,6 +489,9 @@ line-height:1.4;color:#000;
 </div>
 </div>
 
+<!-- QZ TRAY -->
+<script src="https://cdn.jsdelivr.net/npm/qz-tray@2/qz-tray.js"></script>
+
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -457,17 +518,120 @@ function doLogin(){
   if(u === ADMIN_USER && p === ADMIN_PASS){
     sessionStorage.setItem('admin','1');
     document.getElementById('loginScreen').classList.add('hidden');
-    initFirebaseListener(); // Start listening after login
+    showWelcome();
   } else {
     document.getElementById('loginError').style.display='block';
   }
 }
 function doLogout(){
   sessionStorage.removeItem('admin');
+  sessionStorage.removeItem('dayStarted');
   document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('welcomeScreen').classList.add('hidden');
 }
+
+// Show welcome screen after login
+function showWelcome(){
+  // If day already started this session, skip welcome
+  if(sessionStorage.getItem('dayStarted')==='1'){
+    initFirebaseListener();
+    initQZ();
+    return;
+  }
+  document.getElementById('welcomeScreen').classList.remove('hidden');
+  startWelcomeClock();
+  checkWelcomeStatus();
+}
+
+// Welcome clock
+function startWelcomeClock(){
+  function tick(){
+    var now = new Date();
+    document.getElementById('wClock').textContent = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('wDate').textContent = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// Check QZ + Firebase on welcome
+function checkWelcomeStatus(){
+  // Firebase check
+  db.collection('orders').limit(1).get().then(function(){
+    document.getElementById('wFbDot').className='cdot cdot-ok';
+    document.getElementById('wFbText').textContent='Firebase connecté';
+  }).catch(function(){
+    document.getElementById('wFbDot').className='cdot cdot-warn';
+    document.getElementById('wFbText').textContent='Firebase — erreur';
+  });
+  // QZ check
+  setTimeout(function(){
+    if(typeof qz !== 'undefined'){
+      qz.websocket.connect().then(function(){
+        return qz.printers.find();
+      }).then(function(printers){
+        document.getElementById('wQzDot').className='cdot cdot-ok';
+        document.getElementById('wQzText').textContent='Imprimante: ' + (printers[0] || 'aucune');
+      }).catch(function(){
+        document.getElementById('wQzDot').className='cdot cdot-warn';
+        document.getElementById('wQzText').textContent='QZ Tray — non connecté';
+      });
+    } else {
+      document.getElementById('wQzDot').className='cdot cdot-warn';
+      document.getElementById('wQzText').textContent='QZ Tray — non installé (qz.io)';
+    }
+  }, 1000);
+}
+
+// "Démarrer la journée" — unlock audio + start
+function startDay(){
+  var ctx = new (window.AudioContext || window.webkitAudioContext)();
+  ctx.resume();
+  sessionStorage.setItem('dayStarted','1');
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  initFirebaseListener();
+  initQZ();
+}
+
+// "Juste de passage"
+function quickPass(){
+  var ctx = new (window.AudioContext || window.webkitAudioContext)();
+  ctx.resume();
+  sessionStorage.setItem('dayStarted','1');
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  initFirebaseListener();
+  initQZ();
+}
+
+// QZ Tray connection
+var printerName = null;
+function initQZ(){
+  setTimeout(function(){
+    if(typeof qz === 'undefined' || !qz) return updatePrinterUI(false, 'QZ non installé');
+    if(qz.websocket.isActive()){
+      qz.printers.find().then(function(p){ printerName = p[0]; updatePrinterUI(true, printerName); });
+      return;
+    }
+    qz.websocket.connect().then(function(){
+      return qz.printers.find();
+    }).then(function(printers){
+      printerName = printers[0] || null;
+      updatePrinterUI(!!printerName, printerName || 'Aucune imprimante');
+    }).catch(function(e){
+      updatePrinterUI(false, 'QZ non connecté');
+      setTimeout(initQZ, 10000); // retry
+    });
+  }, 500);
+}
+function updatePrinterUI(ok, text){
+  var el = document.getElementById('printerStatus');
+  el.className = 'printer-indicator ' + (ok ? 'ok' : 'warn');
+  el.textContent = (ok ? '🟢 ' : '🔴 ') + text;
+}
+
 if(sessionStorage.getItem('admin')==='1'){
   document.getElementById('loginScreen').classList.add('hidden');
+  showWelcome();
 }
 
 // ===== PAGE SWITCH =====
@@ -524,18 +688,7 @@ function toggleSound(){
   document.getElementById('soundBtn').textContent = soundEnabled ? '🔔 Son ON' : '🔕 Son OFF';
 }
 
-// ===== PRINTER CHECK =====
-function checkPrinter(){
-  const el = document.getElementById('printerStatus');
-  if(window.print){
-    el.className = 'printer-indicator ok';
-    el.textContent = '🟢 Imprimante prete';
-  } else {
-    el.className = 'printer-indicator warn';
-    el.textContent = '🔴 Impression indisponible';
-  }
-}
-window.addEventListener('load', checkPrinter);
+// ===== PRINTER CHECK (handled by initQZ) =====
 
 // ===== FIREBASE REAL-TIME ORDERS =====
 const printedOrders = new Set();
@@ -590,65 +743,119 @@ function onStatusUpdate(order){
   }
 }
 
-// ===== AUTO PRINT (window.print — mode kiosk = 100% auto) =====
+// ===== AUTO PRINT — QZ TRAY ESC/POS =====
 function autoPrint(order){
-  const time = order.createdAt && order.createdAt.toDate
+  // Si QZ Tray disponible → impression ESC/POS directe
+  if(printerName && typeof qz !== 'undefined' && qz.websocket.isActive()){
+    var cfg = qz.configs.create(printerName);
+    var data = [{ type:'raw', format:'command', data: buildTicket(order) }];
+    qz.print(cfg, data).then(function(){
+      console.log('Ticket imprimé:', order.orderNum || order.id);
+      db.collection('orders').doc(order.id).update({ printed: true });
+    }).catch(function(err){
+      console.error('Erreur impression QZ:', err);
+      // Fallback: iframe print
+      fallbackPrint(order);
+    });
+  } else {
+    // Fallback: iframe print (avec --kiosk-printing = auto)
+    fallbackPrint(order);
+  }
+}
+
+function buildTicket(order){
+  var ESC = '\x1B', GS = '\x1D';
+  var t = ESC + '@';           // reset
+  t += ESC + 'E\x01';         // bold ON
+  t += ESC + 'G\x01';         // double strike
+  t += ESC + 'a\x01';         // center
+  t += ESC + '!\x30';         // big
+  t += 'NEW PIZZA REIMS\n';
+  t += ESC + '!\x00';         // normal
+  t += '41 rue du Mont d\'Arene\n';
+  t += 'Tel: 03 26 04 30 51\n';
+  t += '================================\n';
+  t += ESC + 'a\x00';         // left
+
+  var num = order.orderNum || '---';
+  var time = '--:--';
+  if(order.createdAt && order.createdAt.toDate){
+    time = order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  t += ESC + '!\x30';         // big
+  t += 'N. ' + num + '\n';
+  t += ESC + '!\x00';         // normal
+  t += 'Heure: ' + time + '\n';
+  t += '================================\n';
+  t += 'Mode  : ' + (order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER') + '\n';
+  t += 'Client: ' + (order.customerName || 'Client') + '\n';
+  t += 'Tel   : ' + (order.customerPhone || '') + '\n';
+  if(order.deliveryMode === 'livraison' && order.address){
+    t += 'Adresse: ' + order.address + '\n';
+  }
+  t += '================================\n';
+
+  (order.items||[]).forEach(function(item){
+    t += item.name + '  ' + parseFloat(item.price||0).toFixed(2) + 'EUR\n';
+    if(item.details) t += '  > ' + item.details + '\n';
+  });
+
+  t += '================================\n';
+  t += ESC + 'a\x01';         // center
+  t += ESC + '!\x30';         // big
+  t += 'TOTAL: ' + parseFloat(order.total||0).toFixed(2) + ' EUR\n';
+  t += ESC + '!\x00';         // normal
+  t += 'Paiement: ' + (order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE') + '\n';
+
+  if(order.special){
+    t += '================================\n';
+    t += ESC + 'a\x00';
+    t += 'NOTE: ' + order.special + '\n';
+  }
+
+  t += '================================\n';
+  t += ESC + 'a\x01';
+  t += 'Merci de votre commande !\n';
+  t += 'New Pizza Reims - 7j/7\n';
+  t += '\n\n\n\n';
+  t += GS + 'V\x42\x00';     // cut paper
+  return t;
+}
+
+// Fallback pour quand QZ Tray n'est pas dispo
+function fallbackPrint(order){
+  var time = order.createdAt && order.createdAt.toDate
     ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
     : '--:--';
-  const payLabel = order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE';
-
-  const ticketHTML = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8">
-<style>
-@page{size:80mm auto;margin:0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{width:80mm;padding:4mm 3mm;font-family:'Courier New',Courier,monospace;font-size:14pt;font-weight:bold;color:#000;line-height:1.4}
-h2{text-align:center;font-size:20pt;font-weight:900;margin-bottom:2mm;letter-spacing:1px}
-.shop-info{text-align:center;font-size:10pt;font-weight:normal;margin-bottom:3mm}
-.divider{border-top:2px dashed #000;margin:3mm 0}
-.order-num{font-size:14pt;font-weight:900}
-.mode{font-size:13pt;font-weight:900;text-transform:uppercase;margin:1mm 0}
-.client{font-size:12pt;font-weight:bold}
-.address{font-size:11pt;font-weight:bold;margin-bottom:1mm}
-table{width:100%;border-collapse:collapse}
-td{padding:1mm 0;font-size:12pt;font-weight:bold;vertical-align:top}
-td.price{text-align:right;white-space:nowrap}
-td small{font-size:9pt;font-weight:normal}
-.total{font-size:18pt;font-weight:900;text-align:center;border-top:3px solid #000;padding-top:2mm;margin-top:2mm}
-.payment{font-size:12pt;font-weight:bold;text-align:center;margin-top:1mm}
-.note{font-size:11pt;font-weight:bold;margin-top:2mm}
-.footer{text-align:center;font-size:10pt;font-weight:normal;margin-top:4mm}
-</style></head><body>
-<h2>NEW PIZZA REIMS</h2>
-<p class="shop-info">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
-<div class="divider"></div>
-<p class="order-num">${order.orderNum || '---'} - ${time}</p>
-<p class="mode">${order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER'}</p>
-<p class="client">${order.customerName || ''}<br>${order.customerPhone || ''}</p>
-${order.deliveryMode === 'livraison' && order.address ? '<p class="address">Adresse: '+order.address+'</p>' : ''}
-<div class="divider"></div>
-<table>
-${(order.items||[]).map(item => '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td class="price">'+item.price.toFixed(2)+' EUR</td></tr>').join('')}
-</table>
-<div class="divider"></div>
-<p class="total">TOTAL: ${(order.total||0).toFixed(2)} EUR</p>
-<p class="payment">Paiement: ${payLabel}</p>
-${order.special ? '<div class="divider"></div><p class="note">Note: '+order.special+'</p>' : ''}
-<div class="divider"></div>
-<p class="footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</p>
-</body></html>`;
+  var payLabel = order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE';
+  var ticketHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+    '@page{size:80mm auto;margin:0}*{margin:0;padding:0;box-sizing:border-box}' +
+    'body{width:80mm;padding:4mm 3mm;font-family:Courier New,monospace;font-size:14pt;font-weight:bold;color:#000;line-height:1.4}' +
+    'h2{text-align:center;font-size:20pt;font-weight:900;margin-bottom:2mm}.shop-info{text-align:center;font-size:10pt;font-weight:normal;margin-bottom:3mm}' +
+    '.divider{border-top:2px dashed #000;margin:3mm 0}table{width:100%;border-collapse:collapse}td{padding:1mm 0;font-size:12pt;font-weight:bold}' +
+    '.total{font-size:18pt;font-weight:900;text-align:center;border-top:3px solid #000;padding-top:2mm;margin-top:2mm}' +
+    '.footer{text-align:center;font-size:10pt;font-weight:normal;margin-top:4mm}' +
+    '</style></head><body>' +
+    '<h2>NEW PIZZA REIMS</h2><p class="shop-info">41 rue du Mont d\'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>' +
+    '<div class="divider"></div>' +
+    '<p style="font-size:14pt;font-weight:900">' + (order.orderNum||'---') + ' - ' + time + '</p>' +
+    '<p style="font-size:13pt;font-weight:900">' + (order.deliveryMode==='livraison'?'LIVRAISON':'A EMPORTER') + '</p>' +
+    '<p>' + (order.customerName||'') + '<br>' + (order.customerPhone||'') + '</p>' +
+    (order.deliveryMode==='livraison'&&order.address ? '<p>Adresse: '+order.address+'</p>' : '') +
+    '<div class="divider"></div><table>' +
+    (order.items||[]).map(function(item){ return '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td style="text-align:right">'+parseFloat(item.price||0).toFixed(2)+' EUR</td></tr>'; }).join('') +
+    '</table><div class="divider"></div>' +
+    '<p class="total">TOTAL: ' + parseFloat(order.total||0).toFixed(2) + ' EUR</p>' +
+    '<p style="text-align:center">Paiement: ' + payLabel + '</p>' +
+    (order.special ? '<div class="divider"></div><p>Note: '+order.special+'</p>' : '') +
+    '<div class="divider"></div><p class="footer">Merci !<br>New Pizza Reims - 7j/7</p></body></html>';
 
   db.collection('orders').doc(order.id).update({ printed: true });
-
-  // Impression via iframe caché — compatible --kiosk-printing = 100% auto
-  const frame = document.getElementById('printFrame');
-  const doc = frame.contentDocument || frame.contentWindow.document;
-  doc.open();
-  doc.write(ticketHTML);
-  doc.close();
-  setTimeout(() => {
-    frame.contentWindow.print();
-  }, 400);
+  var frame = document.getElementById('printFrame');
+  var fdoc = frame.contentDocument || frame.contentWindow.document;
+  fdoc.open(); fdoc.write(ticketHTML); fdoc.close();
+  setTimeout(function(){ frame.contentWindow.print(); }, 400);
 }
 
 // ===== RENDER ORDERS PAGE =====
@@ -756,11 +963,7 @@ function manualPrint(orderId){
   });
 }
 
-// ===== START LISTENER =====
-// If already logged in, start immediately
-if(sessionStorage.getItem('admin')==='1'){
-  initFirebaseListener();
-}
+// ===== START — handled by showWelcome() above =====
 
 // ===== MENU DATA =====
 const defaultMenu = {
