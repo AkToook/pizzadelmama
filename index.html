@@ -1419,7 +1419,8 @@ WhatsApp
 </div>
 
 <div class="checkout-footer">
-<button class="checkout-submit" onclick="submitOrder()">✅ Confirmer ma commande</button>
+<button class="checkout-submit" onclick="submitOrder()">💶 Payer en espèces</button>
+<button class="checkout-submit" style="background:linear-gradient(135deg,#635bff,#4f46e5);margin-top:10px" onclick="payByCard()">💳 Payer par carte bancaire</button>
 <div class="checkout-legal">En confirmant, vous acceptez nos conditions générales de vente. Vos données sont utilisées uniquement pour traiter votre commande.</div>
 </div>
 </div>
@@ -2363,6 +2364,74 @@ function selectPayment(el) {
   el.classList.add('selected');
 }
 
+async function payByCard() {
+  // Validation des champs
+  const fields = [
+    {id:'co_prenom', label:'Prénom'},
+    {id:'co_nom', label:'Nom'},
+    {id:'co_tel', label:'Téléphone'},
+    {id:'co_email', label:'Email'},
+  ];
+  const isLivraison = document.querySelector('.delivery-opt.selected').dataset.mode === 'livraison';
+  if (isLivraison) {
+    fields.push({id:'co_adresse', label:'Adresse'});
+    fields.push({id:'co_ville', label:'Ville'});
+  }
+
+  let valid = true;
+  fields.forEach(f => {
+    const input = document.getElementById(f.id);
+    if (!input.value.trim()) {
+      input.classList.add('error');
+      valid = false;
+      setTimeout(() => input.classList.remove('error'), 600);
+    }
+  });
+  if (!valid) return;
+
+  const result = applyCartRules();
+  const orderNum = '#' + (1000 + Math.floor(Math.random() * 9000));
+  const customerName = document.getElementById('co_prenom').value + ' ' + document.getElementById('co_nom').value;
+  const customerPhone = document.getElementById('co_tel').value;
+  const deliveryMode = document.querySelector('.delivery-opt.selected').dataset.mode;
+  const address = isLivraison ? (document.getElementById('co_adresse').value + ', ' + document.getElementById('co_ville').value) : '';
+  const special = document.getElementById('co_special')?.value || '';
+
+  // Bouton loading
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Redirection vers Stripe...';
+
+  try {
+    const resp = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        items: cart.map(item => ({ name: item.name, price: item.price, details: item.details || '' })),
+        total: result.total,
+        orderNum,
+        customerName,
+        customerPhone,
+        deliveryMode,
+        address,
+        special
+      })
+    });
+
+    const data = await resp.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Erreur Stripe');
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '💳 Payer par carte bancaire';
+    alert('Erreur de paiement : ' + err.message);
+  }
+}
+
 async function submitOrder() {
   // Validate required fields
   const fields = [
@@ -2401,59 +2470,6 @@ async function submitOrder() {
   const special = document.getElementById('co_special')?.value || '';
 
   const orderDesc = cart.map(item => `${item.name} (${item.price.toFixed(2)}€)${item.details ? ' — '+item.details : ''}`).join('\n');
-
-  // CB / Apple Pay → SumUp Hosted Checkout
-  if (paymentMethod === 'cb' || paymentMethod === 'applepay') {
-    const submitBtn = document.querySelector('.checkout-submit');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '⏳ Redirection vers le paiement...';
-
-    try {
-      const resp = await fetch('/api/create-checkout', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          amount: result.total,
-          description: `Commande ${orderNum} — ${customerName} — ${deliveryMode === 'livraison' ? address : 'À emporter'}`,
-          reference: orderNum.replace('#','NPR-'),
-          customer_name: customerName,
-          customer_phone: customerPhone,
-          delivery_address: address
-        })
-      });
-
-      const data = await resp.json();
-
-      if (data.checkout_url) {
-        // Send WhatsApp notification to restaurant before redirect
-        const waMsg = `🆕 COMMANDE ${orderNum} (CB en ligne)%0A` +
-          `👤 ${encodeURIComponent(customerName)} — ${encodeURIComponent(customerPhone)}%0A` +
-          `📍 ${encodeURIComponent(deliveryMode === 'livraison' ? address : 'À EMPORTER')}%0A` +
-          `📝 ${encodeURIComponent(orderDesc)}%0A` +
-          `${special ? '💬 '+encodeURIComponent(special)+'%0A' : ''}` +
-          `💰 TOTAL: ${result.total.toFixed(2)}€ (💳 CB en ligne)%0A` +
-          `⏳ Paiement en cours sur SumUp`;
-
-        // Open WhatsApp notification in background
-        const waLink = document.createElement('a');
-        waLink.href = `https://wa.me/33668562273?text=${waMsg}`;
-        waLink.target = '_blank';
-        waLink.click();
-
-        // Redirect to SumUp payment page
-        setTimeout(() => {
-          window.location.href = data.checkout_url;
-        }, 1000);
-      } else {
-        throw new Error(data.error || 'Erreur lors de la création du paiement');
-      }
-    } catch (err) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '✅ Confirmer ma commande';
-      alert('Erreur de paiement : ' + err.message + '\nVeuillez réessayer ou choisir un autre mode de paiement.');
-    }
-    return;
-  }
 
   // Espèces → Firestore + WhatsApp
   const orderData = {

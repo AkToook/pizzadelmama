@@ -15,6 +15,8 @@ body{font-family:var(--font-body);color:var(--white);background:var(--dark);min-
 .card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:48px 36px;max-width:480px;width:100%;text-align:center}
 .icon{width:80px;height:80px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2.5rem}
 .icon.error{background:var(--red)}
+.icon.loading{background:var(--gold);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 h1{font-family:var(--font-display);font-size:2rem;margin-bottom:8px}
 .ref{color:var(--gold);font-size:.9rem;font-weight:700;margin-bottom:16px}
 p{color:var(--white-dim);font-size:.9rem;line-height:1.6;margin-bottom:20px}
@@ -26,31 +28,108 @@ p{color:var(--white-dim);font-size:.9rem;line-height:1.6;margin-bottom:20px}
 </head>
 <body>
 <div class="card" id="confirmCard">
-<div class="icon" id="statusIcon">✓</div>
-<h1 id="statusTitle">Paiement reçu !</h1>
+<div class="icon loading" id="statusIcon">⏳</div>
+<h1 id="statusTitle">Vérification du paiement...</h1>
 <div class="ref" id="refDisplay"></div>
-<p id="statusMsg">Votre commande a bien été enregistrée et payée. Notre équipe la prépare dès maintenant. Vous recevrez votre commande dans les 30 à 45 minutes.</p>
-<a href="/" class="btn">Retour au site</a>
-<div class="contact">
+<p id="statusMsg">Un instant, nous vérifions votre paiement auprès de Stripe...</p>
+<div class="contact" style="display:none" id="contactBlock">
 <p style="margin-bottom:8px">Une question sur votre commande ?</p>
 <a href="tel:0326043051">📞 03 26 04 30 51</a> · <a href="https://wa.me/33668562273">💬 WhatsApp</a>
 </div>
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-const params = new URLSearchParams(window.location.search);
-const ref = params.get('ref');
-const status = params.get('status');
+firebase.initializeApp({
+  apiKey: "AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU",
+  authDomain: "pizza-reims.firebaseapp.com",
+  projectId: "pizza-reims",
+  storageBucket: "pizza-reims.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abc123"
+});
+var db = firebase.firestore();
 
-if (ref) {
-  document.getElementById('refDisplay').textContent = 'Réf: ' + ref;
-}
+(async function(){
+  var params = new URLSearchParams(window.location.search);
+  var sessionId = params.get('session_id');
 
-if (status === 'failed' || status === 'error') {
+  if(!sessionId){
+    showError('Aucune session de paiement trouvée.');
+    return;
+  }
+
+  try {
+    // Vérifier le paiement via l'API Vercel
+    var resp = await fetch('/api/verify-payment?session_id=' + encodeURIComponent(sessionId));
+    var data = await resp.json();
+
+    if(!resp.ok || data.error){
+      showError(data.error || 'Erreur de vérification');
+      return;
+    }
+
+    if(data.payment_status !== 'paid'){
+      showError('Le paiement n\'a pas été validé. Statut: ' + data.payment_status);
+      return;
+    }
+
+    // Paiement validé — créer la commande dans Firebase
+    var meta = data.metadata || {};
+    var items = [];
+    try { items = JSON.parse(meta.items || '[]'); } catch(e){}
+
+    var orderData = {
+      orderNum: meta.orderNum || 'CB-' + Date.now().toString(36).toUpperCase(),
+      customerName: meta.customerName || '',
+      customerPhone: meta.customerPhone || '',
+      deliveryMode: meta.deliveryMode || 'emporter',
+      address: meta.address || '',
+      special: meta.special || '',
+      items: items,
+      total: data.amount / 100, // centimes → euros
+      status: 'PAYED_CARD',
+      payment: 'carte',
+      stripeSessionId: sessionId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      printed: false
+    };
+
+    await db.collection('orders').add(orderData);
+
+    // Succès
+    document.getElementById('statusIcon').textContent = '✓';
+    document.getElementById('statusIcon').className = 'icon';
+    document.getElementById('statusTitle').textContent = 'Paiement reçu !';
+    document.getElementById('refDisplay').textContent = 'Commande #' + orderData.orderNum;
+    document.getElementById('statusMsg').innerHTML = 'Votre commande a bien été enregistrée et payée.<br>Notre équipe la prépare dès maintenant.<br><br><a href="/" class="btn">Retour au site</a>';
+    document.getElementById('contactBlock').style.display = '';
+
+    // WhatsApp notification
+    var whatsappMsg = '🍕 NOUVELLE COMMANDE CARTE 💳\n' +
+      'Commande: ' + orderData.orderNum + '\n' +
+      'Client: ' + orderData.customerName + '\n' +
+      'Tel: ' + orderData.customerPhone + '\n' +
+      'Mode: ' + (orderData.deliveryMode === 'livraison' ? 'Livraison' : 'A emporter') + '\n' +
+      (orderData.address ? 'Adresse: ' + orderData.address + '\n' : '') +
+      'Total: ' + orderData.total.toFixed(2) + ' EUR\n' +
+      'Paiement: CARTE ✅';
+    fetch('https://api.whatsapp.com/send?phone=33668562273&text=' + encodeURIComponent(whatsappMsg));
+
+  } catch(err){
+    console.error(err);
+    showError('Erreur: ' + err.message);
+  }
+})();
+
+function showError(msg){
   document.getElementById('statusIcon').textContent = '✕';
-  document.getElementById('statusIcon').classList.add('error');
+  document.getElementById('statusIcon').className = 'icon error';
   document.getElementById('statusTitle').textContent = 'Paiement échoué';
-  document.getElementById('statusMsg').textContent = 'Le paiement n\'a pas pu être traité. Veuillez réessayer ou nous contacter par téléphone pour passer votre commande.';
+  document.getElementById('statusMsg').innerHTML = msg + '<br><br><a href="/" class="btn">Réessayer</a>';
+  document.getElementById('contactBlock').style.display = '';
 }
 </script>
 </body>

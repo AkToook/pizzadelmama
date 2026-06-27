@@ -1,0 +1,7 @@
+{
+  "name": "new-pizza-reims",
+  "private": true,
+  "dependencies": {
+    "stripe": "^14.0.0"
+  }
+}
