@@ -10,7 +10,11 @@
 :root{--red:#c0392b;--dark:#0b1120;--dark-card:#162032;--dark-border:#1e2d45;--gold:#d4a855;--white:#f5f5f5;--green:#27ae60;--orange:#f39c12;--font-display:'Bebas Neue',sans-serif;--font-body:'Manrope',sans-serif}
 body{font-family:var(--font-body);background:var(--dark);color:var(--white);min-height:100vh;padding:24px}
 h1{font-family:var(--font-display);font-size:2.5rem;text-align:center;margin-bottom:8px}
-.subtitle{text-align:center;color:var(--gold);font-size:.9rem;margin-bottom:32px}
+.subtitle{text-align:center;color:var(--gold);font-size:.9rem;margin-bottom:8px}
+.printer-status{text-align:center;font-size:.8rem;margin-bottom:24px;padding:8px 16px;border-radius:8px;display:inline-block;margin-left:auto;margin-right:auto}
+.printer-status.ok{background:rgba(39,174,96,.15);color:#27ae60;border:1px solid rgba(39,174,96,.3)}
+.printer-status.warn{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.3)}
+.printer-wrap{text-align:center;margin-bottom:24px}
 .status-bar{display:flex;justify-content:center;gap:24px;margin-bottom:32px;flex-wrap:wrap}
 .status-badge{padding:10px 20px;border-radius:12px;background:var(--dark-card);border:1px solid var(--dark-border);font-weight:700;font-size:.9rem}
 .status-badge .count{font-family:var(--font-display);font-size:1.6rem;color:var(--gold)}
@@ -42,6 +46,7 @@ h1{font-family:var(--font-display);font-size:2.5rem;text-align:center;margin-bot
 .empty{text-align:center;color:rgba(255,255,255,.4);font-size:1.1rem;padding:80px 24px}
 .connection-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);margin-right:8px;animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.sound-btn{position:fixed;top:16px;right:16px;background:var(--dark-card);border:1px solid var(--dark-border);color:var(--white);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;z-index:99}
 /* Print receipt styling */
 @media print{
 body{background:#fff;color:#000;padding:0}
@@ -63,12 +68,18 @@ body{background:#fff;color:#000;padding:0}
 <h1>🍕 COMMANDES EN DIRECT</h1>
 <p class="subtitle"><span class="connection-dot"></span>Connecté à Firebase — Impression automatique activée</p>
 
+<div class="printer-wrap">
+<div id="printerStatus" class="printer-status warn">🖨️ Vérification imprimante...</div>
+</div>
+
 <div class="status-bar">
 <div class="status-badge">En attente <span class="count" id="countPending">0</span></div>
 <div class="status-badge">Payées <span class="count" id="countPayed">0</span></div>
 <div class="status-badge">Terminées <span class="count" id="countDone">0</span></div>
 <div class="status-badge">Total aujourd'hui <span class="count" id="countTotal">0</span></div>
 </div>
+
+<button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔔 Son ON</button>
 
 <div class="orders-grid" id="ordersGrid">
 <div class="empty">En attente de commandes...</div>
@@ -91,10 +102,52 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 
-// Track which orders we already printed
+// ======== PRINTER CHECK ========
+let printerReady = false;
+function checkPrinter() {
+  const el = document.getElementById('printerStatus');
+  // On mode kiosk (--kiosk-printing), window.print() envoie direct
+  // On détecte si le navigateur supporte l'impression
+  if (window.print) {
+    printerReady = true;
+    el.className = 'printer-status ok';
+    el.innerHTML = '🟢 Imprimante prête — impression automatique active<br><small style="opacity:.7">Lancez Chrome avec --kiosk-printing pour impression sans dialogue</small>';
+  } else {
+    el.className = 'printer-status warn';
+    el.innerHTML = '🔴 Impression non disponible';
+  }
+}
+window.addEventListener('load', checkPrinter);
+
+// ======== NOTIFICATION SONORE ========
+let soundEnabled = true;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playOrderSound() {
+  if (!soundEnabled) return;
+  // Double beep pour nouvelle commande
+  [0, 300].forEach(delay => {
+    setTimeout(() => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = 880;
+      gain.gain.value = 0.3;
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }, delay);
+  });
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundBtn').textContent = soundEnabled ? '🔔 Son ON' : '🔕 Son OFF';
+}
+
+// ======== ORDERS ========
 const printedOrders = new Set();
 
-// Get today's start timestamp
 function todayStart() {
   const d = new Date();
   d.setHours(0,0,0,0);
@@ -110,7 +163,6 @@ db.collection('orders')
     snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
     renderOrders(orders);
 
-    // Handle status updates → auto-print
     snapshot.docChanges().forEach(change => {
       const order = { id: change.doc.id, ...change.doc.data() };
       if (change.type === 'added' || change.type === 'modified') {
@@ -120,9 +172,9 @@ db.collection('orders')
   });
 
 function onStatusUpdate(order) {
-  // RÈGLE D'OR : seul déclencheur d'impression
   if ((order.status === 'PAYED_CASH' || order.status === 'PAYED_CARD') && !printedOrders.has(order.id)) {
     printedOrders.add(order.id);
+    playOrderSound();
     autoPrint(order);
   }
 }
@@ -130,37 +182,31 @@ function onStatusUpdate(order) {
 function autoPrint(order) {
   const receipt = document.getElementById('printReceipt');
   const time = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--';
-  const payLabel = order.status === 'PAYED_CASH' ? 'ESPÈCES' : 'CARTE';
+  const payLabel = order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE';
 
   receipt.innerHTML = `
     <h2>NEW PIZZA REIMS</h2>
-    <p style="text-align:center;font-size:10px">41 rue du Mont d'Arène — 51100 Reims<br>Tél: 03 26 04 30 51</p>
+    <p style="text-align:center;font-size:10px">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
     <div class="divider"></div>
-    <p><strong>${order.orderNum}</strong> — ${time}</p>
-    <p>${order.deliveryMode === 'livraison' ? '🛵 LIVRAISON' : '🏠 À EMPORTER'}</p>
+    <p><strong>${order.orderNum}</strong> - ${time}</p>
+    <p>${order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER'}</p>
     <p><strong>${order.customerName}</strong><br>${order.customerPhone}</p>
-    ${order.deliveryMode === 'livraison' ? `<p>📍 ${order.address}</p>` : ''}
+    ${order.deliveryMode === 'livraison' ? `<p>Adresse: ${order.address}</p>` : ''}
     <div class="divider"></div>
     <table>
-      ${order.items.map(item => `
-        <tr>
-          <td>${item.name}${item.details ? '<br><small>'+item.details+'</small>' : ''}</td>
-          <td style="text-align:right;white-space:nowrap">${item.price.toFixed(2)}€</td>
-        </tr>
-      `).join('')}
+      ${order.items.map(item => `<tr><td>${item.name}${item.details ? '<br><small>'+item.details+'</small>' : ''}</td><td style="text-align:right;white-space:nowrap">${item.price.toFixed(2)} EUR</td></tr>`).join('')}
     </table>
     <div class="divider"></div>
-    <p class="total-line">TOTAL: ${order.total.toFixed(2)}€</p>
+    <p class="total-line">TOTAL: ${order.total.toFixed(2)} EUR</p>
     <p>Paiement: ${payLabel}</p>
-    ${order.special ? `<div class="divider"></div><p>📝 ${order.special}</p>` : ''}
+    ${order.special ? `<div class="divider"></div><p>Note: ${order.special}</p>` : ''}
     <div class="divider"></div>
-    <p class="footer">Merci de votre commande !<br>New Pizza Reims — 7j/7</p>
+    <p class="footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</p>
   `;
 
-  // Mark as printed in Firestore
   db.collection('orders').doc(order.id).update({ printed: true });
 
-  // Auto-print
+  // window.print() — en mode kiosk (--kiosk-printing) = 100% auto, sans dialogue
   setTimeout(() => window.print(), 500);
 }
 
@@ -218,7 +264,7 @@ function markDone(orderId) {
 function manualPrint(orderId) {
   db.collection('orders').doc(orderId).get().then(doc => {
     if (doc.exists) {
-      printedOrders.delete(orderId); // Allow reprint
+      printedOrders.delete(orderId);
       autoPrint({ id: doc.id, ...doc.data() });
     }
   });

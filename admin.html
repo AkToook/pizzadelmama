@@ -11,6 +11,7 @@
 :root{
 --bg:#0a0a0a;--surface:#141414;--card:#1a1a1a;--border:#2a2a2a;
 --red:#c0392b;--red-bright:#e74c3c;--green:#27ae60;--gold:#d4a855;
+--blue:#3498db;--orange:#f39c12;
 --white:#f5f5f5;--dim:#888;
 --font:'Manrope',sans-serif;
 }
@@ -60,6 +61,17 @@ transition:all .2s;cursor:pointer;text-decoration:none;
 .sidebar a.active{border-left:3px solid var(--red)}
 .sidebar .spacer{flex:1}
 .sidebar .logout{color:var(--red-bright)}
+.sidebar .printer-indicator{
+padding:10px 16px;border-radius:10px;font-size:.75rem;
+margin-top:8px;
+}
+.sidebar .printer-indicator.ok{background:rgba(39,174,96,.1);color:var(--green)}
+.sidebar .printer-indicator.warn{background:rgba(231,76,60,.1);color:var(--red-bright)}
+.order-badge{
+background:var(--red);color:#fff;font-size:.7rem;font-weight:800;
+padding:2px 7px;border-radius:10px;margin-left:auto;min-width:20px;text-align:center;
+}
+.order-badge:empty{display:none}
 
 /* MAIN */
 .main{margin-left:260px;flex:1;padding:32px;min-height:100vh}
@@ -101,7 +113,55 @@ background:var(--white);transition:transform .3s;
 .status-label.open{color:var(--green)}
 .status-label.closed{color:var(--red-bright)}
 
-/* ORDERS TABLE */
+/* ORDERS */
+.orders-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.orders-stats{display:flex;gap:16px;flex-wrap:wrap}
+.orders-stat{
+background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:8px 16px;font-size:.8rem;font-weight:600;
+}
+.orders-stat .num{font-size:1.2rem;font-weight:800;margin-right:4px}
+.orders-stat.green .num{color:var(--green)}
+.orders-stat.gold .num{color:var(--gold)}
+.orders-stat.red .num{color:var(--red-bright)}
+.sound-toggle{
+background:var(--card);border:1px solid var(--border);color:var(--white);
+padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;
+}
+.orders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.ocard{
+background:var(--card);border:1px solid var(--border);border-radius:14px;
+padding:20px;transition:border-color .3s;
+}
+.ocard.highlight{border-color:var(--green);animation:pulse 2s ease-in-out 3}
+@keyframes pulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 16px rgba(39,174,96,.25)}}
+.ocard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ocard-num{font-size:1.2rem;font-weight:800;color:var(--gold)}
+.ocard-badge{padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+.ocard-badge.cash{background:var(--green);color:#fff}
+.ocard-badge.card{background:var(--blue);color:#fff}
+.ocard-badge.done{background:rgba(255,255,255,.1);color:var(--dim)}
+.ocard-badge.pending{background:var(--orange);color:#fff}
+.ocard-client{font-weight:700;margin-bottom:2px}
+.ocard-phone{color:var(--gold);font-size:.85rem;margin-bottom:4px}
+.ocard-mode{color:var(--dim);font-size:.85rem;margin-bottom:10px}
+.ocard-items{list-style:none;margin-bottom:10px}
+.ocard-items li{display:flex;justify-content:space-between;padding:3px 0;font-size:.85rem;border-bottom:1px solid var(--border)}
+.ocard-items li:last-child{border:none}
+.ocard-note{background:rgba(212,168,85,.08);border:1px solid rgba(212,168,85,.15);border-radius:8px;padding:6px 10px;font-size:.8rem;color:var(--gold);margin-bottom:10px}
+.ocard-total{font-size:1.2rem;font-weight:800;color:var(--gold);text-align:right;margin-bottom:4px}
+.ocard-time{color:var(--dim);font-size:.75rem;margin-bottom:10px}
+.ocard-actions{display:flex;gap:8px}
+.ocard-actions button{
+padding:7px 14px;border-radius:8px;border:none;cursor:pointer;
+font-weight:700;font-size:.8rem;transition:opacity .2s;
+}
+.ocard-actions button:hover{opacity:.8}
+.btn-mark-done{background:var(--green);color:#fff}
+.btn-reprint{background:var(--border);color:var(--white)}
+.empty-orders{text-align:center;padding:60px;color:var(--dim);font-size:1rem}
+
+/* ORDERS TABLE (dashboard) */
 .orders-table{
 width:100%;border-collapse:collapse;
 background:var(--card);border-radius:16px;overflow:hidden;
@@ -113,13 +173,11 @@ font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;
 }
 .orders-table td{padding:14px 16px;border-top:1px solid var(--border);font-size:.9rem}
 .orders-table tr:hover td{background:rgba(255,255,255,.02)}
-.order-status{
-padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;
-display:inline-block;
-}
-.order-status.pending{background:rgba(212,168,85,.15);color:var(--gold)}
-.order-status.done{background:rgba(39,174,96,.15);color:var(--green)}
-.order-status.cancelled{background:rgba(231,76,60,.15);color:var(--red-bright)}
+.tbl-status{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;display:inline-block}
+.tbl-status.pending{background:rgba(212,168,85,.15);color:var(--gold)}
+.tbl-status.done{background:rgba(39,174,96,.15);color:var(--green)}
+.tbl-status.cash{background:rgba(39,174,96,.15);color:var(--green)}
+.tbl-status.card{background:rgba(52,152,219,.15);color:var(--blue)}
 
 /* MENU EDITOR */
 .editor-header{
@@ -194,6 +252,22 @@ cursor:pointer;border:none;transition:all .2s;
 .page-title{font-size:1.6rem;font-weight:800;margin-bottom:24px}
 .empty-state{text-align:center;padding:60px;color:var(--dim)}
 
+/* PRINT */
+@media print{
+body{background:#fff!important;color:#000!important;display:block!important}
+.sidebar,.login-screen,.no-print{display:none!important}
+.main{margin-left:0!important;padding:0!important}
+.page{display:none!important}
+#printReceipt{display:block!important;width:80mm;font-family:'Courier New',monospace;font-size:12px;padding:8px}
+#printReceipt h2{text-align:center;font-size:16px;margin-bottom:4px}
+#printReceipt .divider{border-top:1px dashed #000;margin:8px 0}
+#printReceipt table{width:100%;border-collapse:collapse}
+#printReceipt td{padding:2px 0;font-size:11px}
+#printReceipt .total-line{font-weight:bold;font-size:14px;border-top:2px solid #000;padding-top:4px}
+#printReceipt .receipt-footer{text-align:center;font-size:10px;margin-top:8px}
+}
+#printReceipt{display:none}
+
 @media(max-width:768px){
 .sidebar{display:none}
 .main{margin-left:0}
@@ -215,18 +289,19 @@ cursor:pointer;border:none;transition:all .2s;
 </div>
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar no-print">
 <h2>🍕 New Pizza Reims</h2>
 <a class="active" data-page="dashboard" onclick="switchPage('dashboard')">📊 Dashboard</a>
+<a data-page="orders" onclick="switchPage('orders')">📋 Commandes <span class="order-badge" id="sidebarBadge"></span></a>
 <a data-page="menu-editor" onclick="switchPage('menu-editor')">🍽️ Gérer le Menu</a>
-<a data-page="orders" onclick="switchPage('orders')">📋 Commandes</a>
 <div class="spacer"></div>
+<div class="printer-indicator warn" id="printerStatus">🖨️ Imprimante: verification...</div>
 <a href="index.html">🌐 Voir le site</a>
-<a class="logout" onclick="doLogout()">🚪 Déconnexion</a>
+<a class="logout" onclick="doLogout()">🚪 Deconnexion</a>
 </aside>
 
 <!-- MAIN -->
-<div class="main">
+<div class="main no-print">
 
 <!-- DASHBOARD PAGE -->
 <div class="page active" id="page-dashboard">
@@ -235,7 +310,7 @@ cursor:pointer;border:none;transition:all .2s;
 <div class="status-section">
 <div>
 <h3>Statut du restaurant</h3>
-<p style="color:var(--dim);font-size:.85rem;margin-top:4px">Ouvrir ou fermer manuellement le restaurant</p>
+<p style="color:var(--dim);font-size:.85rem;margin-top:4px">Ouvrir ou fermer le restaurant</p>
 </div>
 <div style="display:flex;align-items:center">
 <div class="toggle on" id="statusToggle" onclick="toggleStatus()"></div>
@@ -246,63 +321,67 @@ cursor:pointer;border:none;transition:all .2s;
 <div class="dash-cards">
 <div class="dash-card green">
 <div class="label">Commandes aujourd'hui</div>
-<div class="value" id="ordersToday">24</div>
+<div class="value" id="dashTotal">0</div>
 </div>
 <div class="dash-card gold">
-<div class="label">Chiffre d'affaires du jour</div>
-<div class="value" id="caToday">487€</div>
+<div class="label">Chiffre d'affaires</div>
+<div class="value" id="dashCA">0€</div>
 </div>
 <div class="dash-card">
 <div class="label">Panier moyen</div>
-<div class="value" id="avgBasket">20.3€</div>
+<div class="value" id="dashAvg">0€</div>
 </div>
 <div class="dash-card red">
-<div class="label">Commandes en attente</div>
-<div class="value" id="pendingOrders">3</div>
+<div class="label">En attente</div>
+<div class="value" id="dashPending">0</div>
 </div>
 </div>
 
-<h2 style="font-size:1.2rem;margin-bottom:16px">Dernières commandes</h2>
+<h2 style="font-size:1.2rem;margin-bottom:16px">Dernieres commandes</h2>
 <table class="orders-table">
 <thead><tr><th>#</th><th>Client</th><th>Articles</th><th>Total</th><th>Heure</th><th>Statut</th></tr></thead>
-<tbody id="recentOrders">
-<tr><td>#1024</td><td>Ahmed B.</td><td>2x Margherita, 1x Coca</td><td>19.50€</td><td>20:15</td><td><span class="order-status pending">En cours</span></td></tr>
-<tr><td>#1023</td><td>Marie L.</td><td>1x Royale Méga, 1x Tiramisu</td><td>14.50€</td><td>19:48</td><td><span class="order-status pending">En cours</span></td></tr>
-<tr><td>#1022</td><td>Karim D.</td><td>1x Menu 2 pers. Fried Chicken</td><td>19.00€</td><td>19:30</td><td><span class="order-status done">Livré</span></td></tr>
-<tr><td>#1021</td><td>Sophie M.</td><td>1x Tacos 3 viandes, 1x Fanta</td><td>12.50€</td><td>19:12</td><td><span class="order-status done">Livré</span></td></tr>
-<tr><td>#1020</td><td>Lucas R.</td><td>3x Pizza Barbecue</td><td>37.50€</td><td>18:45</td><td><span class="order-status done">Livré</span></td></tr>
+<tbody id="dashRecentOrders">
+<tr><td colspan="6" style="text-align:center;color:var(--dim)">Chargement...</td></tr>
 </tbody>
 </table>
 </div>
 
 <!-- ORDERS PAGE -->
 <div class="page" id="page-orders">
-<h1 class="page-title">Commandes</h1>
-<table class="orders-table">
-<thead><tr><th>#</th><th>Client</th><th>Articles</th><th>Total</th><th>Heure</th><th>Mode paiement</th><th>Statut</th><th>Action</th></tr></thead>
-<tbody id="allOrders">
-<tr><td>#1024</td><td>Ahmed B.</td><td>2x Margherita, 1x Coca</td><td>19.50€</td><td>20:15</td><td>Cash</td><td><span class="order-status pending">En cours</span></td><td><button class="btn-edit" onclick="this.parentElement.previousElementSibling.innerHTML='<span class=\'order-status done\'>Livré</span>'">✓ Terminer</button></td></tr>
-<tr><td>#1023</td><td>Marie L.</td><td>1x Royale Méga, 1x Tiramisu</td><td>14.50€</td><td>19:48</td><td>Carte (Stripe)</td><td><span class="order-status pending">En cours</span></td><td><button class="btn-edit" onclick="this.parentElement.previousElementSibling.innerHTML='<span class=\'order-status done\'>Livré</span>'">✓ Terminer</button></td></tr>
-<tr><td>#1022</td><td>Karim D.</td><td>1x Menu 2 pers. Fried Chicken</td><td>19.00€</td><td>19:30</td><td>Cash</td><td><span class="order-status done">Livré</span></td><td>—</td></tr>
-</tbody>
-</table>
+<div class="orders-header">
+<h1 class="page-title" style="margin-bottom:0">Commandes en direct</h1>
+<div style="display:flex;gap:10px;align-items:center">
+<button class="sound-toggle" id="soundBtn" onclick="toggleSound()">🔔 Son ON</button>
+</div>
+</div>
+<div class="orders-stats" style="margin-bottom:20px">
+<div class="orders-stat red">En attente: <span class="num" id="statPending">0</span></div>
+<div class="orders-stat green">Payees: <span class="num" id="statPayed">0</span></div>
+<div class="orders-stat">Terminees: <span class="num" id="statDone">0</span></div>
+<div class="orders-stat gold">Total: <span class="num" id="statTotal">0</span></div>
+</div>
+<div class="orders-grid" id="ordersGrid">
+<div class="empty-orders">Chargement des commandes...</div>
+</div>
 </div>
 
 <!-- MENU EDITOR PAGE -->
 <div class="page" id="page-menu-editor">
 <div class="editor-header">
-<h2>Gérer le Menu</h2>
+<h2>Gerer le Menu</h2>
 <div style="display:flex;gap:10px;flex-wrap:wrap">
-<button class="btn-add" onclick="openAddCatModal()" style="background:var(--gold);color:var(--bg)">+ Nouvelle catégorie</button>
+<button class="btn-add" onclick="openAddCatModal()" style="background:var(--gold);color:var(--bg)">+ Nouvelle categorie</button>
 <button class="btn-add" onclick="openAddModal()">+ Ajouter un article</button>
 </div>
 </div>
-
 <div class="editor-tabs" id="editorTabs"></div>
 <div style="margin-top:24px" id="editorGrid"></div>
 </div>
 
 </div>
+
+<!-- HIDDEN PRINT RECEIPT -->
+<div id="printReceipt"></div>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
@@ -327,80 +406,329 @@ cursor:pointer;border:none;transition:all .2s;
 <!-- CATEGORY MODAL -->
 <div class="modal-overlay" id="catModal">
 <div class="modal">
-<h3>Nouvelle catégorie</h3>
-<label>Nom de la catégorie</label>
-<input type="text" id="catName" placeholder="Ex: Pâtes, Salades...">
+<h3>Nouvelle categorie</h3>
+<label>Nom de la categorie</label>
+<input type="text" id="catName" placeholder="Ex: Pates, Salades...">
 <label>Emoji (optionnel)</label>
 <input type="text" id="catEmoji" placeholder="🍝" style="max-width:80px">
 <div class="modal-actions">
 <button class="cancel" onclick="closeCatModal()">Annuler</button>
-<button class="save" onclick="saveCategory()">Créer</button>
+<button class="save" onclick="saveCategory()">Creer</button>
 </div>
 </div>
 </div>
 
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
+// ===== FIREBASE =====
+firebase.initializeApp({
+  apiKey: "AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU",
+  authDomain: "pizza-reims.firebaseapp.com",
+  projectId: "pizza-reims",
+  storageBucket: "pizza-reims.firebasestorage.app",
+  messagingSenderId: "39771057202",
+  appId: "1:39771057202:web:e55aa7ce61d7d39f82a02b"
+});
+const db = firebase.firestore();
+
 // ===== AUTH =====
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'pizza2026';
 
 function doLogin(){
-const u = document.getElementById('loginUser').value;
-const p = document.getElementById('loginPass').value;
-if(u === ADMIN_USER && p === ADMIN_PASS){
-  sessionStorage.setItem('admin','1');
-  document.getElementById('loginScreen').classList.add('hidden');
-} else {
-  document.getElementById('loginError').style.display='block';
-}
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    sessionStorage.setItem('admin','1');
+    document.getElementById('loginScreen').classList.add('hidden');
+    initFirebaseListener(); // Start listening after login
+  } else {
+    document.getElementById('loginError').style.display='block';
+  }
 }
 function doLogout(){
-sessionStorage.removeItem('admin');
-document.getElementById('loginScreen').classList.remove('hidden');
+  sessionStorage.removeItem('admin');
+  document.getElementById('loginScreen').classList.remove('hidden');
 }
-if(sessionStorage.getItem('admin')==='1') document.getElementById('loginScreen').classList.add('hidden');
+if(sessionStorage.getItem('admin')==='1'){
+  document.getElementById('loginScreen').classList.add('hidden');
+}
 
 // ===== PAGE SWITCH =====
 function switchPage(name){
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-document.getElementById('page-'+name).classList.add('active');
-document.querySelectorAll('.sidebar a[data-page]').forEach(a=>{
-  a.classList.toggle('active',a.dataset.page===name);
-});
-if(name==='menu-editor') initEditor();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.sidebar a[data-page]').forEach(a=>{
+    a.classList.toggle('active',a.dataset.page===name);
+  });
+  if(name==='menu-editor') initEditor();
 }
 
 // ===== STATUS TOGGLE =====
 let isOpen = true;
 function toggleStatus(){
-isOpen = !isOpen;
-const t = document.getElementById('statusToggle');
-const l = document.getElementById('statusLabel');
-t.classList.toggle('on',isOpen);
-l.textContent = isOpen ? 'Ouvert' : 'Fermé';
-l.className = 'status-label ' + (isOpen ? 'open' : 'closed');
+  isOpen = !isOpen;
+  const t = document.getElementById('statusToggle');
+  const l = document.getElementById('statusLabel');
+  t.classList.toggle('on',isOpen);
+  l.textContent = isOpen ? 'Ouvert' : 'Ferme';
+  l.className = 'status-label ' + (isOpen ? 'open' : 'closed');
 }
 
-// ===== MENU DATA (shared with frontend) =====
+// ===== SOUND =====
+let soundEnabled = true;
+let audioCtx = null;
+
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playOrderSound(){
+  if(!soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    [0, 300].forEach(delay => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.3;
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      }, delay);
+    });
+  } catch(e){}
+}
+
+function toggleSound(){
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundBtn').textContent = soundEnabled ? '🔔 Son ON' : '🔕 Son OFF';
+}
+
+// ===== PRINTER CHECK =====
+function checkPrinter(){
+  const el = document.getElementById('printerStatus');
+  if(window.print){
+    el.className = 'printer-indicator ok';
+    el.textContent = '🟢 Imprimante prete';
+  } else {
+    el.className = 'printer-indicator warn';
+    el.textContent = '🔴 Impression indisponible';
+  }
+}
+window.addEventListener('load', checkPrinter);
+
+// ===== FIREBASE REAL-TIME ORDERS =====
+const printedOrders = new Set();
+let allOrders = [];
+
+function todayStart(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function initFirebaseListener(){
+  db.collection('orders')
+    .where('createdAt', '>=', todayStart())
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      allOrders = [];
+      snapshot.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
+
+      // Update all views
+      renderOrdersPage(allOrders);
+      updateDashboard(allOrders);
+
+      // Auto-print on status change
+      snapshot.docChanges().forEach(change => {
+        const order = { id: change.doc.id, ...change.doc.data() };
+        if(change.type === 'added' || change.type === 'modified'){
+          onStatusUpdate(order);
+        }
+      });
+    }, err => {
+      console.error('Firestore error:', err);
+    });
+}
+
+function onStatusUpdate(order){
+  if((order.status === 'PAYED_CASH' || order.status === 'PAYED_CARD') && !printedOrders.has(order.id)){
+    printedOrders.add(order.id);
+    playOrderSound();
+    autoPrint(order);
+  }
+}
+
+// ===== AUTO PRINT (window.print — mode kiosk = 100% auto) =====
+function autoPrint(order){
+  const receipt = document.getElementById('printReceipt');
+  const time = order.createdAt && order.createdAt.toDate
+    ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+    : '--:--';
+  const payLabel = order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE';
+
+  receipt.innerHTML = `
+    <h2>NEW PIZZA REIMS</h2>
+    <p style="text-align:center;font-size:10px">41 rue du Mont d'Arene - 51100 Reims<br>Tel: 03 26 04 30 51</p>
+    <div class="divider"></div>
+    <p><strong>${order.orderNum || '---'}</strong> - ${time}</p>
+    <p>${order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER'}</p>
+    <p><strong>${order.customerName || ''}</strong><br>${order.customerPhone || ''}</p>
+    ${order.deliveryMode === 'livraison' && order.address ? '<p>Adresse: '+order.address+'</p>' : ''}
+    <div class="divider"></div>
+    <table>
+      ${(order.items||[]).map(item => '<tr><td>'+item.name+(item.details?'<br><small>'+item.details+'</small>':'')+'</td><td style="text-align:right;white-space:nowrap">'+item.price.toFixed(2)+' EUR</td></tr>').join('')}
+    </table>
+    <div class="divider"></div>
+    <p class="total-line">TOTAL: ${(order.total||0).toFixed(2)} EUR</p>
+    <p>Paiement: ${payLabel}</p>
+    ${order.special ? '<div class="divider"></div><p>Note: '+order.special+'</p>' : ''}
+    <div class="divider"></div>
+    <p class="receipt-footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</p>
+  `;
+
+  db.collection('orders').doc(order.id).update({ printed: true });
+  setTimeout(() => window.print(), 500);
+}
+
+// ===== RENDER ORDERS PAGE =====
+function renderOrdersPage(orders){
+  const grid = document.getElementById('ordersGrid');
+
+  // Update stats
+  const pending = orders.filter(o => o.status === 'PENDING').length;
+  const payed = orders.filter(o => o.status === 'PAYED_CASH' || o.status === 'PAYED_CARD').length;
+  const done = orders.filter(o => o.status === 'DONE').length;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statPayed').textContent = payed;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statTotal').textContent = orders.length;
+
+  // Sidebar badge (pending + payed = active orders)
+  const active = pending + payed;
+  document.getElementById('sidebarBadge').textContent = active > 0 ? active : '';
+
+  if(!orders.length){
+    grid.innerHTML = '<div class="empty-orders">En attente de commandes...</div>';
+    return;
+  }
+
+  grid.innerHTML = orders.map(order => {
+    const time = order.createdAt && order.createdAt.toDate
+      ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+      : '--:--';
+    const badgeClass = order.status === 'PAYED_CASH' ? 'cash' : order.status === 'PAYED_CARD' ? 'card' : order.status === 'DONE' ? 'done' : 'pending';
+    const badgeText = order.status === 'PAYED_CASH' ? '💶 Especes' : order.status === 'PAYED_CARD' ? '💳 Carte' : order.status === 'DONE' ? '✅ Terminee' : '⏳ En attente';
+    const isNew = order.status !== 'DONE' && !order.printed;
+
+    return '<div class="ocard '+(isNew?'highlight':'')+'">' +
+      '<div class="ocard-head">' +
+        '<span class="ocard-num">'+(order.orderNum||'---')+'</span>' +
+        '<span class="ocard-badge '+badgeClass+'">'+badgeText+'</span>' +
+      '</div>' +
+      '<div class="ocard-client">'+(order.customerName||'Client')+'</div>' +
+      '<div class="ocard-phone">'+(order.customerPhone||'')+'</div>' +
+      '<div class="ocard-mode">'+(order.deliveryMode==='livraison'?'🛵 '+order.address:'🏠 A emporter')+'</div>' +
+      '<ul class="ocard-items">' +
+        (order.items||[]).map(item =>
+          '<li><span>'+item.name+(item.details?' <small style="opacity:.5">'+item.details+'</small>':'')+'</span><span>'+item.price.toFixed(2)+'€</span></li>'
+        ).join('') +
+      '</ul>' +
+      (order.special ? '<div class="ocard-note">📝 '+order.special+'</div>' : '') +
+      '<div class="ocard-total">'+(order.total||0).toFixed(2)+'€</div>' +
+      '<div class="ocard-time">🕐 '+time+'</div>' +
+      '<div class="ocard-actions">' +
+        (order.status!=='DONE' ? '<button class="btn-mark-done" onclick="markDone(\''+order.id+'\')">✅ Terminee</button>' : '') +
+        '<button class="btn-reprint" onclick="manualPrint(\''+order.id+'\')">🖨️ Reimprimer</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ===== DASHBOARD UPDATE =====
+function updateDashboard(orders){
+  const total = orders.length;
+  const ca = orders.reduce((s,o) => s + (o.total||0), 0);
+  const avg = total > 0 ? (ca / total) : 0;
+  const pending = orders.filter(o => o.status !== 'DONE').length;
+
+  document.getElementById('dashTotal').textContent = total;
+  document.getElementById('dashCA').textContent = ca.toFixed(2) + '€';
+  document.getElementById('dashAvg').textContent = avg.toFixed(2) + '€';
+  document.getElementById('dashPending').textContent = pending;
+
+  // Recent orders table (last 5)
+  const tbody = document.getElementById('dashRecentOrders');
+  const recent = orders.slice(0, 5);
+  if(!recent.length){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--dim)">Aucune commande aujourd\'hui</td></tr>';
+    return;
+  }
+  tbody.innerHTML = recent.map(order => {
+    const time = order.createdAt && order.createdAt.toDate
+      ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+      : '--:--';
+    const statusClass = order.status === 'DONE' ? 'done' : 'pending';
+    const statusText = order.status === 'DONE' ? 'Terminee' : order.status === 'PAYED_CASH' ? 'Especes' : order.status === 'PAYED_CARD' ? 'Carte' : 'En attente';
+    const itemsList = (order.items||[]).map(i => i.name).join(', ');
+    return '<tr>' +
+      '<td>'+(order.orderNum||'---')+'</td>' +
+      '<td>'+(order.customerName||'Client')+'</td>' +
+      '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+itemsList+'</td>' +
+      '<td>'+(order.total||0).toFixed(2)+'€</td>' +
+      '<td>'+time+'</td>' +
+      '<td><span class="tbl-status '+statusClass+'">'+statusText+'</span></td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ===== ORDER ACTIONS =====
+function markDone(orderId){
+  db.collection('orders').doc(orderId).update({ status: 'DONE' });
+}
+
+function manualPrint(orderId){
+  db.collection('orders').doc(orderId).get().then(doc => {
+    if(doc.exists){
+      printedOrders.delete(orderId);
+      autoPrint({ id: doc.id, ...doc.data() });
+    }
+  });
+}
+
+// ===== START LISTENER =====
+// If already logged in, start immediately
+if(sessionStorage.getItem('admin')==='1'){
+  initFirebaseListener();
+}
+
+// ===== MENU DATA =====
 const defaultMenu = {
 "pizza":[
 {name:"Margherita",desc:"Mozzarella, sauce tomate",price:"8.50",image:""},
-{name:"4 Fromages",desc:"Mozzarella, mélange de 4 fromages",price:"9.50",image:""},
-{name:"Chèvre Miel",desc:"Mozzarella, chèvre, miel, olives",price:"10.00",image:""},
-{name:"Napolitaine",desc:"Mozzarella, anchois, câpres, olives, tomate fraîche",price:"10.00",image:""},
+{name:"4 Fromages",desc:"Mozzarella, melange de 4 fromages",price:"9.50",image:""},
+{name:"Chevre Miel",desc:"Mozzarella, chevre, miel, olives",price:"10.00",image:""},
+{name:"Napolitaine",desc:"Mozzarella, anchois, capres, olives, tomate fraiche",price:"10.00",image:""},
 {name:"Reine",desc:"Mozzarella, jambon, champignons, olives",price:"9.50",image:""},
-{name:"Calzone",desc:"Mozzarella, jambon ou poulet, œuf",price:"10.00",image:""},
-{name:"Thon",desc:"Mozzarella, thon, olives, œuf, oignons",price:"10.50",image:""},
-{name:"Hawaïenne",desc:"Mozzarella, ananas, jambon, poulet, maïs",price:"10.50",image:""},
-{name:"Américaine",desc:"Mozzarella, bœuf haché, poulet, cheddar, oignons",price:"11.00",image:""},
+{name:"Calzone",desc:"Mozzarella, jambon ou poulet, oeuf",price:"10.00",image:""},
+{name:"Thon",desc:"Mozzarella, thon, olives, oeuf, oignons",price:"10.50",image:""},
+{name:"Hawaienne",desc:"Mozzarella, ananas, jambon, poulet, mais",price:"10.50",image:""},
+{name:"Americaine",desc:"Mozzarella, boeuf hache, poulet, cheddar, oignons",price:"11.00",image:""},
 {name:"Kebab",desc:"Mozzarella, viande kebab, salade, tomate, oignons",price:"11.00",image:""},
-{name:"Orientale",desc:"Mozzarella, poulet, merguez, œuf, poivrons, olives",price:"11.00",image:""},
-{name:"Royale",desc:"Mozzarella, bœuf haché, poivrons, olives, merguez",price:"11.00",image:""},
+{name:"Orientale",desc:"Mozzarella, poulet, merguez, oeuf, poivrons, olives",price:"11.00",image:""},
+{name:"Royale",desc:"Mozzarella, boeuf hache, poivrons, olives, merguez",price:"11.00",image:""},
 {name:"Raclette",desc:"Mozzarella, lardons, pommes de terre, raclette fondue",price:"11.50",image:""},
-{name:"Pizza Reims",desc:"Mozzarella, lardons, champignons, crème fraîche",price:"11.00",image:""},
-{name:"Végétarienne",desc:"Mozzarella, champignons, poivrons, aubergines, olives",price:"10.50",image:""},
-{name:"Barbecue",desc:"Mozzarella, bœuf haché, poulet, poivrons, sauce BBQ",price:"12.50",image:""},
-{name:"Cannibale",desc:"Mozzarella, bœuf haché, poulet, chorizo",price:"12.50",image:""},
+{name:"Pizza Reims",desc:"Mozzarella, lardons, champignons, creme fraiche",price:"11.00",image:""},
+{name:"Vegetarienne",desc:"Mozzarella, champignons, poivrons, aubergines, olives",price:"10.50",image:""},
+{name:"Barbecue",desc:"Mozzarella, boeuf hache, poulet, poivrons, sauce BBQ",price:"12.50",image:""},
+{name:"Cannibale",desc:"Mozzarella, boeuf hache, poulet, chorizo",price:"12.50",image:""},
 {name:"Parma",desc:"Mozzarella, jambon de Parme, copeaux de Grana, roquette",price:"13.00",image:""},
 ],
 "fried-chicken":[
@@ -409,15 +737,15 @@ const defaultMenu = {
 {name:"Menu 2 Pers. Tenders x10",desc:"10 tenders + 2 frites + 2 boissons",price:"19.00",image:""},
 ],
 "sandwich":[
-{name:"Tandoori",desc:"Poulet tandoori, crudités, sauce blanche",price:"6.00",image:""},
-{name:"Américain",desc:"Poulet pané, frites, crudités",price:"7.00",image:""},
-{name:"Big Américain",desc:"2 steaks, 2 cheddar, œuf, salade",price:"9.00",image:""},
+{name:"Tandoori",desc:"Poulet tandoori, crudites, sauce blanche",price:"6.00",image:""},
+{name:"Americain",desc:"Poulet pane, frites, crudites",price:"7.00",image:""},
+{name:"Big Americain",desc:"2 steaks, 2 cheddar, oeuf, salade",price:"9.00",image:""},
 {name:"Chicken Cheese Curry",desc:"Poulet curry, cheddar, salade",price:"8.00",image:""},
 ],
 "burger":[
 {name:"Hamburger",desc:"Steak 90g, cheddar, salade, tomate",price:"5.00",image:""},
 {name:"Big Burger",desc:"2 steaks 90g, cheddar",price:"7.00",image:""},
-{name:"Chicken Crispy",desc:"Crispy Chicken, chèvre, salade",price:"7.00",image:""},
+{name:"Chicken Crispy",desc:"Crispy Chicken, chevre, salade",price:"7.00",image:""},
 {name:"Beef Chef",desc:"2 crispy, cheddar, salade",price:"7.50",image:""},
 ],
 "tacos":[
@@ -426,27 +754,27 @@ const defaultMenu = {
 {name:"Tacos 3 Viandes",desc:"Galette, fromage fondu, frites, sauce + 3 viandes",price:"11.00",image:""},
 ],
 "kids":[
-{name:"Menu Kids",desc:"5 pièces + frites + capri-sun",price:"6.00",image:""},
+{name:"Menu Kids",desc:"5 pieces + frites + capri-sun",price:"6.00",image:""},
 ],
 "riz":[
 {name:"Riz Krousty",desc:"Riz blanc, tenders, oignon frit, cheddar",price:"10.00",image:""},
-{name:"Riz Chicken Tandoori",desc:"Riz, poulet tandoori, crudités",price:"12.00",image:""},
-{name:"Riz Chicken Curry",desc:"Riz, poulet curry, légumes",price:"12.00",image:""},
+{name:"Riz Chicken Tandoori",desc:"Riz, poulet tandoori, crudites",price:"12.00",image:""},
+{name:"Riz Chicken Curry",desc:"Riz, poulet curry, legumes",price:"12.00",image:""},
 ],
 "dessert":[
 {name:"Tiramisu",desc:"Tiramisu maison",price:"3.50",image:""},
 {name:"Tarte au Daim",desc:"Tarte chocolat Daim",price:"3.50",image:""},
-{name:"Häagen-Dazs 100ml",desc:"Glace premium",price:"4.00",image:""},
-{name:"Häagen-Dazs 500ml",desc:"Pot familial",price:"8.00",image:""},
+{name:"Haagen-Dazs 100ml",desc:"Glace premium",price:"4.00",image:""},
+{name:"Haagen-Dazs 500ml",desc:"Pot familial",price:"8.00",image:""},
 ],
 "boisson":[
 {name:"Coca-Cola 33cl",desc:"Cannette",price:"1.50",image:""},
-{name:"Coca-Cola Zero 33cl",desc:"Zéro sucre",price:"1.50",image:""},
+{name:"Coca-Cola Zero 33cl",desc:"Zero sucre",price:"1.50",image:""},
 {name:"Fanta Orange 33cl",desc:"Cannette",price:"1.50",image:""},
 {name:"Sprite 33cl",desc:"Cannette",price:"1.50",image:""},
 {name:"Orangina 33cl",desc:"Cannette",price:"1.50",image:""},
 {name:"Coca-Cola 1.5L",desc:"Bouteille",price:"3.00",image:""},
-{name:"Evian 50cl",desc:"Eau minérale",price:"1.50",image:""},
+{name:"Evian 50cl",desc:"Eau minerale",price:"1.50",image:""},
 {name:"Capri-Sun",desc:"Pour enfants",price:"1.00",image:""},
 ]
 };
@@ -458,15 +786,15 @@ const defaultCatLabels = {
 };
 
 function getCatLabels(){
-const stored = localStorage.getItem('npr_catLabels');
-return stored ? JSON.parse(stored) : {...defaultCatLabels};
+  const stored = localStorage.getItem('npr_catLabels');
+  return stored ? JSON.parse(stored) : {...defaultCatLabels};
 }
 function saveCatLabels(labels){ localStorage.setItem('npr_catLabels', JSON.stringify(labels)); }
 let catLabels = getCatLabels();
 
 function getMenu(){
-const stored = localStorage.getItem('npr_menu');
-return stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaultMenu));
+  const stored = localStorage.getItem('npr_menu');
+  return stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaultMenu));
 }
 function saveMenu(menu){ localStorage.setItem('npr_menu', JSON.stringify(menu)); }
 
@@ -474,158 +802,132 @@ let currentEditorCat = 'pizza';
 let editingIndex = -1;
 
 function initEditor(){
-catLabels = getCatLabels();
-const tabs = document.getElementById('editorTabs');
-tabs.innerHTML = Object.keys(catLabels).map(k =>
-  `<button class="editor-tab ${k===currentEditorCat?'active':''}" onclick="switchEditorCat('${k}')">${catLabels[k]}</button>`
-).join('');
-renderEditorItems();
-// Show cat actions for current category
-const grid = document.getElementById('editorGrid');
-const catActions = `<div style="display:flex;gap:8px;margin-bottom:16px">
-  <button class="btn-edit" onclick="renameCategory('${currentEditorCat}')" style="font-size:.8rem;padding:6px 14px;border-radius:8px;cursor:pointer;border:none">✏️ Renommer catégorie</button>
-  <button class="btn-del" onclick="deleteCategory('${currentEditorCat}')" style="font-size:.8rem;padding:6px 14px;border-radius:8px;cursor:pointer;border:none">🗑️ Supprimer catégorie</button>
-</div>`;
-grid.insertAdjacentHTML('afterbegin', catActions);
+  catLabels = getCatLabels();
+  const tabs = document.getElementById('editorTabs');
+  tabs.innerHTML = Object.keys(catLabels).map(k =>
+    '<button class="editor-tab '+(k===currentEditorCat?'active':'')+'" onclick="switchEditorCat(\''+k+'\')">'+catLabels[k]+'</button>'
+  ).join('');
+  renderEditorItems();
 }
 
 function switchEditorCat(cat){
-currentEditorCat = cat;
-document.querySelectorAll('.editor-tab').forEach(t=>t.classList.remove('active'));
-document.querySelector(`.editor-tab[onclick*="${cat}"]`).classList.add('active');
-renderEditorItems();
+  currentEditorCat = cat;
+  document.querySelectorAll('.editor-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderEditorItems();
 }
 
 function renderEditorItems(){
-const menu = getMenu();
-const items = menu[currentEditorCat] || [];
-const grid = document.getElementById('editorGrid');
-if(!items.length){
-  grid.innerHTML = '<div class="empty-state">Aucun article dans cette catégorie</div>';
-  return;
-}
-grid.innerHTML = '<div class="item-grid">' + items.map((item,i) => `
-<div class="item-card">
-  <img src="${item.image || 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=160&q=80'}" alt="${item.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect fill=%22%231a1a1a%22 width=%2280%22 height=%2280%22/></svg>'">
-  <div class="item-card-info">
-    <h4>${item.name}</h4>
-    <p>${item.desc}</p>
-    <span class="price-tag">${item.price}€</span>
-    <div class="item-actions">
-      <button class="btn-edit" onclick="openEditModal(${i})">✏️ Modifier</button>
-      <button class="btn-del" onclick="deleteItem(${i})">🗑️ Supprimer</button>
-    </div>
-  </div>
-</div>
-`).join('') + '</div>';
+  const menu = getMenu();
+  const items = menu[currentEditorCat] || [];
+  const grid = document.getElementById('editorGrid');
+  if(!items.length){
+    grid.innerHTML = '<div class="empty-state">Aucun article dans cette categorie</div>';
+    return;
+  }
+  grid.innerHTML = '<div class="item-grid">' + items.map((item,i) =>
+    '<div class="item-card">' +
+    '<img src="'+(item.image || 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=160&q=80')+'" alt="'+item.name+'" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect fill=%22%231a1a1a%22 width=%2280%22 height=%2280%22/></svg>\'">' +
+    '<div class="item-card-info">' +
+      '<h4>'+item.name+'</h4>' +
+      '<p>'+item.desc+'</p>' +
+      '<span class="price-tag">'+item.price+'€</span>' +
+      '<div class="item-actions">' +
+        '<button class="btn-edit" onclick="openEditModal('+i+')">✏️ Modifier</button>' +
+        '<button class="btn-del" onclick="deleteItem('+i+')">🗑️ Supprimer</button>' +
+      '</div>' +
+    '</div></div>'
+  ).join('') + '</div>';
 }
 
 function openEditModal(index){
-editingIndex = index;
-const menu = getMenu();
-const item = menu[currentEditorCat][index];
-document.getElementById('modalTitle').textContent = 'Modifier: ' + item.name;
-document.getElementById('editName').value = item.name;
-document.getElementById('editDesc').value = item.desc;
-document.getElementById('editPrice').value = item.price;
-document.getElementById('editImage').value = item.image || '';
-document.getElementById('editModal').classList.add('open');
+  editingIndex = index;
+  const menu = getMenu();
+  const item = menu[currentEditorCat][index];
+  document.getElementById('modalTitle').textContent = 'Modifier: ' + item.name;
+  document.getElementById('editName').value = item.name;
+  document.getElementById('editDesc').value = item.desc;
+  document.getElementById('editPrice').value = item.price;
+  document.getElementById('editImage').value = item.image || '';
+  document.getElementById('editModal').classList.add('open');
 }
 
 function openAddModal(){
-editingIndex = -1;
-document.getElementById('modalTitle').textContent = 'Ajouter un article';
-document.getElementById('editName').value = '';
-document.getElementById('editDesc').value = '';
-document.getElementById('editPrice').value = '';
-document.getElementById('editImage').value = '';
-document.getElementById('editModal').classList.add('open');
+  editingIndex = -1;
+  document.getElementById('modalTitle').textContent = 'Ajouter un article';
+  document.getElementById('editName').value = '';
+  document.getElementById('editDesc').value = '';
+  document.getElementById('editPrice').value = '';
+  document.getElementById('editImage').value = '';
+  document.getElementById('editModal').classList.add('open');
 }
 
 function closeModal(){
-document.getElementById('editModal').classList.remove('open');
+  document.getElementById('editModal').classList.remove('open');
 }
 
 function saveItem(){
-const menu = getMenu();
-const item = {
-  name: document.getElementById('editName').value,
-  desc: document.getElementById('editDesc').value,
-  price: document.getElementById('editPrice').value,
-  image: document.getElementById('editImage').value,
-};
-if(!menu[currentEditorCat]) menu[currentEditorCat] = [];
-if(editingIndex >= 0){
-  menu[currentEditorCat][editingIndex] = item;
-} else {
-  menu[currentEditorCat].push(item);
-}
-saveMenu(menu);
-closeModal();
-renderEditorItems();
+  const menu = getMenu();
+  const item = {
+    name: document.getElementById('editName').value,
+    desc: document.getElementById('editDesc').value,
+    price: document.getElementById('editPrice').value,
+    image: document.getElementById('editImage').value,
+  };
+  if(!menu[currentEditorCat]) menu[currentEditorCat] = [];
+  if(editingIndex >= 0){
+    menu[currentEditorCat][editingIndex] = item;
+  } else {
+    menu[currentEditorCat].push(item);
+  }
+  saveMenu(menu);
+  closeModal();
+  renderEditorItems();
 }
 
 function deleteItem(index){
-if(!confirm('Supprimer cet article ?')) return;
-const menu = getMenu();
-menu[currentEditorCat].splice(index, 1);
-saveMenu(menu);
-renderEditorItems();
+  if(!confirm('Supprimer cet article ?')) return;
+  const menu = getMenu();
+  menu[currentEditorCat].splice(index, 1);
+  saveMenu(menu);
+  renderEditorItems();
 }
 
 function handleImageUpload(input){
-const file = input.files[0];
-if(!file) return;
-const reader = new FileReader();
-reader.onload = function(e){
-  document.getElementById('editImage').value = e.target.result;
-};
-reader.readAsDataURL(file);
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    document.getElementById('editImage').value = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
-// ===== CATEGORY CRUD =====
 function openAddCatModal(){
-document.getElementById('catName').value = '';
-document.getElementById('catEmoji').value = '';
-document.getElementById('catModal').classList.add('open');
+  document.getElementById('catName').value = '';
+  document.getElementById('catEmoji').value = '';
+  document.getElementById('catModal').classList.add('open');
 }
 function closeCatModal(){
-document.getElementById('catModal').classList.remove('open');
+  document.getElementById('catModal').classList.remove('open');
 }
 function saveCategory(){
-const name = document.getElementById('catName').value.trim();
-const emoji = document.getElementById('catEmoji').value.trim();
-if(!name){ alert('Nom requis'); return; }
-const slug = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'');
-if(catLabels[slug]){ alert('Cette catégorie existe déjà'); return; }
-catLabels[slug] = (emoji ? emoji + ' ' : '') + name;
-saveCatLabels(catLabels);
-const menu = getMenu();
-menu[slug] = [];
-saveMenu(menu);
-currentEditorCat = slug;
-closeCatModal();
-initEditor();
-}
-function renameCategory(slug){
-const newName = prompt('Nouveau nom pour la catégorie :', catLabels[slug]);
-if(!newName || !newName.trim()) return;
-catLabels[slug] = newName.trim();
-saveCatLabels(catLabels);
-initEditor();
-}
-function deleteCategory(slug){
-if(!confirm('Supprimer la catégorie "' + catLabels[slug] + '" et tous ses articles ?')) return;
-delete catLabels[slug];
-saveCatLabels(catLabels);
-const menu = getMenu();
-delete menu[slug];
-saveMenu(menu);
-currentEditorCat = Object.keys(catLabels)[0] || 'pizza';
-initEditor();
+  const name = document.getElementById('catName').value.trim();
+  const emoji = document.getElementById('catEmoji').value.trim();
+  if(!name){ alert('Nom requis'); return; }
+  const slug = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'');
+  if(catLabels[slug]){ alert('Cette categorie existe deja'); return; }
+  catLabels[slug] = (emoji ? emoji + ' ' : '') + name;
+  saveCatLabels(catLabels);
+  const menu = getMenu();
+  menu[slug] = [];
+  saveMenu(menu);
+  currentEditorCat = slug;
+  closeCatModal();
+  initEditor();
 }
 
-// Init
+// Init editor
 initEditor();
 </script>
 </body>
