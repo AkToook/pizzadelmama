@@ -592,7 +592,7 @@ function startWelcomeClock(){
   setInterval(tick, 1000);
 }
 
-// Check QZ + Firebase on welcome
+// Check QZ + Firebase on welcome (SANS connexion QZ — juste vérifier si le script est chargé)
 function checkWelcomeStatus(){
   // Firebase check
   db.collection('orders').limit(1).get().then(function(){
@@ -602,23 +602,14 @@ function checkWelcomeStatus(){
     document.getElementById('wFbDot').className='cdot cdot-warn';
     document.getElementById('wFbText').textContent='Firebase — erreur';
   });
-  // QZ check
-  setTimeout(function(){
-    if(typeof qz !== 'undefined'){
-      qz.websocket.connect().then(function(){
-        return qz.printers.find();
-      }).then(function(printers){
-        document.getElementById('wQzDot').className='cdot cdot-ok';
-        document.getElementById('wQzText').textContent='Imprimante: ' + (printers[0] || 'aucune');
-      }).catch(function(){
-        document.getElementById('wQzDot').className='cdot cdot-warn';
-        document.getElementById('wQzText').textContent='QZ Tray — non connecté';
-      });
-    } else {
-      document.getElementById('wQzDot').className='cdot cdot-warn';
-      document.getElementById('wQzText').textContent='QZ Tray — non installé (qz.io)';
-    }
-  }, 1000);
+  // QZ check — on vérifie juste si le script est chargé, PAS de connexion ici
+  if(typeof qz !== 'undefined' && qz){
+    document.getElementById('wQzDot').className='cdot cdot-ok';
+    document.getElementById('wQzText').textContent='QZ Tray détecté — prêt';
+  } else {
+    document.getElementById('wQzDot').className='cdot cdot-warn';
+    document.getElementById('wQzText').textContent='QZ Tray — non installé (qz.io)';
+  }
 }
 
 // "Démarrer la journée" — unlock audio + start
@@ -658,6 +649,17 @@ function initQZ(){
     updatePrinterUI('error', 'QZ Tray non installé — qz.io/download');
     return;
   }
+
+  // ═══ BYPASS SÉCURITÉ QZ — supprime les popups d'autorisation ═══
+  // Pour que ça marche sans popup : dans QZ Tray > Advanced > Security
+  // cocher "Allow sites without valid certificates"
+  // OU ajouter le domaine dans la whitelist
+  qz.security.setCertificatePromise(function(resolve, reject){
+    resolve(); // pas de certificat = mode non-signé
+  });
+  qz.security.setSignaturePromise(function(toSign){
+    return function(resolve, reject){ resolve(); }; // pas de signature
+  });
 
   // Écouter les déconnexions QZ
   qz.websocket.setClosedCallbacks(function(evt){
