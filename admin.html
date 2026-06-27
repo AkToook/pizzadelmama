@@ -1140,10 +1140,24 @@ function fallbackPrint(order){
     '<div class="divider"></div><p class="footer">Merci !<br>New Pizza Reims - 7j/7</p></body></html>';
 
   db.collection('orders').doc(order.id).update({ printed: true });
-  var frame = document.getElementById('printFrame');
-  var fdoc = frame.contentDocument || frame.contentWindow.document;
-  fdoc.open(); fdoc.write(ticketHTML); fdoc.close();
-  setTimeout(function(){ frame.contentWindow.print(); }, 400);
+  // Ouvrir popup, imprimer, fermer automatiquement
+  var win = window.open('', '_blank', 'width=350,height=600');
+  if(win){
+    win.document.open();
+    win.document.write(ticketHTML);
+    win.document.close();
+    win.onload = function(){
+      win.print();
+      win.onafterprint = function(){ win.close(); };
+      // Fallback fermeture après 3s si onafterprint pas supporté
+      setTimeout(function(){ try{win.close();}catch(e){} }, 3000);
+    };
+    // Si onload ne se déclenche pas (contenu simple)
+    setTimeout(function(){
+      try{ win.print(); }catch(e){}
+      setTimeout(function(){ try{win.close();}catch(e){} }, 3000);
+    }, 500);
+  }
 }
 
 // ===== RENDER ORDERS PAGE =====
