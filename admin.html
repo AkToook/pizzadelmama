@@ -704,23 +704,31 @@ function connectQZ(){
 }
 
 function findPrinter(){
-  qz.printers.find().then(function(printers){
-    if(printers.length > 0){
-      printerName = printers[0];
-      qzConnected = true;
-      updatePrinterUI('ok', printerName);
-      if(qzRetryCount > 0){
-        showToast('Imprimante reconnectée: ' + printerName, 'success');
-      }
-      qzRetryCount = 0;
-    } else {
-      qzConnected = true; // QZ connecté mais pas d'imprimante
-      printerName = null;
-      updatePrinterUI('warning', 'QZ OK — aucune imprimante détectée');
-      showToast('QZ Tray connecté mais aucune imprimante trouvée. Vérifiez le câble USB.', 'warning');
+  var THERMAL_PRINTER = 'XP-80(copy1)';
+  qz.printers.find(THERMAL_PRINTER).then(function(printer){
+    printerName = printer;
+    qzConnected = true;
+    updatePrinterUI('ok', printerName);
+    if(qzRetryCount > 0){
+      showToast('Imprimante reconnectée: ' + printerName, 'success');
     }
-  }).catch(function(e){
-    updatePrinterUI('error', 'Erreur détection imprimante');
+    qzRetryCount = 0;
+  }).catch(function(){
+    console.warn('Imprimante "' + THERMAL_PRINTER + '" non trouvée, recherche générale...');
+    qz.printers.find().then(function(printers){
+      if(printers.length > 0){
+        printerName = printers[0];
+        qzConnected = true;
+        updatePrinterUI('ok', printerName + ' (fallback)');
+      } else {
+        qzConnected = true;
+        printerName = null;
+        updatePrinterUI('warning', 'QZ OK — aucune imprimante détectée');
+        showToast('Aucune imprimante trouvée. Vérifiez le câble USB.', 'warning');
+      }
+    }).catch(function(e){
+      updatePrinterUI('error', 'Erreur détection imprimante');
+    });
   });
 }
 
