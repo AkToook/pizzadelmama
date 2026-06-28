@@ -2649,4 +2649,9 @@ function parseEmojis(el){ if(window.twemoji) twemoji.parse(el||document.body,{fo
 parseEmojis();
 // Re-parse after menu tab switch
 const origRender = renderMenu;
-renderMenu = function(cat){ origRender(cat); parseEmojis(docum
+renderMenu = function(cat){ origRender(cat); parseEmojis(document.getElementById('menuGrid')); };
+
+</script>
+
+</body>
+</html>
