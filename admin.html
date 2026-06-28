@@ -924,7 +924,7 @@ function switchPage(name){
   document.querySelectorAll('.sidebar a[data-page]').forEach(a=>{
     a.classList.toggle('active',a.dataset.page===name);
   });
-  if(name==='menu-editor') initEditor();
+  if(name==='menu-editor') loadMenuFromFirestore().then(() => { catLabels = getCatLabels(); initEditor(); });
 }
 
 // ===== STATUS TOGGLE =====
@@ -1537,17 +1537,42 @@ function getCatLabels(){
   const stored = localStorage.getItem('npr_catLabels');
   return stored ? JSON.parse(stored) : {...defaultCatLabels};
 }
-function saveCatLabels(labels){ localStorage.setItem('npr_catLabels', JSON.stringify(labels)); }
+function saveCatLabels(labels){
+  localStorage.setItem('npr_catLabels', JSON.stringify(labels));
+  db.collection('config').doc('catLabels').set({data: JSON.stringify(labels), updatedAt: firebase.firestore.FieldValue.serverTimestamp()})
+    .catch(e => console.error('CatLabels sync error:', e));
+}
 let catLabels = getCatLabels();
 
 function getMenu(){
   const stored = localStorage.getItem('npr_menu');
   return stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaultMenu));
 }
-function saveMenu(menu){ localStorage.setItem('npr_menu', JSON.stringify(menu)); }
+function saveMenu(menu){
+  localStorage.setItem('npr_menu', JSON.stringify(menu));
+  // Sync to Firestore so the public site sees changes
+  db.collection('config').doc('menu').set({data: JSON.stringify(menu), updatedAt: firebase.firestore.FieldValue.serverTimestamp()})
+    .then(() => console.log('Menu synced to Firestore'))
+    .catch(e => console.error('Firestore sync error:', e));
+}
 
 let currentEditorCat = 'pizza';
 let editingIndex = -1;
+
+// Load menu from Firestore on admin startup
+async function loadMenuFromFirestore(){
+  try {
+    const doc = await db.collection('config').doc('menu').get();
+    if(doc.exists && doc.data().data){
+      localStorage.setItem('npr_menu', doc.data().data);
+      console.log('Menu loaded from Firestore');
+    }
+    const catDoc = await db.collection('config').doc('catLabels').get();
+    if(catDoc.exists && catDoc.data().data){
+      localStorage.setItem('npr_catLabels', catDoc.data().data);
+    }
+  } catch(e){ console.error('Firestore load error:', e); }
+}
 
 function initEditor(){
   catLabels = getCatLabels();

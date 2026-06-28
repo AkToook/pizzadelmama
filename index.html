@@ -1771,6 +1771,45 @@ return `<div class="menu-card" onclick='openCustom(${JSON.stringify(item).replac
 </div>`;
 }
 
+
+// ===== LIVE MENU FROM FIRESTORE =====
+(async function loadLiveMenu(){
+  try {
+    const doc = await db.collection('config').doc('menu').get();
+    if(!doc.exists || !doc.data().data) return;
+    const adminMenu = JSON.parse(doc.data().data);
+    // adminMenu is flat: {pizza: [{name,desc,price,image},...], burger: [...], ...}
+    // Overlay onto menuData: update matching items by name, add new ones
+    Object.keys(adminMenu).forEach(cat => {
+      if(!menuData[cat]) {
+        // New category from admin
+        menuData[cat] = { items: adminMenu[cat] };
+        return;
+      }
+      const adminItems = adminMenu[cat];
+      // Get all existing items (flat list from subcategories or items)
+      let existingItems = [];
+      if(menuData[cat].subcategories) {
+        menuData[cat].subcategories.forEach(sub => { existingItems = existingItems.concat(sub.items); });
+      } else if(menuData[cat].items) {
+        existingItems = menuData[cat].items;
+      }
+      // Update existing items by name match
+      adminItems.forEach(adminItem => {
+        const match = existingItems.find(e => e.name === adminItem.name);
+        if(match) {
+          if(adminItem.price) match.price = adminItem.price;
+          if(adminItem.desc) match.desc = adminItem.desc;
+          if(adminItem.image) match.image = adminItem.image;
+        }
+      });
+    });
+    // Re-render current category
+    if(typeof renderMenu === 'function') renderMenu(currentCat || 'pizza');
+    console.log('Live menu loaded from Firestore');
+  } catch(e) { console.log('No live menu override:', e); }
+})();
+
 // ===== ORDER MODE (Livraison vs À emporter) =====
 let orderMode = 'livraison';
 
@@ -2620,39 +2659,4 @@ async function submitOrder() {
 }
 
 // Tab switching + scroll to products
-document.querySelectorAll('.menu-tab').forEach(tab => {
-tab.addEventListener('click', () => {
-  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  renderMenu(tab.dataset.cat);
-  setTimeout(() => {
-    document.getElementById('menuGrid').scrollIntoView({behavior:'smooth',block:'start'});
-  }, 100);
-});
-});
-
-// Initial render
-renderMenu('pizza');
-
-// Nav scroll effect
-window.addEventListener('scroll', () => {
-document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
-});
-
-// Reveal on scroll
-const observer = new IntersectionObserver(entries => {
-entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
-}, {threshold: 0.1});
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// Parse all emojis to Twemoji (iOS-style)
-function parseEmojis(el){ if(window.twemoji) twemoji.parse(el||document.body,{folder:'svg',ext:'.svg'}); }
-parseEmojis();
-// Re-parse after menu tab switch
-const origRender = renderMenu;
-renderMenu = function(cat){ origRender(cat); parseEmojis(document.getElementById('menuGrid')); };
-
-</script>
-
-</body>
-</html>
+document.querySelectorAll('.m
