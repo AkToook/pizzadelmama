@@ -89,12 +89,58 @@ function Build-Ticket($order) {
     return $t
 }
 
+# API Windows pour impression RAW directe
+Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+using System.IO;
+
+public class RawPrinter {
+    [StructLayout(LayoutKind.Sequential)] public struct DOCINFOA {
+        [MarshalAs(UnmanagedType.LPStr)] public string pDocName;
+        [MarshalAs(UnmanagedType.LPStr)] public string pOutputFile;
+        [MarshalAs(UnmanagedType.LPStr)] public string pDatatype;
+    }
+
+    [DllImport("winspool.drv", SetLastError=true, CharSet=CharSet.Ansi)]
+    public static extern bool OpenPrinter(string szPrinter, out IntPtr hPrinter, IntPtr pd);
+    [DllImport("winspool.drv", SetLastError=true, CharSet=CharSet.Ansi)]
+    public static extern bool StartDocPrinter(IntPtr hPrinter, int level, ref DOCINFOA di);
+    [DllImport("winspool.drv", SetLastError=true)]
+    public static extern bool StartPagePrinter(IntPtr hPrinter);
+    [DllImport("winspool.drv", SetLastError=true)]
+    public static extern bool WritePrinter(IntPtr hPrinter, IntPtr pBytes, int dwCount, out int dwWritten);
+    [DllImport("winspool.drv", SetLastError=true)]
+    public static extern bool EndPagePrinter(IntPtr hPrinter);
+    [DllImport("winspool.drv", SetLastError=true)]
+    public static extern bool EndDocPrinter(IntPtr hPrinter);
+    [DllImport("winspool.drv", SetLastError=true)]
+    public static extern bool ClosePrinter(IntPtr hPrinter);
+
+    public static bool SendRaw(string printerName, byte[] data) {
+        IntPtr hPrinter;
+        if (!OpenPrinter(printerName, out hPrinter, IntPtr.Zero)) return false;
+        var di = new DOCINFOA { pDocName = "Ticket", pDatatype = "RAW" };
+        try {
+            StartDocPrinter(hPrinter, 1, ref di);
+            StartPagePrinter(hPrinter);
+            IntPtr pBytes = Marshal.AllocCoTaskMem(data.Length);
+            Marshal.Copy(data, 0, pBytes, data.Length);
+            int written;
+            bool ok = WritePrinter(hPrinter, pBytes, data.Length, out written);
+            Marshal.FreeCoTaskMem(pBytes);
+            EndPagePrinter(hPrinter);
+            EndDocPrinter(hPrinter);
+            return ok && written > 0;
+        } finally { ClosePrinter(hPrinter); }
+    }
+}
+'@ -ErrorAction SilentlyContinue
+
 function Print-Ticket($order, $docId) {
     $ticket = Build-Ticket $order
-    $tmpFile = Join-Path $env:TEMP "ticket-$([guid]::NewGuid().ToString('N').Substring(0,8)).bin"
-    
     $encoding = [System.Text.Encoding]::GetEncoding(437)
-    [System.IO.File]::WriteAllBytes($tmpFile, $encoding.GetBytes($ticket))
+    $rawBytes = $encoding.GetBytes($ticket)
 
     $success = $false
 
@@ -103,46 +149,27 @@ function Print-Ticket($order, $docId) {
         $default = (Get-CimInstance -ClassName Win32_Printer -Filter "Default=True")
         if ($default) {
             $printerName = $default.Name
-            $portName = $default.PortName
-            Write-Host "  Imprimante: $printerName (port: $portName)" -ForegroundColor Cyan
-
-            # Methode 1: copy /b vers partage
-            $share = "\\$env:COMPUTERNAME\$printerName"
-            $result = cmd /c "copy /b `"$tmpFile`" `"$share`"" 2>&1
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "  Ticket imprime sur: $printerName" -ForegroundColor Green
-                $success = $true
+            Write-Host "  Imprimante: $printerName" -ForegroundColor Cyan
+            $success = [RawPrinter]::SendRaw($printerName, $rawBytes)
+            if ($success) {
+                Write-Host "  Ticket imprime!" -ForegroundColor Green
+            } else {
+                Write-Host "  Echec sur $printerName, essai XP-80..." -ForegroundColor Yellow
             }
-
-            # Methode 2: port direct
-            if (-not $success -and $portName) {
-                cmd /c "copy /b `"$tmpFile`" `"$portName`"" 2>&1
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "  Ticket imprime via port: $portName" -ForegroundColor Green
-                    $success = $true
-                }
-            }
-        } else {
-            Write-Host "  ERREUR: aucune imprimante par defaut!" -ForegroundColor Red
         }
     } catch {
-        Write-Host "  ERREUR imprimante: $_" -ForegroundColor Red
+        Write-Host "  ERREUR imprimante defaut: $_" -ForegroundColor Red
     }
 
-    # Dernier recours: cherche une imprimante thermique/POS
+    # Fallback: cherche XP-80 par nom
     if (-not $success) {
-        try {
-            $printerObj = Get-CimInstance -ClassName Win32_Printer | Where-Object { $_.Name -like '*XP*80*' -or $_.Name -like '*thermal*' -or $_.Name -like '*POS*' } | Select-Object -First 1
-            if ($printerObj) {
-                $portName = $printerObj.PortName
-                Write-Host "  Tentative port direct: $portName" -ForegroundColor Yellow
-                cmd /c "copy /b `"$tmpFile`" `"$portName`"" 2>&1
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "  Ticket imprime via port direct: $portName" -ForegroundColor Green
-                    $success = $true
-                }
-            }
-        } catch {}
+        $allPrinters = Get-CimInstance -ClassName Win32_Printer
+        $xp = $allPrinters | Where-Object { $_.Name -like '*XP*80*' } | Select-Object -First 1
+        if ($xp) {
+            Write-Host "  Essai: $($xp.Name)" -ForegroundColor Yellow
+            $success = [RawPrinter]::SendRaw($xp.Name, $rawBytes)
+            if ($success) { Write-Host "  Ticket imprime sur $($xp.Name)!" -ForegroundColor Green }
+        }
     }
 
     if ($success) {
@@ -159,13 +186,10 @@ function Print-Ticket($order, $docId) {
             Write-Host "  WARN: Firebase update echoue: $_" -ForegroundColor Yellow
         }
     } else {
-        Write-Host "  ERREUR: aucune imprimante trouvee!" -ForegroundColor Red
+        Write-Host "  ERREUR: impression echouee!" -ForegroundColor Red
         Write-Host "  Imprimantes disponibles:" -ForegroundColor Red
         Get-Printer | ForEach-Object { Write-Host "    - $($_.Name) (port: $($_.PortName))" -ForegroundColor Red }
     }
-
-    # Nettoyage fichier temp
-    try { Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue } catch {}
 }
 
 function Check-Orders {
@@ -208,29 +232,4 @@ function Check-Orders {
 
                 Write-Host "`n--- NOUVELLE COMMANDE ---" -ForegroundColor Yellow
                 Write-Host "  #$($order.orderNum) - $($order.customerName) - $($order.total)EUR" -ForegroundColor Cyan
-                Print-Ticket $order $docId
-            }
-        }
-    } catch {
-        Write-Host "Erreur connexion: $_" -ForegroundColor Red
-    }
-}
-
-Clear-Host
-Write-Host ""
-Write-Host "========================================" -ForegroundColor Red
-Write-Host "  AUTO-PRINTER - New Pizza Reims" -ForegroundColor White
-Write-Host "========================================" -ForegroundColor Red
-Write-Host ""
-Write-Host "Imprimantes detectees:" -ForegroundColor Cyan
-Get-Printer | ForEach-Object { Write-Host "  - $($_.Name) (port: $($_.PortName))" -ForegroundColor Cyan }
-Write-Host ""
-Write-Host "En ecoute des nouvelles commandes..." -ForegroundColor Green
-Write-Host "Appuyez sur Ctrl+C pour arreter" -ForegroundColor Gray
-Write-Host ""
-
-while ($true) {
-    Check-Orders
-    Start-Sleep -Seconds $POLL_INTERVAL
-}
-                                                                                                                                                                                                                                                                                                      
+ 
