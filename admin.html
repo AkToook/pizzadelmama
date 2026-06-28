@@ -315,7 +315,7 @@ display:flex;align-items:center;justify-content:center;
 
 /* TOP BAR */
 .topbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:24px;flex-wrap:wrap}
-.topbar-qz{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.topbar-qz{display:none!important;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
 .topbar-qz:hover{border-color:var(--gold)}
 .topbar-qz.connected{border-color:rgba(39,174,96,.3)}
 .topbar-qz.error{border-color:rgba(231,76,60,.3);animation:qz-alert 1s ease-in-out 3}
@@ -338,6 +338,8 @@ display:flex;align-items:center;justify-content:center;
 .sidebar{display:none}
 .main{margin-left:0}
 }
+
+#topbarQz, .sidebar-qz, [onclick*="qz"], #wQzDot, #wQzText, .printer-indicator { display:none!important; }
 </style>
 </head>
 <body>
@@ -375,7 +377,7 @@ display:flex;align-items:center;justify-content:center;
     </div>
   </div>
   <div class="w-checks">
-    <div class="w-check"><span class="cdot cdot-loading" id="wQzDot"></span><span id="wQzText">Vérification QZ Tray...</span></div>
+    
     <div class="w-check"><span class="cdot cdot-loading" id="wFbDot"></span><span id="wFbText">Vérification Firebase...</span></div>
   </div>
 </div>
