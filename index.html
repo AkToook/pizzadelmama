@@ -905,25 +905,26 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 </div>
 
 <!-- POPUP BIENVENUE -->
-<div id="welcomeOverlay" style="position:fixed;inset:0;z-index:10001;background:rgba(11,17,32,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;transition:opacity .4s">
-<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:40px 32px;max-width:420px;width:90%;text-align:center">
+<div id="welcomeOverlay" style="position:fixed;inset:0;z-index:99999;background:rgba(11,17,32,.95);display:flex;align-items:center;justify-content:center;transition:opacity .4s;pointer-events:auto">
+<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:40px 32px;max-width:420px;width:90%;text-align:center;pointer-events:auto;position:relative;z-index:99999">
 <img src="img/Logo-Pizza-Reims.png" alt="New Pizza Reims" style="height:70px;width:auto;margin-bottom:20px">
 <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px">Bienvenue !</h2>
 <p style="color:var(--white-dim);font-size:.9rem;margin-bottom:28px">Comment souhaitez-vous commander ?</p>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-<button onclick="chooseOrderMode('livraison')" style="background:var(--dark);border:2px solid var(--red);border-radius:16px;padding:24px 16px;cursor:pointer;transition:all .3s" onmouseover="this.style.background='rgba(192,57,43,.15)'" onmouseout="this.style.background='var(--dark)'">
-<div style="font-size:2rem;margin-bottom:8px">🚚</div>
-<div style="color:#fff;font-weight:700;font-size:.95rem">Livraison</div>
-<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px">À domicile</div>
-</button>
-<button onclick="chooseOrderMode('emporter')" style="background:var(--dark);border:2px solid var(--dark-border);border-radius:16px;padding:24px 16px;cursor:pointer;transition:all .3s" onmouseover="this.style.background='rgba(212,168,85,.1)'" onmouseout="this.style.background='var(--dark)'">
-<div style="font-size:2rem;margin-bottom:8px">🏪</div>
-<div style="color:#fff;font-weight:700;font-size:.95rem">Sur place / À emporter</div>
-<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px">Retrait au restaurant</div>
-</button>
+<div onclick="window.orderMode='livraison';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('livraison')" style="background:var(--dark);border:2px solid var(--red);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none">
+<div style="font-size:2rem;margin-bottom:8px;pointer-events:none">🚚</div>
+<div style="color:#fff;font-weight:700;font-size:.95rem;pointer-events:none">Livraison</div>
+<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px;pointer-events:none">À domicile</div>
+</div>
+<div onclick="window.orderMode='emporter';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('emporter')" style="background:var(--dark);border:2px solid var(--dark-border);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none">
+<div style="font-size:2rem;margin-bottom:8px;pointer-events:none">🏪</div>
+<div style="color:#fff;font-weight:700;font-size:.95rem;pointer-events:none">Sur place / À emporter</div>
+<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px;pointer-events:none">Retrait au restaurant</div>
 </div>
 </div>
 </div>
+</div>
+
 
 <!-- HERO -->
 <section class="hero" id="accueil">
@@ -1578,6 +1579,40 @@ firebase.initializeApp({
   appId: "1:39771057202:web:e55aa7ce61d7d39f82a02b"
 });
 const db = firebase.firestore();
+
+// ===== ANALYTICS TRACKER =====
+(function(){
+  try {
+    var ref = document.referrer || 'direct';
+    var source = 'direct';
+    // Detect source from referrer
+    if(ref.includes('google')) source = 'google';
+    else if(ref.includes('instagram')) source = 'instagram';
+    else if(ref.includes('facebook')) source = 'facebook';
+    else if(ref.includes('tiktok')) source = 'tiktok';
+    else if(ref.includes('whatsapp')) source = 'whatsapp';
+    else if(ref !== 'direct' && ref !== '') source = 'autre';
+    // Also check URL params for UTM
+    var params = new URLSearchParams(window.location.search);
+    if(params.get('utm_source')) source = params.get('utm_source');
+
+    var device = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
+    var page = window.location.pathname || '/';
+    var now = new Date();
+    var dateStr = now.toISOString().slice(0,10); // YYYY-MM-DD
+
+    db.collection('analytics').add({
+      page: page,
+      source: source,
+      referrer: ref.substring(0, 200),
+      device: device,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      date: dateStr,
+      hour: now.getHours(),
+      userAgent: navigator.userAgent.substring(0, 150)
+    });
+  } catch(e) { console.log('Analytics error:', e); }
+})();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
 <script>
