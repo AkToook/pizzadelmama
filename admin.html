@@ -720,8 +720,7 @@ function connectQZ(){
 }
 
 function findPrinter(){
-  var THERMAL_PRINTER = 'XP-80(copy1)';
-  qz.printers.find(THERMAL_PRINTER).then(function(printer){
+  qz.printers.getDefault().then(function(printer){
     printerName = printer;
     qzConnected = true;
     updatePrinterUI('ok', printerName);
@@ -730,7 +729,7 @@ function findPrinter(){
     }
     qzRetryCount = 0;
   }).catch(function(){
-    console.warn('Imprimante "' + THERMAL_PRINTER + '" non trouvée, recherche générale...');
+    console.warn('Imprimante par défaut non trouvée, recherche générale...');
     qz.printers.find().then(function(printers){
       if(printers.length > 0){
         printerName = printers[0];
