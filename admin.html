@@ -79,6 +79,15 @@ padding:2px 7px;border-radius:10px;margin-left:auto;min-width:20px;text-align:ce
 .page.active{display:block}
 
 /* DASHBOARD */
+
+.dash-period-btn{
+background:var(--card);border:1px solid var(--border);color:var(--dim);
+padding:8px 16px;border-radius:10px;cursor:pointer;font-size:.8rem;font-weight:600;
+transition:all .2s;
+}
+.dash-period-btn:hover{border-color:var(--accent);color:#fff}
+.dash-period-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
 .dash-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:32px}
 .dash-card{
 background:var(--card);border:1px solid var(--border);border-radius:16px;
@@ -431,6 +440,13 @@ display:flex;align-items:center;justify-content:center;
 </div>
 </div>
 
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="dashPeriodBtns">
+<button class="dash-period-btn active" onclick="setDashPeriod('today')">Aujourd'hui</button>
+<button class="dash-period-btn" onclick="setDashPeriod('week')">7 jours</button>
+<button class="dash-period-btn" onclick="setDashPeriod('month')">30 jours</button>
+<button class="dash-period-btn" onclick="setDashPeriod('3months')">3 mois</button>
+<button class="dash-period-btn" onclick="setDashPeriod('6months')">6 mois</button>
+</div>
 <div class="dash-cards">
 <div class="dash-card green">
 <div class="label">Commandes aujourd'hui</div>
@@ -1400,6 +1416,46 @@ function renderOrdersPage(orders){
 }
 
 // ===== DASHBOARD UPDATE =====
+let currentDashPeriod = 'today';
+
+function getPeriodStart(period){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  switch(period){
+    case 'today': return d;
+    case 'week': d.setDate(d.getDate()-7); return d;
+    case 'month': d.setDate(d.getDate()-30); return d;
+    case '3months': d.setMonth(d.getMonth()-3); return d;
+    case '6months': d.setMonth(d.getMonth()-6); return d;
+    default: return d;
+  }
+}
+
+function setDashPeriod(period){
+  currentDashPeriod = period;
+  document.querySelectorAll('.dash-period-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.dash-period-btn[onclick*="'+period+'"]').classList.add('active');
+  if(period === 'today'){
+    updateDashboard(allOrders);
+  } else {
+    loadDashOrders(period);
+  }
+}
+
+function loadDashOrders(period){
+  const start = getPeriodStart(period);
+  db.collection('orders')
+    .where('createdAt', '>=', start)
+    .orderBy('createdAt', 'desc')
+    .get()
+    .then(snapshot => {
+      const orders = [];
+      snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+      updateDashboard(orders);
+    })
+    .catch(e => console.error('Erreur chargement periode:', e));
+}
+
 function updateDashboard(orders){
   const total = orders.length;
   const ca = orders.reduce((s,o) => s + (o.total||0), 0);
@@ -1407,21 +1463,30 @@ function updateDashboard(orders){
   const pending = orders.filter(o => o.status !== 'DONE').length;
 
   document.getElementById('dashTotal').textContent = total;
-  document.getElementById('dashCA').textContent = ca.toFixed(2) + '€';
-  document.getElementById('dashAvg').textContent = avg.toFixed(2) + '€';
+  document.getElementById('dashCA').textContent = ca.toFixed(2) + '\u20ac';
+  document.getElementById('dashAvg').textContent = avg.toFixed(2) + '\u20ac';
   document.getElementById('dashPending').textContent = pending;
 
-  // Recent orders table (last 5)
+  // Update label based on period
+  const labels = {today:"Commandes aujourd'hui",week:'Commandes (7 jours)',month:'Commandes (30 jours)','3months':'Commandes (3 mois)','6months':'Commandes (6 mois)'};
+  document.querySelector('#dashTotal').previousElementSibling.textContent = labels[currentDashPeriod] || "Commandes aujourd'hui";
+
+  // Recent orders table (last 10 for longer periods)
   const tbody = document.getElementById('dashRecentOrders');
-  const recent = orders.slice(0, 5);
+  const showCount = currentDashPeriod === 'today' ? 5 : 10;
+  const recent = orders.slice(0, showCount);
   if(!recent.length){
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--dim)">Aucune commande aujourd\'hui</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--dim)">Aucune commande</td></tr>';
     return;
   }
   tbody.innerHTML = recent.map(order => {
     const time = order.createdAt && order.createdAt.toDate
       ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
       : '--:--';
+    const date = order.createdAt && order.createdAt.toDate
+      ? order.createdAt.toDate().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})
+      : '';
+    const dateStr = currentDashPeriod === 'today' ? time : date + ' ' + time;
     const statusClass = order.status === 'DONE' ? 'done' : 'pending';
     const statusText = order.status === 'DONE' ? 'Terminee' : order.status === 'PAYED_CASH' ? 'Especes' : order.status === 'PAYED_CARD' ? 'Carte' : 'En attente';
     const itemsList = (order.items||[]).map(i => i.name).join(', ');
@@ -1429,8 +1494,8 @@ function updateDashboard(orders){
       '<td>'+(order.orderNum||'---')+'</td>' +
       '<td>'+(order.customerName||'Client')+'</td>' +
       '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+itemsList+'</td>' +
-      '<td>'+(order.total||0).toFixed(2)+'€</td>' +
-      '<td>'+time+'</td>' +
+      '<td>'+(order.total||0).toFixed(2)+'\u20ac</td>' +
+      '<td>'+dateStr+'</td>' +
       '<td><span class="tbl-status '+statusClass+'">'+statusText+'</span></td>' +
     '</tr>';
   }).join('');
