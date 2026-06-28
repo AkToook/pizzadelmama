@@ -4,7 +4,7 @@
 
 $PROJECT_ID = 'pizza-reims'
 $API_KEY = 'AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU'
-$POLL_INTERVAL = 5
+$POLL_INTERVAL = 10
 $PRINTED_FILE = Join-Path $PSScriptRoot '.printed-orders.json'
 
 $printedOrders = @{}
@@ -231,6 +231,7 @@ function Check-Orders {
                 Write-Host "`n--- NOUVELLE COMMANDE ---" -ForegroundColor Yellow
                 Write-Host "  #$($order.orderNum) - $($order.customerName) - $($order.total)EUR" -ForegroundColor Cyan
                 Print-Ticket $order $docId
+                Start-Sleep -Seconds 2
             }
         }
     } catch {
