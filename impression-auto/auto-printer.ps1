@@ -91,7 +91,7 @@ function Build-Ticket($order) {
 
 function Print-Ticket($order, $docId) {
     $ticket = Build-Ticket $order
-    $tmpFile = Join-Path $env:TEMP 'ticket.bin'
+    $tmpFile = Join-Path $env:TEMP "ticket-$([guid]::NewGuid().ToString('N').Substring(0,8)).bin"
     
     $encoding = [System.Text.Encoding]::GetEncoding(437)
     [System.IO.File]::WriteAllBytes($tmpFile, $encoding.GetBytes($ticket))
@@ -163,6 +163,9 @@ function Print-Ticket($order, $docId) {
         Write-Host "  Imprimantes disponibles:" -ForegroundColor Red
         Get-Printer | ForEach-Object { Write-Host "    - $($_.Name) (port: $($_.PortName))" -ForegroundColor Red }
     }
+
+    # Nettoyage fichier temp
+    try { Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue } catch {}
 }
 
 function Check-Orders {
@@ -230,4 +233,4 @@ while ($true) {
     Check-Orders
     Start-Sleep -Seconds $POLL_INTERVAL
 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                                      
