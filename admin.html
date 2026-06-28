@@ -1609,3 +1609,28 @@ function openAddCatModal(){
   document.getElementById('catName').value = '';
   document.getElementById('catEmoji').value = '';
   document.getElementById('catModal').classList.add('open');
+}
+function closeCatModal(){
+  document.getElementById('catModal').classList.remove('open');
+}
+function saveCategory(){
+  const name = document.getElementById('catName').value.trim();
+  const emoji = document.getElementById('catEmoji').value.trim();
+  if(!name){ alert('Nom requis'); return; }
+  const slug = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'');
+  if(catLabels[slug]){ alert('Cette categorie existe deja'); return; }
+  catLabels[slug] = (emoji ? emoji + ' ' : '') + name;
+  saveCatLabels(catLabels);
+  const menu = getMenu();
+  menu[slug] = [];
+  saveMenu(menu);
+  currentEditorCat = slug;
+  closeCatModal();
+  initEditor();
+}
+
+// Init editor
+initEditor();
+</script>
+</body>
+</html>
