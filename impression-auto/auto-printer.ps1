@@ -34,7 +34,6 @@ function Build-Ticket($order) {
     $t += "Tel: 03 26 04 30 51`n"
     $t += "================================`n"
     $t += "${ESC}a$([char]0)"
-
     $num = if ($order.orderNum) { $order.orderNum } else { '---' }
     $timeStr = '--:--'
     if ($order.createdAt) {
@@ -43,7 +42,6 @@ function Build-Ticket($order) {
             $timeStr = $dt.ToString('HH:mm')
         } catch {}
     }
-
     $t += "${ESC}!$([char]0x30)"
     $t += "N. $num`n"
     $t += "${ESC}!$([char]0)"
@@ -57,13 +55,11 @@ function Build-Ticket($order) {
         $t += "Adresse: $($order.address)`n"
     }
     $t += "================================`n"
-
     foreach ($item in $order.items) {
         $price = [math]::Round([double]$item.price, 2)
         $t += "$($item.name)  ${price}EUR`n"
         if ($item.details) { $t += "  > $($item.details)`n" }
     }
-
     $t += "================================`n"
     $t += "${ESC}a$([char]1)"
     $t += "${ESC}!$([char]0x30)"
@@ -72,13 +68,11 @@ function Build-Ticket($order) {
     $t += "${ESC}!$([char]0)"
     $pay = if ($order.status -eq 'PAYED_CASH') { 'ESPECES' } else { 'CARTE' }
     $t += "Paiement: $pay`n"
-
     if ($order.special) {
         $t += "================================`n"
         $t += "${ESC}a$([char]0)"
         $t += "NOTE: $($order.special)`n"
     }
-
     $t += "================================`n"
     $t += "${ESC}a$([char]1)"
     $t += "Merci de votre commande !`n"
@@ -88,7 +82,6 @@ function Build-Ticket($order) {
     return $t
 }
 
-# API Windows pour impression RAW directe
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
@@ -99,7 +92,6 @@ public class RawPrinter {
         [MarshalAs(UnmanagedType.LPStr)] public string pOutputFile;
         [MarshalAs(UnmanagedType.LPStr)] public string pDatatype;
     }
-
     [DllImport("winspool.drv", SetLastError=true, CharSet=CharSet.Ansi)]
     public static extern bool OpenPrinter(string szPrinter, out IntPtr hPrinter, IntPtr pd);
     [DllImport("winspool.drv", SetLastError=true, CharSet=CharSet.Ansi)]
@@ -138,7 +130,6 @@ public class RawPrinter {
 '@ -ErrorAction SilentlyContinue
 
 function Send-ToPrinter($printerName, $rawBytes) {
-    # 3 tentatives avec pause entre chaque
     for ($attempt = 1; $attempt -le 3; $attempt++) {
         $ok = [RawPrinter]::SendRaw($printerName, $rawBytes)
         if ($ok) { return $true }
@@ -154,7 +145,6 @@ function Print-Ticket($order, $docId) {
     $rawBytes = $encoding.GetBytes($ticket)
     $success = $false
 
-    # Methode 1: imprimante par defaut
     try {
         $default = (Get-CimInstance -ClassName Win32_Printer -Filter "Default=True")
         if ($default) {
@@ -163,15 +153,12 @@ function Print-Ticket($order, $docId) {
             $success = Send-ToPrinter $printerName $rawBytes
             if ($success) {
                 Write-Host "  Ticket imprime!" -ForegroundColor Green
-            } else {
-                Write-Host "  Echec sur $printerName apres 3 tentatives" -ForegroundColor Yellow
             }
         }
     } catch {
         Write-Host "  ERREUR imprimante defaut: $_" -ForegroundColor Red
     }
 
-    # Methode 2: cherche XP-80 par nom
     if (-not $success) {
         try {
             $allPrinters = Get-CimInstance -ClassName Win32_Printer
@@ -258,4 +245,15 @@ Write-Host ""
 Write-Host "========================================" -ForegroundColor Red
 Write-Host "  AUTO-PRINTER - New Pizza Reims" -ForegroundColor White
 Write-Host "========================================" -ForegroundColor Red
-Writ
+Write-Host ""
+Write-Host "Imprimantes detectees:" -ForegroundColor Cyan
+Get-Printer | ForEach-Object { Write-Host "  - $($_.Name) (port: $($_.PortName))" -ForegroundColor Cyan }
+Write-Host ""
+Write-Host "En ecoute des nouvelles commandes..." -ForegroundColor Green
+Write-Host "Appuyez sur Ctrl+C pour arreter" -ForegroundColor Gray
+Write-Host ""
+
+while ($true) {
+    Check-Orders
+    Start-Sleep -Seconds $POLL_INTERVAL
+}
