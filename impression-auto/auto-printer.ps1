@@ -137,6 +137,17 @@ public class RawPrinter {
 }
 '@ -ErrorAction SilentlyContinue
 
+function Send-ToPrinter($printerName, $rawBytes) {
+    # 3 tentatives avec pause entre chaque
+    for ($attempt = 1; $attempt -le 3; $attempt++) {
+        $ok = [RawPrinter]::SendRaw($printerName, $rawBytes)
+        if ($ok) { return $true }
+        Write-Host "  Tentative $attempt/3 echouee, pause 2s..." -ForegroundColor Yellow
+        Start-Sleep -Seconds 2
+    }
+    return $false
+}
+
 function Print-Ticket($order, $docId) {
     $ticket = Build-Ticket $order
     $encoding = [System.Text.Encoding]::GetEncoding(437)
@@ -149,11 +160,11 @@ function Print-Ticket($order, $docId) {
         if ($default) {
             $printerName = $default.Name
             Write-Host "  Imprimante: $printerName" -ForegroundColor Cyan
-            $success = [RawPrinter]::SendRaw($printerName, $rawBytes)
+            $success = Send-ToPrinter $printerName $rawBytes
             if ($success) {
                 Write-Host "  Ticket imprime!" -ForegroundColor Green
             } else {
-                Write-Host "  Echec sur $printerName" -ForegroundColor Yellow
+                Write-Host "  Echec sur $printerName apres 3 tentatives" -ForegroundColor Yellow
             }
         }
     } catch {
@@ -167,7 +178,7 @@ function Print-Ticket($order, $docId) {
             $xp = $allPrinters | Where-Object { $_.Name -like '*XP*80*' } | Select-Object -First 1
             if ($xp) {
                 Write-Host "  Essai: $($xp.Name)" -ForegroundColor Yellow
-                $success = [RawPrinter]::SendRaw($xp.Name, $rawBytes)
+                $success = Send-ToPrinter $xp.Name $rawBytes
                 if ($success) {
                     Write-Host "  Ticket imprime sur $($xp.Name)!" -ForegroundColor Green
                 }
@@ -189,7 +200,7 @@ function Print-Ticket($order, $docId) {
             Write-Host "  WARN: Firebase update echoue: $_" -ForegroundColor Yellow
         }
     } else {
-        Write-Host "  ERREUR: impression echouee!" -ForegroundColor Red
+        Write-Host "  ERREUR: impression echouee apres toutes les tentatives!" -ForegroundColor Red
         Write-Host "  Imprimantes disponibles:" -ForegroundColor Red
         Get-Printer | ForEach-Object { Write-Host "    - $($_.Name) (port: $($_.PortName))" -ForegroundColor Red }
     }
@@ -247,15 +258,4 @@ Write-Host ""
 Write-Host "========================================" -ForegroundColor Red
 Write-Host "  AUTO-PRINTER - New Pizza Reims" -ForegroundColor White
 Write-Host "========================================" -ForegroundColor Red
-Write-Host ""
-Write-Host "Imprimantes detectees:" -ForegroundColor Cyan
-Get-Printer | ForEach-Object { Write-Host "  - $($_.Name) (port: $($_.PortName))" -ForegroundColor Cyan }
-Write-Host ""
-Write-Host "En ecoute des nouvelles commandes..." -ForegroundColor Green
-Write-Host "Appuyez sur Ctrl+C pour arreter" -ForegroundColor Gray
-Write-Host ""
-
-while ($true) {
-    Check-Orders
-    Start-Sleep -Seconds $POLL_INTERVAL
-}
+Writ
