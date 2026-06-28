@@ -1189,7 +1189,63 @@ function timeAgo(timestamp){
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
 function autoPrint(order){
   console.log('>>> autoPrint déclenché pour commande:', order.orderNum || order.id);
-  fallbackPrint(order);
+  silentPrint(order);
+}
+
+function silentPrint(order){
+  var time = order.createdAt && order.createdAt.toDate
+    ? order.createdAt.toDate().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+    : '--:--';
+  var payLabel = order.status === 'PAYED_CASH' ? 'ESPECES' : 'CARTE';
+  var itemsHTML = (order.items||[]).map(function(item){
+    return '<tr><td style="text-align:left;padding:2px 0">' + item.name + '</td><td style="text-align:right;padding:2px 0">' + parseFloat(item.price||0).toFixed(2) + ' EUR</td></tr>' +
+      (item.details ? '<tr><td colspan="2" style="font-size:10pt;padding:0 0 2px 8px;font-weight:normal">&gt; ' + item.details + '</td></tr>' : '');
+  }).join('');
+
+  var ticketHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+    '@page{size:80mm auto;margin:0}' +
+    '*{margin:0;padding:0;box-sizing:border-box}' +
+    'body{width:80mm;padding:4mm 3mm;font-family:Courier New,monospace;font-size:14pt;font-weight:bold;color:#000;line-height:1.4}' +
+    'h2{text-align:center;font-size:20pt;font-weight:900;margin-bottom:2mm}' +
+    '.info{text-align:center;font-size:10pt;font-weight:normal;margin-bottom:3mm}' +
+    '.divider{border-top:2px dashed #000;margin:3mm 0}' +
+    'table{width:100%;border-collapse:collapse}' +
+    'td{padding:1mm 0;font-size:12pt;font-weight:bold}' +
+    '.total{text-align:center;font-size:20pt;font-weight:900;margin:3mm 0}' +
+    '.footer{text-align:center;font-size:10pt;font-weight:normal;margin-top:3mm}' +
+    '</style></head><body>' +
+    '<h2>NEW PIZZA REIMS</h2>' +
+    '<div class="info">41 rue du Mont d\'Arene<br>Tel: 03 26 04 30 51</div>' +
+    '<div class="divider"></div>' +
+    '<div style="text-align:center;font-size:18pt;font-weight:900">N. ' + (order.orderNum || '---') + '</div>' +
+    '<div style="text-align:center;font-size:11pt;font-weight:normal">Heure: ' + time + '</div>' +
+    '<div class="divider"></div>' +
+    '<div style="font-size:12pt"><strong>Mode:</strong> ' + (order.deliveryMode === 'livraison' ? 'LIVRAISON' : 'A EMPORTER') + '</div>' +
+    '<div style="font-size:12pt"><strong>Client:</strong> ' + (order.customerName || 'Client') + '</div>' +
+    '<div style="font-size:12pt"><strong>Tel:</strong> ' + (order.customerPhone || '') + '</div>' +
+    (order.deliveryMode === 'livraison' && order.address ? '<div style="font-size:12pt"><strong>Adresse:</strong> ' + order.address + '</div>' : '') +
+    '<div class="divider"></div>' +
+    '<table>' + itemsHTML + '</table>' +
+    '<div class="divider"></div>' +
+    '<div class="total">TOTAL: ' + parseFloat(order.total||0).toFixed(2) + ' EUR</div>' +
+    '<div style="text-align:center;font-size:12pt">Paiement: ' + payLabel + '</div>' +
+    (order.special ? '<div class="divider"></div><div style="font-size:11pt"><strong>NOTE:</strong> ' + order.special + '</div>' : '') +
+    '<div class="divider"></div>' +
+    '<div class="footer">Merci de votre commande !<br>New Pizza Reims - 7j/7</div>' +
+    '</body></html>';
+
+  var iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:80mm;height:0;border:none;visibility:hidden';
+  document.body.appendChild(iframe);
+  iframe.contentDocument.open();
+  iframe.contentDocument.write(ticketHTML);
+  iframe.contentDocument.close();
+  setTimeout(function(){
+    iframe.contentWindow.print();
+    db.collection('orders').doc(order._id || order.id).update({ printed: true });
+    showToast('Ticket imprime: ' + (order.orderNum || order.id), 'success');
+    setTimeout(function(){ iframe.remove(); }, 3000);
+  }, 500);
 }
 
 function buildTicket(order){
