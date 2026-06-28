@@ -1018,11 +1018,21 @@ function initFirebaseListener(){
       updateDashboard(allOrders);
 
       if(!initialLoadDone){
-        // Premier chargement : on marque les commandes existantes comme "déjà vues"
-        // pour ne PAS les imprimer
-        snapshot.forEach(doc => printedOrders.add(doc.id));
+        // Premier chargement : vérifier les commandes NON imprimées
+        snapshot.forEach(doc => {
+          var data = doc.data();
+          printedOrders.add(doc.id);
+          // Si payée mais pas imprimée → ajouter au bandeau
+          if((data.status === 'PAYED_CASH' || data.status === 'PAYED_CARD') && !data.printed){
+            pendingOrders.push({ id: doc.id, ...data });
+          }
+        });
         initialLoadDone = true;
-        console.log('Chargement initial: ' + allOrders.length + ' commandes existantes ignorées pour impression');
+        if(pendingOrders.length > 0){
+          updatePendingBanner();
+          showUnprintedOverlay();
+        }
+        console.log('Chargement initial: ' + allOrders.length + ' commandes, ' + pendingOrders.length + ' non imprimées');
         return;
       }
 
@@ -1038,50 +1048,145 @@ function initFirebaseListener(){
     });
 }
 
+// File d'attente des commandes non imprimées
+var pendingOrders = [];
+
 function onStatusUpdate(order){
   if(!printedOrders.has(order.id)){
-    if(order.status === 'PAYED_CASH'){
-      // Espèces → impression automatique
+    if(order.status === 'PAYED_CASH' || order.status === 'PAYED_CARD'){
       printedOrders.add(order.id);
       playOrderSound();
-      autoPrint(order);
-    } else if(order.status === 'PAYED_CARD'){
-      // Carte → popup avec bouton imprimer
-      printedOrders.add(order.id);
-      playOrderSound();
+      pendingOrders.push(order);
+      updatePendingBanner();
       showPrintPopup(order);
     }
   }
 }
 
-// Popup pour commande carte — le mec clique "Imprimer"
+// Bandeau persistant "X nouvelles commandes"
+function updatePendingBanner(){
+  var banner = document.getElementById('pendingBanner');
+  if(!banner){
+    banner = document.createElement('div');
+    banner.id = 'pendingBanner';
+    banner.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9998;background:linear-gradient(135deg,#e63946,#c0392b);color:#fff;padding:14px 28px;border-radius:14px;font-weight:700;font-size:16px;display:none;align-items:center;gap:14px;box-shadow:0 6px 24px rgba(230,57,70,.4);animation:pendingPulse 2s infinite';
+    document.body.appendChild(banner);
+    if(!document.getElementById('pendingStyle')){
+      var s = document.createElement('style');
+      s.id = 'pendingStyle';
+      s.textContent = '@keyframes pendingPulse{0%,100%{box-shadow:0 6px 24px rgba(230,57,70,.4)}50%{box-shadow:0 6px 32px rgba(230,57,70,.7)}}';
+      document.head.appendChild(s);
+    }
+  }
+  var count = pendingOrders.length;
+  if(count === 0){
+    banner.style.display = 'none';
+    return;
+  }
+  banner.style.display = 'flex';
+  var label = count === 1 ? '1 nouvelle commande' : count + ' nouvelles commandes';
+  var btnLabel = count === 1 ? 'Imprimer le ticket' : 'Imprimer les ' + count + ' tickets';
+  banner.innerHTML = '<span>🔔 ' + label + '</span>' +
+    '<button onclick="printAllPending()" style="background:#fff;color:#e63946;border:none;padding:8px 20px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-left:8px">🖨️ ' + btnLabel + '</button>';
+}
+
+function printAllPending(){
+  if(pendingOrders.length === 0) return;
+  document.querySelectorAll('.print-popup-overlay').forEach(function(el){ el.remove(); });
+  var orders = pendingOrders.slice();
+  pendingOrders = [];
+  updatePendingBanner();
+  orders.forEach(function(order, i){
+    setTimeout(function(){ autoPrint(order); }, i * 1500);
+  });
+}
+
+function removePendingOrder(orderId){
+  pendingOrders = pendingOrders.filter(function(o){ return o.id !== orderId; });
+  updatePendingBanner();
+}
+
+// Popup pour toute commande (cash ou carte)
 function showPrintPopup(order){
   var overlay = document.createElement('div');
+  overlay.className = 'print-popup-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center';
   var box = document.createElement('div');
   box.style.cssText = 'background:#fff;border-radius:16px;padding:30px;max-width:400px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3)';
   var num = order.orderNum || '---';
   var total = parseFloat(order.total||0).toFixed(2);
   var mode = order.deliveryMode === 'livraison' ? 'Livraison' : 'A emporter';
-  box.innerHTML = '<h2 style="margin:0 0 10px;font-size:24px;color:#22c55e">💳 Paiement carte validé</h2>' +
-    '<p style="font-size:20px;font-weight:900;margin:5px 0">Commande #' + num + '</p>' +
+  var icon = order.status === 'PAYED_CASH' ? '💶' : '💳';
+  var payLabel = order.status === 'PAYED_CASH' ? 'Paiement espèces' : 'Paiement carte validé';
+  var payColor = order.status === 'PAYED_CASH' ? '#f59e0b' : '#22c55e';
+  box.innerHTML = '<h2 style="margin:0 0 10px;font-size:24px;color:' + payColor + '">' + icon + ' ' + payLabel + '</h2>' +
+    '<p style="font-size:20px;font-weight:900;margin:5px 0">Commande ' + num + '</p>' +
     '<p style="font-size:16px;margin:5px 0">' + (order.customerName||'') + ' — ' + mode + '</p>' +
     '<p style="font-size:22px;font-weight:900;margin:10px 0">' + total + ' EUR</p>' +
     '<button onclick="printFromPopup(this)" style="background:#e63946;color:#fff;border:none;padding:14px 40px;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;margin:10px 5px">🖨️ Imprimer</button>' +
-    '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:#666;color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:16px;cursor:pointer;margin:10px 5px">Fermer</button>';
-  box.dataset.orderId = order.id;
+    '<button onclick="closePopupOnly(this)" style="background:#666;color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:16px;cursor:pointer;margin:10px 5px">Fermer</button>';
+  overlay._order = order;
   overlay.appendChild(box);
   document.body.appendChild(overlay);
-
-  // Stocker la commande pour impression
-  overlay._order = order;
 }
 
 function printFromPopup(btn){
-  var overlay = btn.closest('div[style*="fixed"]');
+  var overlay = btn.closest('.print-popup-overlay');
   var order = overlay._order;
+  removePendingOrder(order.id);
   autoPrint(order);
   overlay.remove();
+}
+
+function closePopupOnly(btn){
+  btn.closest('.print-popup-overlay').remove();
+}
+
+// Overlay d'alerte au retour — commandes non imprimées
+function showUnprintedOverlay(){
+  if(pendingOrders.length === 0) return;
+  var overlay = document.createElement('div');
+  overlay.id = 'unprintedOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;display:flex;align-items:center;justify-content:center';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#1a1a2e;border:2px solid #e63946;border-radius:20px;padding:36px;max-width:500px;width:90%;text-align:center;box-shadow:0 10px 60px rgba(230,57,70,.5)';
+  var count = pendingOrders.length;
+  var title = count === 1 ? '1 commande non imprimée' : count + ' commandes non imprimées';
+  var html = '<h2 style="color:#e63946;font-size:28px;margin:0 0 20px">⚠️ ' + title + '</h2>';
+  html += '<div style="text-align:left;max-height:300px;overflow-y:auto;margin-bottom:24px">';
+  pendingOrders.forEach(function(order){
+    var icon = order.status === 'PAYED_CASH' ? '💶 Espèces' : '💳 Carte';
+    var num = order.orderNum || '---';
+    var ago = timeAgo(order.createdAt);
+    html += '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">';
+    html += '<div><span style="font-weight:700;color:#fff;font-size:15px">Commande ' + num + '</span>';
+    html += '<br><span style="color:#aaa;font-size:13px">' + icon + ' — ' + (order.customerName || '') + '</span></div>';
+    html += '<div style="color:#f59e0b;font-size:13px;font-weight:600;white-space:nowrap">' + ago + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '<button onclick="printAllFromOverlay()" style="background:#e63946;color:#fff;border:none;padding:16px 40px;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;margin:0 8px">🖨️ Tout imprimer (' + count + ')</button>';
+  html += '<button onclick="document.getElementById(\'unprintedOverlay\').remove()" style="background:#444;color:#fff;border:none;padding:16px 24px;border-radius:12px;font-size:16px;cursor:pointer;margin:0 8px">Plus tard</button>';
+  box.innerHTML = html;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function printAllFromOverlay(){
+  var el = document.getElementById('unprintedOverlay');
+  if(el) el.remove();
+  printAllPending();
+}
+
+function timeAgo(timestamp){
+  if(!timestamp) return '';
+  var now = Date.now();
+  var time = timestamp.toDate ? timestamp.toDate().getTime() : (timestamp.seconds ? timestamp.seconds * 1000 : new Date(timestamp).getTime());
+  var diff = Math.floor((now - time) / 1000);
+  if(diff < 60) return 'à l\'instant';
+  if(diff < 3600) return 'il y a ' + Math.floor(diff / 60) + ' min';
+  if(diff < 86400) return 'il y a ' + Math.floor(diff / 3600) + 'h';
+  return 'il y a ' + Math.floor(diff / 86400) + 'j';
 }
 
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
