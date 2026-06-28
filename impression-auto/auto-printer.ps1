@@ -7,7 +7,6 @@ $API_KEY = 'AIzaSyBc4KLK4E6p5rEmQBcdghX2YesveHyT2NU'
 $POLL_INTERVAL = 5
 $PRINTED_FILE = Join-Path $PSScriptRoot '.printed-orders.json'
 
-# Charger commandes deja imprimees
 $printedOrders = @{}
 if (Test-Path $PRINTED_FILE) {
     try {
@@ -93,7 +92,6 @@ function Build-Ticket($order) {
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
-using System.IO;
 
 public class RawPrinter {
     [StructLayout(LayoutKind.Sequential)] public struct DOCINFOA {
@@ -132,7 +130,9 @@ public class RawPrinter {
             EndPagePrinter(hPrinter);
             EndDocPrinter(hPrinter);
             return ok && written > 0;
-        } finally { ClosePrinter(hPrinter); }
+        } finally {
+            ClosePrinter(hPrinter);
+        }
     }
 }
 '@ -ErrorAction SilentlyContinue
@@ -141,10 +141,9 @@ function Print-Ticket($order, $docId) {
     $ticket = Build-Ticket $order
     $encoding = [System.Text.Encoding]::GetEncoding(437)
     $rawBytes = $encoding.GetBytes($ticket)
-
     $success = $false
 
-    # Utilise l'imprimante par defaut de Windows
+    # Methode 1: imprimante par defaut
     try {
         $default = (Get-CimInstance -ClassName Win32_Printer -Filter "Default=True")
         if ($default) {
@@ -154,29 +153,33 @@ function Print-Ticket($order, $docId) {
             if ($success) {
                 Write-Host "  Ticket imprime!" -ForegroundColor Green
             } else {
-                Write-Host "  Echec sur $printerName, essai XP-80..." -ForegroundColor Yellow
+                Write-Host "  Echec sur $printerName" -ForegroundColor Yellow
             }
         }
     } catch {
         Write-Host "  ERREUR imprimante defaut: $_" -ForegroundColor Red
     }
 
-    # Fallback: cherche XP-80 par nom
+    # Methode 2: cherche XP-80 par nom
     if (-not $success) {
-        $allPrinters = Get-CimInstance -ClassName Win32_Printer
-        $xp = $allPrinters | Where-Object { $_.Name -like '*XP*80*' } | Select-Object -First 1
-        if ($xp) {
-            Write-Host "  Essai: $($xp.Name)" -ForegroundColor Yellow
-            $success = [RawPrinter]::SendRaw($xp.Name, $rawBytes)
-            if ($success) { Write-Host "  Ticket imprime sur $($xp.Name)!" -ForegroundColor Green }
+        try {
+            $allPrinters = Get-CimInstance -ClassName Win32_Printer
+            $xp = $allPrinters | Where-Object { $_.Name -like '*XP*80*' } | Select-Object -First 1
+            if ($xp) {
+                Write-Host "  Essai: $($xp.Name)" -ForegroundColor Yellow
+                $success = [RawPrinter]::SendRaw($xp.Name, $rawBytes)
+                if ($success) {
+                    Write-Host "  Ticket imprime sur $($xp.Name)!" -ForegroundColor Green
+                }
+            }
+        } catch {
+            Write-Host "  ERREUR XP-80: $_" -ForegroundColor Red
         }
     }
 
     if ($success) {
         $printedOrders[$docId] = $true
         Save-Printed
-
-        # Marquer comme imprime dans Firebase
         try {
             $url = "https://firestore.googleapis.com/v1/projects/$PROJECT_ID/databases/(default)/documents/orders/${docId}?updateMask.fieldPaths=printed&key=$API_KEY"
             $body = '{"fields":{"printed":{"booleanValue":true}}}'
@@ -196,11 +199,10 @@ function Check-Orders {
     try {
         $url = "https://firestore.googleapis.com/v1/projects/$PROJECT_ID/databases/(default)/documents/orders?key=$API_KEY"
         $resp = Invoke-RestMethod -Uri $url -TimeoutSec 10
-        
+
         foreach ($doc in $resp.documents) {
             $docId = $doc.name.Split('/')[-1]
             $fields = $doc.fields
-            
             $status = $fields.status.stringValue
             $isPrinted = $fields.printed.booleanValue
 
@@ -232,4 +234,28 @@ function Check-Orders {
 
                 Write-Host "`n--- NOUVELLE COMMANDE ---" -ForegroundColor Yellow
                 Write-Host "  #$($order.orderNum) - $($order.customerName) - $($order.total)EUR" -ForegroundColor Cyan
- 
+                Print-Ticket $order $docId
+            }
+        }
+    } catch {
+        Write-Host "Erreur connexion: $_" -ForegroundColor Red
+    }
+}
+
+Clear-Host
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Red
+Write-Host "  AUTO-PRINTER - New Pizza Reims" -ForegroundColor White
+Write-Host "========================================" -ForegroundColor Red
+Write-Host ""
+Write-Host "Imprimantes detectees:" -ForegroundColor Cyan
+Get-Printer | ForEach-Object { Write-Host "  - $($_.Name) (port: $($_.PortName))" -ForegroundColor Cyan }
+Write-Host ""
+Write-Host "En ecoute des nouvelles commandes..." -ForegroundColor Green
+Write-Host "Appuyez sur Ctrl+C pour arreter" -ForegroundColor Gray
+Write-Host ""
+
+while ($true) {
+    Check-Orders
+    Start-Sleep -Seconds $POLL_INTERVAL
+}
