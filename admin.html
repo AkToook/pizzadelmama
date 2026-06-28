@@ -534,7 +534,6 @@ display:flex;align-items:center;justify-content:center;
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qz-tray@2/qz-tray.js"></script>
 
 <script>
 // ===== FIREBASE =====
@@ -1190,22 +1189,7 @@ function timeAgo(timestamp){
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
 function autoPrint(order){
   console.log('>>> autoPrint déclenché pour commande:', order.orderNum || order.id);
-  if(!printerName || typeof qz === 'undefined' || !qz.websocket.isActive()){
-    console.warn('QZ non dispo, fallback HTML');
-    fallbackPrint(order);
-    return;
-  }
-  var cfg = qz.configs.create(printerName);
-  var data = [{ type:'raw', format:'command', data: buildTicket(order) }];
-  qz.print(cfg, data).then(function(){
-    console.log('Ticket imprimé via QZ:', order.orderNum || order.id);
-    db.collection('orders').doc(order._id || order.id).update({ printed: true });
-    showToast('Ticket imprimé: ' + (order.orderNum || order.id), 'success');
-  }).catch(function(err){
-    console.error('QZ print error:', err);
-    showToast('Erreur impression QZ, fallback...', 'error');
-    fallbackPrint(order);
-  });
+  fallbackPrint(order);
 }
 
 function buildTicket(order){
