@@ -534,6 +534,7 @@ display:flex;align-items:center;justify-content:center;
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qz-tray@2/qz-tray.js"></script>
 
 <script>
 // ===== FIREBASE =====
@@ -1190,8 +1191,22 @@ function timeAgo(timestamp){
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
 function autoPrint(order){
   console.log('>>> autoPrint déclenché pour commande:', order.orderNum || order.id);
-  playOrderSound();
-  fallbackPrint(order);
+  if(!printerName || typeof qz === 'undefined' || !qz.websocket.isActive()){
+    console.warn('QZ non dispo, fallback HTML');
+    fallbackPrint(order);
+    return;
+  }
+  var cfg = qz.configs.create(printerName);
+  var data = [{ type:'raw', format:'command', data: buildTicket(order) }];
+  qz.print(cfg, data).then(function(){
+    console.log('Ticket imprimé via QZ:', order.orderNum || order.id);
+    db.collection('orders').doc(order._id || order.id).update({ printed: true });
+    showToast('Ticket imprimé: ' + (order.orderNum || order.id), 'success');
+  }).catch(function(err){
+    console.error('QZ print error:', err);
+    showToast('Erreur impression QZ, fallback...', 'error');
+    fallbackPrint(order);
+  });
 }
 
 function buildTicket(order){
@@ -1594,28 +1609,3 @@ function openAddCatModal(){
   document.getElementById('catName').value = '';
   document.getElementById('catEmoji').value = '';
   document.getElementById('catModal').classList.add('open');
-}
-function closeCatModal(){
-  document.getElementById('catModal').classList.remove('open');
-}
-function saveCategory(){
-  const name = document.getElementById('catName').value.trim();
-  const emoji = document.getElementById('catEmoji').value.trim();
-  if(!name){ alert('Nom requis'); return; }
-  const slug = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'');
-  if(catLabels[slug]){ alert('Cette categorie existe deja'); return; }
-  catLabels[slug] = (emoji ? emoji + ' ' : '') + name;
-  saveCatLabels(catLabels);
-  const menu = getMenu();
-  menu[slug] = [];
-  saveMenu(menu);
-  currentEditorCat = slug;
-  closeCatModal();
-  initEditor();
-}
-
-// Init editor
-initEditor();
-</script>
-</body>
-</html>
