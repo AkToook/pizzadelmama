@@ -78,6 +78,15 @@ padding:2px 7px;border-radius:10px;margin-left:auto;min-width:20px;text-align:ce
 .page{display:none}
 .page.active{display:block}
 
+
+.order-filter-btn{
+background:var(--card);border:1px solid var(--border);color:var(--dim);
+padding:6px 14px;border-radius:10px;cursor:pointer;font-size:.78rem;font-weight:600;
+transition:all .2s;
+}
+.order-filter-btn:hover{border-color:var(--accent);color:#fff}
+.order-filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
 /* DASHBOARD */
 
 .dash-period-btn{
@@ -488,6 +497,21 @@ display:flex;align-items:center;justify-content:center;
 <div class="orders-stat green">Payees: <span class="num" id="statPayed">0</span></div>
 <div class="orders-stat">Terminees: <span class="num" id="statDone">0</span></div>
 <div class="orders-stat gold">Total: <span class="num" id="statTotal">0</span></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+<button class="order-filter-btn active" onclick="filterOrders('all')">Toutes</button>
+<button class="order-filter-btn" onclick="filterOrders('cash-livraison')" style="border-color:#e67e22">💶🛵 Cash Livraison</button>
+<button class="order-filter-btn" onclick="filterOrders('cash-surplace')">💶🏠 Cash Sur place</button>
+<button class="order-filter-btn" onclick="filterOrders('card')">💳 Carte</button>
+<button class="order-filter-btn" onclick="filterOrders('livraison')">🛵 Livraison</button>
+<button class="order-filter-btn" onclick="filterOrders('surplace')">🏠 Sur place</button>
+</div>
+<div id="livreurBanner" style="display:none;background:linear-gradient(135deg,#e67e22,#d35400);border-radius:14px;padding:16px 20px;margin-bottom:16px;color:#fff">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div><strong>💶 Total Cash Livraison</strong><br><span style="font-size:.85rem;opacity:.8">Montant que le livreur doit ramener</span></div>
+<div style="font-family:var(--font-display,sans-serif);font-size:2.2rem;font-weight:800" id="livreurTotal">0€</div>
+</div>
+<div style="margin-top:8px;font-size:.8rem;opacity:.7"><span id="livreurCount">0</span> commande(s) cash en livraison aujourd'hui</div>
 </div>
 <div class="orders-grid" id="ordersGrid">
 <div class="empty-orders">Chargement des commandes...</div>
@@ -1029,7 +1053,7 @@ function initFirebaseListener(){
       snapshot.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
 
       // Update all views
-      renderOrdersPage(allOrders);
+      if(currentOrderFilter === 'all') renderOrdersPage(allOrders); else applyOrderFilter();
       updateDashboard(allOrders);
 
       if(!initialLoadDone){
@@ -1362,6 +1386,51 @@ function fallbackPrint(order){
 }
 
 // ===== RENDER ORDERS PAGE =====
+let currentOrderFilter = 'all';
+
+function filterOrders(filter){
+  currentOrderFilter = filter;
+  document.querySelectorAll('.order-filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  applyOrderFilter();
+}
+
+function applyOrderFilter(){
+  let filtered = allOrders;
+  switch(currentOrderFilter){
+    case 'cash-livraison':
+      filtered = allOrders.filter(o => o.status === 'PAYED_CASH' && o.deliveryMode === 'livraison');
+      break;
+    case 'cash-surplace':
+      filtered = allOrders.filter(o => o.status === 'PAYED_CASH' && o.deliveryMode !== 'livraison');
+      break;
+    case 'card':
+      filtered = allOrders.filter(o => o.status === 'PAYED_CARD' || o.status === 'DONE');
+      break;
+    case 'livraison':
+      filtered = allOrders.filter(o => o.deliveryMode === 'livraison');
+      break;
+    case 'surplace':
+      filtered = allOrders.filter(o => o.deliveryMode !== 'livraison');
+      break;
+  }
+  renderOrdersPage(filtered);
+  updateLivreurBanner();
+}
+
+function updateLivreurBanner(){
+  const cashLiv = allOrders.filter(o => o.status === 'PAYED_CASH' && o.deliveryMode === 'livraison');
+  const banner = document.getElementById('livreurBanner');
+  if(currentOrderFilter === 'cash-livraison'){
+    const total = cashLiv.reduce((s,o) => s + (o.total||0), 0);
+    document.getElementById('livreurTotal').textContent = total.toFixed(2) + '\u20ac';
+    document.getElementById('livreurCount').textContent = cashLiv.length;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
 function renderOrdersPage(orders){
   const grid = document.getElementById('ordersGrid');
 
