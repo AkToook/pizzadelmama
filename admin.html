@@ -1131,7 +1131,7 @@ function printFromPopup(btn){
   var overlay = btn.closest('.print-popup-overlay');
   var order = overlay._order;
   removePendingOrder(order.id);
-  autoPrint(order);
+  fallbackPrint(order);
   overlay.remove();
 }
 
@@ -1189,7 +1189,7 @@ function timeAgo(timestamp){
 // ===== AUTO PRINT — QZ TRAY ESC/POS =====
 function autoPrint(order){
   console.log('>>> autoPrint déclenché pour commande:', order.orderNum || order.id);
-  silentPrint(order);
+  showPrintPopup(order);
 }
 
 function silentPrint(order){
