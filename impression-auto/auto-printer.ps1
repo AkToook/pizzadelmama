@@ -130,11 +130,17 @@ public class RawPrinter {
 '@ -ErrorAction SilentlyContinue
 
 function Send-ToPrinter($printerName, $rawBytes) {
-    for ($attempt = 1; $attempt -le 3; $attempt++) {
-        $ok = [RawPrinter]::SendRaw($printerName, $rawBytes)
-        if ($ok) { return $true }
-        Write-Host "  Tentative $attempt/3 echouee, pause 2s..." -ForegroundColor Yellow
-        Start-Sleep -Seconds 2
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        try {
+            $ok = [RawPrinter]::SendRaw($printerName, $rawBytes)
+            if ($ok) {
+                # Pause 3s pour laisser l'imprimante finir physiquement
+                Start-Sleep -Seconds 3
+                return $true
+            }
+        } catch {}
+        Write-Host "  Tentative $attempt/5 echouee, pause 3s..." -ForegroundColor Yellow
+        Start-Sleep -Seconds 3
     }
     return $false
 }
@@ -144,34 +150,28 @@ function Print-Ticket($order, $docId) {
     $encoding = [System.Text.Encoding]::GetEncoding(437)
     $rawBytes = $encoding.GetBytes($ticket)
     $success = $false
+    $printerName = $null
 
+    # Trouver le nom de l'imprimante
     try {
         $default = (Get-CimInstance -ClassName Win32_Printer -Filter "Default=True")
         if ($default) {
             $printerName = $default.Name
-            Write-Host "  Imprimante: $printerName" -ForegroundColor Cyan
-            $success = Send-ToPrinter $printerName $rawBytes
-            if ($success) {
-                Write-Host "  Ticket imprime!" -ForegroundColor Green
-            }
         }
-    } catch {
-        Write-Host "  ERREUR imprimante defaut: $_" -ForegroundColor Red
+    } catch {}
+
+    if (-not $printerName) {
+        try {
+            $xp = Get-CimInstance -ClassName Win32_Printer | Where-Object { $_.Name -like '*XP*80*' } | Select-Object -First 1
+            if ($xp) { $printerName = $xp.Name }
+        } catch {}
     }
 
-    if (-not $success) {
-        try {
-            $allPrinters = Get-CimInstance -ClassName Win32_Printer
-            $xp = $allPrinters | Where-Object { $_.Name -like '*XP*80*' } | Select-Object -First 1
-            if ($xp) {
-                Write-Host "  Essai: $($xp.Name)" -ForegroundColor Yellow
-                $success = Send-ToPrinter $xp.Name $rawBytes
-                if ($success) {
-                    Write-Host "  Ticket imprime sur $($xp.Name)!" -ForegroundColor Green
-                }
-            }
-        } catch {
-            Write-Host "  ERREUR XP-80: $_" -ForegroundColor Red
+    if ($printerName) {
+        Write-Host "  Imprimante: $printerName" -ForegroundColor Cyan
+        $success = Send-ToPrinter $printerName $rawBytes
+        if ($success) {
+            Write-Host "  Ticket imprime!" -ForegroundColor Green
         }
     }
 
@@ -187,9 +187,7 @@ function Print-Ticket($order, $docId) {
             Write-Host "  WARN: Firebase update echoue: $_" -ForegroundColor Yellow
         }
     } else {
-        Write-Host "  ERREUR: impression echouee apres toutes les tentatives!" -ForegroundColor Red
-        Write-Host "  Imprimantes disponibles:" -ForegroundColor Red
-        Get-Printer | ForEach-Object { Write-Host "    - $($_.Name) (port: $($_.PortName))" -ForegroundColor Red }
+        Write-Host "  ECHEC impression - sera retente au prochain cycle" -ForegroundColor Red
     }
 }
 
