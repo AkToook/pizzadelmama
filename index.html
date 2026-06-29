@@ -1564,7 +1564,7 @@ font-size:1.4rem;cursor:pointer;color:#fff;
 
 <!-- WHATSAPP FLOAT -->
 <a href="https://wa.me/33668562273" target="_blank" class="wa-float" aria-label="Contacter via WhatsApp">
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#fff"/><path d="M12 2C6.478 2 2 6.478 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.522 0 10-4.478 10-10S17.522 2 12 2z" fill="none"/></svg>
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.13 6.742 3.046 9.378L1.054 31.29l6.118-1.96A15.923 15.923 0 0016.004 32C24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.302 22.602c-.388 1.094-1.938 2.002-3.168 2.266-.844.178-1.946.32-5.658-1.216-4.748-1.964-7.806-6.782-8.04-7.096-.226-.314-1.886-2.516-1.886-4.798s1.184-3.402 1.612-3.87c.35-.384.926-.576 1.478-.576.178 0 .338.01.482.018.428.018.642.042.924.716.352.84 1.21 2.948 1.316 3.164.108.216.216.502.072.786-.136.292-.256.422-.472.672-.216.25-.422.442-.638.712-.198.234-.42.484-.176.912.244.42 1.086 1.792 2.334 2.904 1.604 1.428 2.912 1.886 3.382 2.09.35.152.766.112 1.02-.152.32-.336.716-.894 1.116-1.444.286-.392.646-.442 1.028-.292.388.144 2.456 1.16 2.876 1.372.42.216.698.32.8.5.1.178.1 1.04-.288 2.132z" fill="#fff"/></svg>
 </a>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1869,10 +1869,15 @@ function toggleOffresVisibility(mode) {
     offresCards.style.gridTemplateColumns = (mode === 'livraison') ? '1fr' : '1fr 1fr 1fr';
     offresCards.style.maxWidth = (mode === 'livraison') ? '300px' : '1100px';
   }
-  // Hide/show the "Duo Gagnant" promo section
+  // Hide/show the "Duo Gagnant" promo section completely (no empty space)
   const offresSection = document.getElementById('offres');
   if (offresSection) {
     offresSection.style.display = (mode === 'livraison') ? 'none' : 'block';
+  }
+  // Also hide the promos banner bar when livraison
+  const promosBanner = document.getElementById('promos');
+  if (promosBanner) {
+    promosBanner.style.display = (mode === 'livraison') ? 'none' : 'block';
   }
 }
 
