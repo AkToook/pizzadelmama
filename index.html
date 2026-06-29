@@ -1054,6 +1054,7 @@ Commander
 <p style="color:var(--red-bright);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem;margin-bottom:8px">Qu'est-ce qui vous tente ?</p>
 <h2>UNE ENVIE DE...</h2>
 </div>
+<div id="firstOrderBanner" style="display:none;background:linear-gradient(135deg,#1a472a,#2d6a3f);border:2px solid var(--gold);border-radius:16px;padding:14px 20px;margin:12px 16px;text-align:center;font-family:var(--font-body)"><span style="font-size:1.3rem">🎁</span> <strong style="color:var(--gold)">Première commande en livraison ?</strong> <span style="color:var(--white-soft)">Profitez de <strong style="color:#2ecc71">-5%</strong> sur votre commande !</span></div>
 <div class="menu-tabs" id="menuTabs">
 <button class="menu-tab hero-card active" data-cat="pizza" style="background-image:url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80')"><span class="tab-label">🍕 Pizzas</span><span class="tab-count">Nos pizzas artisanales · Dès 9€</span></button>
 <button class="menu-tab" data-cat="burger" style="background-image:url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80')"><span class="tab-label">🍔 Burgers</span></button>
@@ -1581,6 +1582,15 @@ firebase.initializeApp({
   appId: "1:39771057202:web:e55aa7ce61d7d39f82a02b"
 });
 const db = firebase.firestore();
+// First order detection
+window._isFirstOrder = false;
+async function checkFirstOrder(phone) {
+  if (!phone || phone.length < 8) { window._isFirstOrder = false; return; }
+  try {
+    const snap = await db.collection('orders').where('customerPhone', '==', phone).limit(1).get();
+    window._isFirstOrder = snap.empty;
+  } catch(e) { window._isFirstOrder = false; }
+}
 
 // ===== ANALYTICS TRACKER =====
 (function(){
@@ -1830,6 +1840,9 @@ return `<div class="menu-card" onclick='openCustom(${JSON.stringify(item).replac
 let orderMode = 'livraison';
 
 function chooseOrderMode(mode) {
+  // Show/hide first order promo banner
+  const promoBanner = document.getElementById('firstOrderBanner');
+  if (promoBanner) promoBanner.style.display = (mode === 'livraison') ? '' : 'none';
   orderMode = mode;
   document.getElementById('welcomeOverlay').style.opacity = '0';
   setTimeout(() => {
@@ -1918,11 +1931,11 @@ const cartRules = [
     }
   },
   {
-    id: 'emporter-5',
-    name: 'Avantage à emporter',
-    desc: '-5% sur le total en retrait au restaurant',
+    id: 'first-order-5',
+    name: 'Bienvenue -5%',
+    desc: '-5% sur votre première commande en livraison',
     condition: (cartItems) => {
-      return orderMode === 'emporter' && cartItems.length > 0;
+      return orderMode === 'livraison' && cartItems.length > 0 && window._isFirstOrder === true;
     },
     discount: (cartItems, subtotal) => {
       return subtotal * 0.05;
@@ -1949,11 +1962,11 @@ function applyCartRules() {
     }
   }
 
-  // À emporter discount (on subtotal after pizza promo)
+  // First order discount (on subtotal after pizza promo)
   if (cartRules[2].condition(cart)) {
-    const emporterDiscount = cartRules[2].discount(cart, subtotal - totalDiscount);
-    appliedRules.push({...cartRules[2], amount: emporterDiscount});
-    totalDiscount += emporterDiscount;
+    const firstDiscount = cartRules[2].discount(cart, subtotal - totalDiscount);
+    appliedRules.push({...cartRules[2], amount: firstDiscount});
+    totalDiscount += firstDiscount;
   }
 
   return {subtotal, totalDiscount, appliedRules, total: subtotal - totalDiscount};
@@ -2497,6 +2510,30 @@ function openCheckout() {
   document.getElementById('checkoutForm').style.display = '';
   document.getElementById('checkoutSuccess').style.display = 'none';
   document.getElementById('checkoutOverlay').classList.add('open');
+  // Listen for phone input to check first order
+  const phoneInput = document.getElementById('co_tel');
+  if (phoneInput && !phoneInput._firstOrderBound) {
+    phoneInput._firstOrderBound = true;
+    phoneInput.addEventListener('blur', async function() {
+      await checkFirstOrder(this.value.trim());
+      // Refresh checkout summary
+      const summary = document.getElementById('checkoutSummary');
+      const r = applyCartRules();
+      let h = cart.map(item => {
+        return '<div class="checkout-summary-item"><div><span class="qty">1x</span>'+item.name+(item.details ? ' <span style="color:var(--white-dim);font-size:.75rem">— '+item.details+'</span>' : '')+'</div><div style="color:var(--gold);font-weight:700">'+item.price.toFixed(2)+'€</div></div>';
+      }).join('');
+      if (r.appliedRules.length > 0) {
+        h += '<div style="border-top:1px dashed var(--dark-border);padding-top:10px;margin-top:10px">';
+        h += '<div class="checkout-summary-item"><div style="color:var(--white-dim)">Sous-total</div><div style="color:var(--white-dim)">'+r.subtotal.toFixed(2)+'€</div></div>';
+        r.appliedRules.forEach(function(rule) {
+          h += '<div class="checkout-summary-item"><div style="color:#2ecc71">🎉 '+rule.name+'</div><div style="color:#2ecc71">-'+rule.amount.toFixed(2)+'€</div></div>';
+        });
+        h += '</div>';
+      }
+      h += '<div class="checkout-summary-total"><span>Total</span><span class="amount">'+r.total.toFixed(2)+'€</span></div>';
+      summary.innerHTML = h;
+    });
+  }
   document.body.style.overflow = 'hidden';
   parseEmojis(document.getElementById('checkoutOverlay'));
 }
