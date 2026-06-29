@@ -905,18 +905,18 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 </div>
 
 <!-- POPUP BIENVENUE -->
-<div id="welcomeOverlay" style="position:fixed;inset:0;z-index:99999;background:rgba(11,17,32,.95);display:flex;align-items:center;justify-content:center;transition:opacity .4s;pointer-events:auto">
-<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:40px 32px;max-width:420px;width:90%;text-align:center;pointer-events:auto;position:relative;z-index:99999">
+<div id="welcomeOverlay" style="position:fixed;inset:0;z-index:9999;background:rgba(11,17,32,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;transition:opacity .4s">
+<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:40px 32px;max-width:420px;width:90%;text-align:center">
 <img src="img/Logo-Pizza-Reims.png" alt="New Pizza Reims" style="height:70px;width:auto;margin-bottom:20px">
 <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px">Bienvenue !</h2>
 <p style="color:var(--white-dim);font-size:.9rem;margin-bottom:28px">Comment souhaitez-vous commander ?</p>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-<div onclick="window.orderMode='livraison';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('livraison')" style="background:var(--dark);border:2px solid var(--red);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none">
+<div onclick="window.orderMode='livraison';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('livraison')" style="background:var(--dark);border:2px solid var(--red);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none">
 <div style="font-size:2rem;margin-bottom:8px;pointer-events:none">🚚</div>
 <div style="color:#fff;font-weight:700;font-size:.95rem;pointer-events:none">Livraison</div>
 <div style="color:var(--white-dim);font-size:.75rem;margin-top:4px;pointer-events:none">À domicile</div>
 </div>
-<div onclick="window.orderMode='emporter';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('emporter')" style="background:var(--dark);border:2px solid var(--dark-border);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none">
+<div onclick="window.orderMode='emporter';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('emporter')" style="background:var(--dark);border:2px solid var(--dark-border);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none">
 <div style="font-size:2rem;margin-bottom:8px;pointer-events:none">🏪</div>
 <div style="color:#fff;font-weight:700;font-size:.95rem;pointer-events:none">Sur place / À emporter</div>
 <div style="color:var(--white-dim);font-size:.75rem;margin-top:4px;pointer-events:none">Retrait au restaurant</div>
@@ -924,7 +924,6 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 </div>
 </div>
 </div>
-
 
 <!-- HERO -->
 <section class="hero" id="accueil">
@@ -1585,34 +1584,26 @@ const db = firebase.firestore();
   try {
     var ref = document.referrer || 'direct';
     var source = 'direct';
-    // Detect source from referrer
     if(ref.includes('google')) source = 'google';
     else if(ref.includes('instagram')) source = 'instagram';
     else if(ref.includes('facebook')) source = 'facebook';
     else if(ref.includes('tiktok')) source = 'tiktok';
     else if(ref.includes('whatsapp')) source = 'whatsapp';
     else if(ref !== 'direct' && ref !== '') source = 'autre';
-    // Also check URL params for UTM
     var params = new URLSearchParams(window.location.search);
     if(params.get('utm_source')) source = params.get('utm_source');
-
     var device = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
     var page = window.location.pathname || '/';
     var now = new Date();
-    var dateStr = now.toISOString().slice(0,10); // YYYY-MM-DD
-
+    var dateStr = now.toISOString().slice(0,10);
     db.collection('analytics').add({
-      page: page,
-      source: source,
-      referrer: ref.substring(0, 200),
-      device: device,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      date: dateStr,
-      hour: now.getHours(),
-      userAgent: navigator.userAgent.substring(0, 150)
+      page: page, source: source, referrer: ref.substring(0, 200),
+      device: device, timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      date: dateStr, hour: now.getHours(), userAgent: navigator.userAgent.substring(0, 150)
     });
   } catch(e) { console.log('Analytics error:', e); }
 })();
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
 <script>
@@ -1806,45 +1797,6 @@ return `<div class="menu-card" onclick='openCustom(${JSON.stringify(item).replac
 </div>`;
 }
 
-
-// ===== LIVE MENU FROM FIRESTORE =====
-(async function loadLiveMenu(){
-  try {
-    const doc = await db.collection('config').doc('menu').get();
-    if(!doc.exists || !doc.data().data) return;
-    const adminMenu = JSON.parse(doc.data().data);
-    // adminMenu is flat: {pizza: [{name,desc,price,image},...], burger: [...], ...}
-    // Overlay onto menuData: update matching items by name, add new ones
-    Object.keys(adminMenu).forEach(cat => {
-      if(!menuData[cat]) {
-        // New category from admin
-        menuData[cat] = { items: adminMenu[cat] };
-        return;
-      }
-      const adminItems = adminMenu[cat];
-      // Get all existing items (flat list from subcategories or items)
-      let existingItems = [];
-      if(menuData[cat].subcategories) {
-        menuData[cat].subcategories.forEach(sub => { existingItems = existingItems.concat(sub.items); });
-      } else if(menuData[cat].items) {
-        existingItems = menuData[cat].items;
-      }
-      // Update existing items by name match
-      adminItems.forEach(adminItem => {
-        const match = existingItems.find(e => e.name === adminItem.name);
-        if(match) {
-          if(adminItem.price) match.price = adminItem.price;
-          if(adminItem.desc) match.desc = adminItem.desc;
-          if(adminItem.image) match.image = adminItem.image;
-        }
-      });
-    });
-    // Re-render current category
-    if(typeof renderMenu === 'function') renderMenu(currentCat || 'pizza');
-    console.log('Live menu loaded from Firestore');
-  } catch(e) { console.log('No live menu override:', e); }
-})();
-
 // ===== ORDER MODE (Livraison vs À emporter) =====
 let orderMode = 'livraison';
 
@@ -1869,7 +1821,7 @@ function toggleOffresVisibility(mode) {
     offresCards.style.gridTemplateColumns = (mode === 'livraison') ? '1fr' : '1fr 1fr 1fr';
     offresCards.style.maxWidth = (mode === 'livraison') ? '300px' : '1100px';
   }
-  // Hide/show the "Duo Gagnant" promo section completely (no empty space)
+  // Hide/show the "Duo Gagnant" promo section
   const offresSection = document.getElementById('offres');
   if (offresSection) {
     offresSection.style.display = (mode === 'livraison') ? 'none' : 'block';
@@ -2699,4 +2651,39 @@ async function submitOrder() {
 }
 
 // Tab switching + scroll to products
-document.querySelectorAll('.m
+document.querySelectorAll('.menu-tab').forEach(tab => {
+tab.addEventListener('click', () => {
+  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  renderMenu(tab.dataset.cat);
+  setTimeout(() => {
+    document.getElementById('menuGrid').scrollIntoView({behavior:'smooth',block:'start'});
+  }, 100);
+});
+});
+
+// Initial render
+renderMenu('pizza');
+
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Reveal on scroll
+const observer = new IntersectionObserver(entries => {
+entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Parse all emojis to Twemoji (iOS-style)
+function parseEmojis(el){ if(window.twemoji) twemoji.parse(el||document.body,{folder:'svg',ext:'.svg'}); }
+parseEmojis();
+// Re-parse after menu tab switch
+const origRender = renderMenu;
+renderMenu = function(cat){ origRender(cat); parseEmojis(document.getElementById('menuGrid')); };
+
+</script>
+
+</body>
+</html>
