@@ -909,17 +909,20 @@ padding:8px 20px;border-radius:10px;margin-bottom:24px;
 <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:24px;padding:40px 32px;max-width:420px;width:90%;text-align:center">
 <img src="img/Logo-Pizza-Reims.png" alt="New Pizza Reims" style="height:70px;width:auto;margin-bottom:20px">
 <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px">Bienvenue !</h2>
-<p style="color:var(--white-dim);font-size:.9rem;margin-bottom:28px">Comment souhaitez-vous commander ?</p>
+<p style="color:var(--white-dim);font-size:.9rem;margin-bottom:12px">Comment souhaitez-vous commander ?</p>
+<div id="horairesNotice" style="background:rgba(212,168,85,.12);border:1px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:20px;font-size:.78rem;color:var(--gold);text-align:center;line-height:1.5">
+<span style="font-weight:700">⏰ Horaires :</span> 12h05 – 13h45 &amp; 18h05 – 22h45
+</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
 <div onclick="window.orderMode='livraison';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('livraison')" style="background:var(--dark);border:2px solid var(--red);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none">
-<div style="font-size:2rem;margin-bottom:8px;pointer-events:none">🚚</div>
-<div style="color:#fff;font-weight:700;font-size:.95rem;pointer-events:none">Livraison</div>
-<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px;pointer-events:none">À domicile</div>
+<div style="font-size:2rem;margin-bottom:8px">🚚</div>
+<div style="color:#fff;font-weight:700;font-size:.95rem">Livraison</div>
+<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px">À domicile</div>
 </div>
 <div onclick="window.orderMode='emporter';var o=document.getElementById('welcomeOverlay');if(o){o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.style.display='none'},500)};if(typeof chooseOrderMode==='function')chooseOrderMode('emporter')" style="background:var(--dark);border:2px solid var(--dark-border);border-radius:16px;padding:24px 16px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none">
-<div style="font-size:2rem;margin-bottom:8px;pointer-events:none">🏪</div>
-<div style="color:#fff;font-weight:700;font-size:.95rem;pointer-events:none">Sur place / À emporter</div>
-<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px;pointer-events:none">Retrait au restaurant</div>
+<div style="font-size:2rem;margin-bottom:8px">🏪</div>
+<div style="color:#fff;font-weight:700;font-size:.95rem">Sur place / À emporter</div>
+<div style="color:var(--white-dim);font-size:.75rem;margin-top:4px">Retrait au restaurant</div>
 </div>
 </div>
 </div>
@@ -1023,7 +1026,7 @@ Commander
 <!-- Menu Étudiant -->
 <div style="background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:16px;padding:24px;text-align:center;position:relative;overflow:hidden">
 <div style="position:absolute;top:-8px;right:-8px;background:var(--gold);color:var(--dark);padding:4px 14px;border-radius:0 16px 0 12px;font-weight:800;font-size:.7rem;text-transform:uppercase">Étudiant</div>
-<div style="font-family:var(--font-display);font-size:2.8rem;color:#fff;line-height:1">8<span style="font-size:1.2rem">€</span></div>
+<div style="font-family:var(--font-display);font-size:2.8rem;color:#fff;line-height:1">9<span style="font-size:1.2rem">€</span></div>
 <p style="color:rgba(255,255,255,.9);font-weight:700;font-size:.85rem;margin:8px 0 4px">MENU ÉTUDIANT</p>
 <p style="color:rgba(255,255,255,.7);font-size:.75rem">Pizza Junior + Boisson 33cl</p>
 </div>
@@ -1616,7 +1619,7 @@ const menuData = {
       note: "Base au choix : Tomate ou Crème fraîche",
       tier: "classique",
       items: [
-        {name:"Margherita",desc:"Mozzarella, sauce tomate",price:"9.00",tier:"classique"},
+        {name:"Margherita",desc:"Mozzarella, sauce tomate",price:"8.00",tier:"classique",customPrices:{Junior:8,Senior:9,'Méga':15}},
         {name:"4 Fromages",desc:"Mozzarella, mélange de 4 fromages",price:"9.00",tier:"classique"},
         {name:"Chèvre Miel",desc:"Mozzarella, chèvre, miel, olives",price:"9.00",tier:"classique"},
         {name:"Napolitaine",desc:"Mozzarella, anchois, câpres, olives, tomate fraîche",price:"9.00",tier:"classique"},
@@ -1732,15 +1735,15 @@ const menuData = {
     {name:"Coca-Cola 33cl",desc:"Cannette classique",price:"1.50"},
     {name:"Coca-Cola Zero 33cl",desc:"Cannette zéro sucre",price:"1.50"},
     {name:"Fanta Orange 33cl",desc:"Cannette",price:"1.50"},
-    {name:"Sprite 33cl",desc:"Cannette",price:"1.50"},
+    {name:"Coca Cherry 33cl",desc:"Cannette",price:"1.50"},
     {name:"Orangina 33cl",desc:"Cannette",price:"1.50"},
     {name:"Ice Tea Pêche 33cl",desc:"Cannette",price:"1.50"},
     {name:"Oasis Tropical 33cl",desc:"Cannette",price:"1.50"},
     {name:"Perrier 33cl",desc:"Eau gazeuse",price:"1.50"},
     {name:"Evian 50cl",desc:"Eau minérale",price:"1.50"},
-    {name:"Coca-Cola 1.5L",desc:"Bouteille",price:"3.00"},
-    {name:"Fanta Orange 1.5L",desc:"Bouteille",price:"3.00"},
-    {name:"Sprite 1.5L",desc:"Bouteille",price:"3.00"},
+    {name:"Coca-Cola 1.5L",desc:"Bouteille",price:"3.50"},
+    {name:"Fanta Orange 1.5L",desc:"Bouteille",price:"3.50"},
+    {name:"Lipton 1.5L",desc:"Bouteille",price:"3.50"},
     {name:"Capri-Sun",desc:"Boisson pour enfants",price:"1.00"},
   ]
 }
@@ -1758,6 +1761,32 @@ const categoryImages = {
 "dessert":"https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=200&q=80",
 "boisson":"https://images.unsplash.com/photo-1581006852262-e4307cf6283a?auto=format&fit=crop&w=200&q=80",
 };
+
+
+// Load menu from Firestore (admin changes sync here)
+(async function loadMenuFromFirestore(){
+  try {
+    const doc = await db.collection('config').doc('menu').get();
+    if(doc.exists && doc.data().data){
+      const fbMenu = JSON.parse(doc.data().data);
+      Object.keys(fbMenu).forEach(cat => {
+        if(!menuData[cat]) return;
+        const fbItems = Array.isArray(fbMenu[cat]) ? fbMenu[cat] : (fbMenu[cat].items || []);
+        const localItems = menuData[cat].items || (menuData[cat].subcategories ? menuData[cat].subcategories.flatMap(s=>s.items) : []);
+        fbItems.forEach(fbItem => {
+          const match = localItems.find(l => l.name === fbItem.name);
+          if(match){
+            if(fbItem.image) match.image = fbItem.image;
+            if(fbItem.price) match.price = fbItem.price;
+            if(fbItem.desc) match.desc = fbItem.desc;
+          }
+        });
+      });
+      console.log('Menu synced from Firestore');
+      renderMenu(currentCat || 'pizza');
+    }
+  } catch(e){ console.log('Firestore menu load error:', e); }
+})();
 
 function renderMenu(cat) {
 const grid = document.getElementById('menuGrid');
@@ -1826,7 +1855,6 @@ function toggleOffresVisibility(mode) {
   if (offresSection) {
     offresSection.style.display = (mode === 'livraison') ? 'none' : 'block';
   }
-  // Also hide the promos banner bar when livraison
   const promosBanner = document.getElementById('promos');
   if (promosBanner) {
     promosBanner.style.display = (mode === 'livraison') ? 'none' : 'block';
@@ -2034,7 +2062,7 @@ function addUpsellItem(label, price, btn) {
 }
 
 function showDrinkPicker(price, triggerBtn) {
-  const boissons = ['Coca-Cola','Coca-Cola Zero','Fanta Orange','Sprite','Orangina','Ice Tea Pêche','Oasis Tropical','Perrier','Evian'];
+  const boissons = ['Coca-Cola','Coca-Cola Zero','Coca Cherry','Fanta Orange','Orangina','Ice Tea Pêche','Oasis Tropical','Perrier','Evian'];
   const overlay = document.createElement('div');
   overlay.id = 'drinkPickerOverlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:10001;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
@@ -2140,7 +2168,7 @@ function openCustom(item, cat) {
       favoris:   {Junior:10, Senior:12, 'Méga':19},
       chef:      {Junior:11, Senior:13, 'Méga':20}
     };
-    const tp = pizzaPrices[tier];
+    const tp = item.customPrices || pizzaPrices[tier];
     html += `
     <div class="custom-section">
       <div class="custom-section-title">🍅 Base</div>
@@ -2179,7 +2207,20 @@ function openCustom(item, cat) {
       <div class="custom-options sauce-grid">
         ${allSauces.map(s => `<div class="custom-opt" data-group="sauce" data-val="${s}" data-max="2" onclick="toggleMulti(this,2)">${s}</div>`).join('')}
       </div>
-    </div>
+    </div>`;
+    if (!item.name.includes('Bowl')) {
+      html += `
+      <div class="custom-section">
+        <div class="custom-section-title">🧀 Gratinage (optionnel)</div>
+        <div class="custom-options">
+          <div class="custom-opt" data-group="gratinage" data-val="Aucun" onclick="selectOpt(this)">Aucun</div>
+          <div class="custom-opt" data-group="gratinage" data-val="Fromage" data-extra="1.50" onclick="selectOpt(this)">Fromage <span class="extra">+1.50€</span></div>
+          <div class="custom-opt" data-group="gratinage" data-val="Lardon" data-extra="1.50" onclick="selectOpt(this)">Lardon <span class="extra">+1.50€</span></div>
+          <div class="custom-opt" data-group="gratinage" data-val="Lardon + Fromage" data-extra="2.00" onclick="selectOpt(this)">Lardon + Fromage <span class="extra">+2.00€</span></div>
+        </div>
+      </div>`;
+    }
+    html += `
     <div class="custom-section">
       <div class="custom-section-title">📝 Demandes spéciales</div>
       <textarea class="custom-textarea" placeholder="Ex: viande supplémentaire (+2€), sans oignon..." id="customNotes"></textarea>
@@ -2213,7 +2254,7 @@ function openCustom(item, cat) {
   else if (cat === 'fried-chicken') {
     const descLower = (item.desc || '').toLowerCase();
     const nbBoissons = descLower.includes('2 boissons') ? 2 : descLower.includes('1 boisson') ? 1 : 0;
-    const boissons33 = ['Coca-Cola','Coca-Cola Zero','Fanta Orange','Sprite','Orangina','Ice Tea Pêche','Oasis Tropical','Perrier','Evian'];
+    const boissons33 = ['Coca-Cola','Coca-Cola Zero','Coca Cherry','Fanta Orange','Orangina','Ice Tea Pêche','Oasis Tropical','Perrier','Evian'];
 
     html += `
     <div class="custom-section" style="text-align:center;padding:20px 0">
