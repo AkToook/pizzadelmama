@@ -407,6 +407,7 @@ display:flex;align-items:center;justify-content:center;
 <a class="active" data-page="dashboard" onclick="switchPage('dashboard')">📊 Dashboard</a>
 <a data-page="orders" onclick="switchPage('orders')">📋 Commandes <span class="order-badge" id="sidebarBadge"></span></a>
 <a data-page="menu-editor" onclick="switchPage('menu-editor')">🍽️ Gérer le Menu</a>
+<a data-page="analytics" onclick="switchPage('analytics')">📈 Analytics</a>
 <div class="spacer"></div>
 <div class="printer-indicator warn" id="printerStatus">🖨️ Imprimante: verification...</div>
 <a href="index.html">🌐 Voir le site</a>
@@ -483,6 +484,79 @@ display:flex;align-items:center;justify-content:center;
 </tbody>
 </table>
 </div>
+
+
+<!-- ANALYTICS PAGE -->
+<div class="page" id="page-analytics">
+<h1 class="page-title">Analytics — Visites du site</h1>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="analyticsPeriodBtns">
+<button class="dash-period-btn active" onclick="setAnalyticsPeriod('today')">Aujourd'hui</button>
+<button class="dash-period-btn" onclick="setAnalyticsPeriod('week')">7 jours</button>
+<button class="dash-period-btn" onclick="setAnalyticsPeriod('month')">30 jours</button>
+<button class="dash-period-btn" onclick="setAnalyticsPeriod('3months')">3 mois</button>
+<button class="dash-period-btn" onclick="setAnalyticsPeriod('6months')">6 mois</button>
+</div>
+
+<div class="dash-cards">
+<div class="dash-card green">
+<div class="label">Visites totales</div>
+<div class="value" id="anTotalVisits">0</div>
+</div>
+<div class="dash-card gold">
+<div class="label">Aujourd'hui</div>
+<div class="value" id="anTodayVisits">0</div>
+</div>
+<div class="dash-card">
+<div class="label">Mobile</div>
+<div class="value" id="anMobilePercent">0%</div>
+</div>
+<div class="dash-card red">
+<div class="label">Desktop</div>
+<div class="value" id="anDesktopPercent">0%</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px">
+
+<!-- Sources de trafic -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px">
+<h3 style="margin-bottom:16px;font-size:1.1rem">🔗 Sources de trafic</h3>
+<div id="anSourcesList" style="font-size:.9rem;color:var(--dim)">Chargement...</div>
+</div>
+
+<!-- Visites par jour (chart) -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px">
+<h3 style="margin-bottom:16px;font-size:1.1rem">📅 Visites par jour</h3>
+<div id="anDailyChart" style="height:200px;display:flex;align-items:flex-end;gap:4px;overflow-x:auto"></div>
+</div>
+
+<!-- Heures de pointe -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px">
+<h3 style="margin-bottom:16px;font-size:1.1rem">⏰ Heures de pointe</h3>
+<div id="anHoursChart" style="height:200px;display:flex;align-items:flex-end;gap:2px"></div>
+</div>
+
+<!-- Pages populaires -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px">
+<h3 style="margin-bottom:16px;font-size:1.1rem">📄 Pages visitées</h3>
+<div id="anPagesList" style="font-size:.9rem;color:var(--dim)">Chargement...</div>
+</div>
+
+</div>
+
+<!-- Dernières visites -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:20px">
+<h3 style="margin-bottom:16px;font-size:1.1rem">🕐 Dernières visites</h3>
+<table class="orders-table">
+<thead><tr><th>Date/Heure</th><th>Source</th><th>Appareil</th><th>Page</th></tr></thead>
+<tbody id="anRecentVisits">
+<tr><td colspan="4" style="text-align:center;color:var(--dim)">Chargement...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
 
 <!-- ORDERS PAGE -->
 <div class="page" id="page-orders">
@@ -965,6 +1039,7 @@ function switchPage(name){
     a.classList.toggle('active',a.dataset.page===name);
   });
   if(name==='menu-editor') loadMenuFromFirestore().then(() => { catLabels = getCatLabels(); initEditor(); });
+  if(name==='analytics') loadAnalytics();
 }
 
 // ===== STATUS TOGGLE =====
@@ -1836,6 +1911,121 @@ function saveCategory(){
 
 // Init editor
 initEditor();
+
+
+// ===== ANALYTICS =====
+let analyticsPeriod = 'today';
+
+function setAnalyticsPeriod(period){
+  analyticsPeriod = period;
+  document.querySelectorAll('#analyticsPeriodBtns .dash-period-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadAnalytics();
+}
+
+function getAnalyticsPeriodStart(period){
+  const now = new Date();
+  switch(period){
+    case 'today': return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    case 'week': return new Date(now - 7*86400000);
+    case 'month': return new Date(now - 30*86400000);
+    case '3months': return new Date(now - 90*86400000);
+    case '6months': return new Date(now - 180*86400000);
+    default: return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+}
+
+async function loadAnalytics(){
+  try {
+    const startDate = getAnalyticsPeriodStart(analyticsPeriod);
+    const startStr = startDate.toISOString().slice(0,10);
+    const todayStr = new Date().toISOString().slice(0,10);
+
+    const snap = await db.collection('analytics')
+      .where('date','>=', startStr)
+      .orderBy('date','desc')
+      .limit(5000)
+      .get();
+
+    const visits = [];
+    snap.forEach(doc => visits.push(doc.data()));
+
+    // Total visits
+    document.getElementById('anTotalVisits').textContent = visits.length;
+
+    // Today visits
+    const todayVisits = visits.filter(v => v.date === todayStr);
+    document.getElementById('anTodayVisits').textContent = todayVisits.length;
+
+    // Device split
+    const mobile = visits.filter(v => v.device === 'mobile').length;
+    const desktop = visits.length - mobile;
+    const mPct = visits.length ? Math.round(mobile/visits.length*100) : 0;
+    document.getElementById('anMobilePercent').textContent = mPct + '%';
+    document.getElementById('anDesktopPercent').textContent = (100-mPct) + '%';
+
+    // Sources
+    const sources = {};
+    visits.forEach(v => { sources[v.source] = (sources[v.source]||0)+1; });
+    const sortedSources = Object.entries(sources).sort((a,b) => b[1]-a[1]);
+    const sourceEmojis = {google:'🔍',instagram:'📸',facebook:'📘',tiktok:'🎵',whatsapp:'💬',direct:'🏠',autre:'🔗'};
+    document.getElementById('anSourcesList').innerHTML = sortedSources.length ? sortedSources.map(([s,c]) => {
+      const pct = Math.round(c/visits.length*100);
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">' +
+        '<span>' + (sourceEmojis[s]||'🔗') + ' ' + s.charAt(0).toUpperCase()+s.slice(1) + '</span>' +
+        '<span style="font-weight:700">' + c + ' <span style="color:var(--dim);font-weight:400">(' + pct + '%)</span></span></div>';
+    }).join('') : '<div style="color:var(--dim)">Aucune visite</div>';
+
+    // Daily chart
+    const daily = {};
+    visits.forEach(v => { daily[v.date] = (daily[v.date]||0)+1; });
+    const dailyEntries = Object.entries(daily).sort((a,b) => a[0].localeCompare(b[0]));
+    const maxDaily = Math.max(...dailyEntries.map(e=>e[1]),1);
+    document.getElementById('anDailyChart').innerHTML = dailyEntries.length ? dailyEntries.map(([d,c]) => {
+      const h = Math.max(Math.round(c/maxDaily*180),4);
+      const label = d.slice(5); // MM-DD
+      return '<div style="display:flex;flex-direction:column;align-items:center;flex:1;min-width:28px">' +
+        '<div style="font-size:.7rem;color:var(--dim);margin-bottom:4px">' + c + '</div>' +
+        '<div style="width:100%;max-width:32px;height:'+h+'px;background:linear-gradient(180deg,#e67e22,#d35400);border-radius:4px 4px 0 0"></div>' +
+        '<div style="font-size:.65rem;color:var(--dim);margin-top:4px;white-space:nowrap">' + label + '</div></div>';
+    }).join('') : '<div style="color:var(--dim)">Aucune donnée</div>';
+
+    // Hours chart
+    const hours = new Array(24).fill(0);
+    visits.forEach(v => { if(typeof v.hour === 'number') hours[v.hour]++; });
+    const maxHour = Math.max(...hours,1);
+    document.getElementById('anHoursChart').innerHTML = hours.map((c,h) => {
+      const hgt = Math.max(Math.round(c/maxHour*180),2);
+      const color = (h>=11 && h<=14) || (h>=18 && h<=22) ? '#e67e22' : '#555';
+      return '<div style="display:flex;flex-direction:column;align-items:center;flex:1">' +
+        '<div style="font-size:.6rem;color:var(--dim);margin-bottom:2px">' + (c||'') + '</div>' +
+        '<div style="width:100%;height:'+hgt+'px;background:'+color+';border-radius:2px 2px 0 0"></div>' +
+        '<div style="font-size:.6rem;color:var(--dim);margin-top:2px">' + h + 'h</div></div>';
+    }).join('');
+
+    // Pages
+    const pages = {};
+    visits.forEach(v => { pages[v.page||'/'] = (pages[v.page||'/']||0)+1; });
+    const sortedPages = Object.entries(pages).sort((a,b) => b[1]-a[1]);
+    document.getElementById('anPagesList').innerHTML = sortedPages.length ? sortedPages.map(([p,c]) => {
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">' +
+        '<span>' + p + '</span><span style="font-weight:700">' + c + '</span></div>';
+    }).join('') : '<div style="color:var(--dim)">Aucune donnée</div>';
+
+    // Recent visits (last 20)
+    const recent = visits.slice(0,20);
+    document.getElementById('anRecentVisits').innerHTML = recent.length ? recent.map(v => {
+      const ts = v.timestamp ? new Date(v.timestamp.seconds*1000) : null;
+      const timeStr = ts ? ts.toLocaleDateString('fr-FR') + ' ' + ts.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : v.date;
+      return '<tr><td>'+timeStr+'</td><td>'+(sourceEmojis[v.source]||'')+' '+v.source+'</td><td>'+(v.device==='mobile'?'📱':'💻')+' '+v.device+'</td><td>'+v.page+'</td></tr>';
+    }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--dim)">Aucune visite</td></tr>';
+
+  } catch(e) {
+    console.log('Analytics error:', e);
+    document.getElementById('anSourcesList').innerHTML = '<div style="color:#e74c3c">Erreur: ' + e.message + '</div>';
+  }
+}
+
 </script>
 </body>
 </html>
